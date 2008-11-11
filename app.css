@@ -39,10 +39,32 @@ body {
 
 #wrapper {
   width            : 980px;
-  margin           : 0 auto;
-  padding          : 20px;
+  margin           : 40px auto;  
+}
+
+h1 {
+  background       : url(images/3n.png);
+  background-repeat: no-repeat;
+  text-indent      : -1000px;
+  height           : 80px;
+  width            : 150px;
 }
 
 #main {
   background-color : white;
+  padding          : 40px;
+  margin-top       : 40px;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
