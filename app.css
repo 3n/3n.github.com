@@ -38,7 +38,7 @@ body {
 }
 
 #wrapper {
-  width            : 980px;
+  width            : 860px;
   margin           : 40px auto;  
 }
 
@@ -52,11 +52,18 @@ h1 {
 
 #main {
   background-color : white;
-  padding          : 40px;
-  margin-top       : 40px;
+  float            : left;
+  margin           : 40px 0;
+  padding          : 40px 20px 20px 40px;
+  width            : 800px;
 }
 
-
+.single-block {
+  float            : left;
+  margin           : 0 20px 20px 0;
+  width            : 140px;
+  height           : 140px;  
+}
 
 
 
