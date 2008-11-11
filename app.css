@@ -38,31 +38,32 @@ body {
 }
 
 #wrapper {
-  width            : 860px;
-  margin           : 40px auto;  
+  width   : 860px;
+  margin  : 40px auto;  
 }
 
 h1 {
-  background       : url(images/3n.png);
-  background-repeat: no-repeat;
-  text-indent      : -1000px;
-  height           : 80px;
-  width            : 150px;
+  background        : url(images/3n.png);
+  background-repeat : no-repeat;
+  text-indent       : -1000px;
+  height            : 80px;
+  width             : 150px;
 }
 
 #main {
-  background-color : white;
-  float            : left;
-  margin           : 40px 0;
-  padding          : 40px 20px 20px 40px;
-  width            : 800px;
+  background-color   : white;
+  float              : left;
+  margin             : 40px 0;
+  padding            : 40px 20px 20px 40px;
+  width              : 800px;  
+  -webkit-box-shadow : 0 0 8px rgba(0, 0, 0, 0.1);	
 }
 
 .single-block {
-  float            : left;
-  margin           : 0 20px 20px 0;
-  width            : 140px;
-  height           : 140px;  
+  float   : left;
+  margin  : 0 20px 20px 0;
+  width   : 140px;
+  height  : 140px;  
 }
 
 
