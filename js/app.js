@@ -46,12 +46,15 @@ var ImageCell = new Class({
 			'src' 	: src,
 			'styles': { 'display':'none'	}
 		})
-
-		elem.on_has_width(function(){ 
-			this.setStyle('display','block').thumbnail(140,140)
-		}.bind(elem))
 		
 		return this.parent(elem, options)
+	},
+	
+	to_html: function(){
+		this.html.on_has_width(function(){ 
+			this.setStyle('display','block').thumbnail(140,140)
+		}.bind(this.html))
+		return this.parent()
 	}
 })
 
@@ -62,8 +65,8 @@ var FeedGrid = new Class({
 		return this
 	},
 	
-	to_html: function(){
-		return this.cells.map(function(c){
+	to_html: function(limit){
+		return this.cells.first(limit||100).map(function(c){
 			return c.to_html()
 		})
 	}
@@ -118,14 +121,14 @@ window.addEvent('domready', function(){
 		},
 		onComplete: function(r){
 			_3n.flickr_grid = new FlickrGrid(r)
-			$('main').adopt( _3n.flickr_grid.to_html() )
+			$('main').adopt( _3n.flickr_grid.to_html(5) )
 		}
 	}).request();
 	
 	new JsonP("http://twitter.com/statuses/user_timeline/" + _3n.twitter_user + ".json", {
 		onComplete: function(r){
 			_3n.twitter_grid = new TwitterGrid(r)
-			$('main').adopt( _3n.twitter_grid.to_html() )
+			$('main').adopt( _3n.twitter_grid.to_html(10) )
 		}
 	}).request();
 	

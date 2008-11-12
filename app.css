@@ -59,6 +59,7 @@ h1 {
   -webkit-box-shadow : 0 0 8px rgba(0, 0, 0, 0.05);	
 }
 
+
 .single-block {
   float   : left;
   margin  : 0 20px 20px 0;
@@ -66,6 +67,9 @@ h1 {
   height  : 140px;  
 }
 
+  .single-block.tweet {
+    background-color:#efefef;
+  }
 
 
 

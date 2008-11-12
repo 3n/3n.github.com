@@ -4,6 +4,7 @@
 	Element.on_has_width
 	Element.BrawndoStyles
 	params
+	Array.BrawndoExtras
 	
 	dbug
 	JsonP (custom)
@@ -103,7 +104,7 @@ Element.implement({
 	},
 	on_has_width: function(fun){
 		if (this.invisibleSize().x > 0) fun()
-		else this.on_has_width.delay(10, this, fun)
+		else this.on_has_width.delay(100, this, fun)
 		return this
 	}
 })
@@ -865,3 +866,50 @@ Date.$parsePatterns.extend([
 		}
 	}
 ]);
+
+/*
+Script: Array.BrawndoExtras.js
+	Extends the Array class (using .implement) with various methods.
+*/
+
+Array.implement({
+	last: function(){
+		return this[this.length-1]
+	},
+	first: function(num){
+		if (num) return this.slice(0,num)
+		else return this[0]
+	},
+	cycle: function(index){
+		return this[index % this.length]
+	},
+	randomize: function() {
+	  var i = this.length;
+    if ( i == 0 ) return false;
+    while ( --i ) {
+     var j = Math.floor( Math.random() * ( i + 1 ) );
+     var tempi = this[i];
+     var tempj = this[j];
+     this[i] = tempj;
+     this[j] = tempi;
+    }
+    return this
+	},
+	average: function(){
+		var total = 0
+		this.each(function(x){
+			total += x
+		})
+		return total/this.length
+	},
+	sort_numericly: function(){
+		this.sort(function(a,b){
+			var x = a.toInt()
+			var y = b.toInt()
+			if (x > y) return 1
+			else if (x < y) return -1
+			else return 0
+		})
+		return this
+	}
+})
