@@ -5,14 +5,18 @@ var Cell = new Class({
 	options: {
 		custom_class	: '',
 		title 				: '',
-		created_on		: new Date(1985,5,31)	
+		created_on		: new Date(1985,5,31),
+		source				: '#'
 	},
 	initialize: function(html, options){
 		this.setOptions(options)
 		this.html = html
+		
+		this.element = this.create_element()
+		this.add_events()
 	},
 	
-	to_html: function(){
+	create_element: function(){
 		var tmp = new Element('div', {
 			'class': 'single-block ' + this.options.custom_class,
 			'title': this.options.title
@@ -20,12 +24,23 @@ var Cell = new Class({
 		if 			($type(this.html) === 'element') tmp.adopt(this.html)
 		else if ($type(this.html) === 'string')  tmp.set('html', this.html)
 		return tmp
+	},
+	
+	add_events: function(){
+		this.element.addEvent('click', function(){
+			document.location = this.options.source
+		}.bind(this))
+	},
+	
+	to_html: function(){
+		return this.element
 	}
 })
 
 var ImageCell = new Class({
 	Extends: Cell,
 	initialize: function(src, options){
+		this.setOptions(options)
 		
 		var elem = new Element('img', {
 			'src' 	: src,
@@ -65,7 +80,8 @@ var FlickrGrid = new Class({
 		return data.items.map(function(flickr_item){
 			return new ImageCell(flickr_item.media.m, { 
 				'title' 		: flickr_item.title, 
-				'created_on': new Date( Date.parse(flickr_item.published) ) 
+				'created_on': new Date( Date.parse(flickr_item.published) ),
+				'source' 		: flickr_item.link
 			})
 	  })
 	}
@@ -81,7 +97,8 @@ var TwitterGrid = new Class({
 		return data.map(function(tweet){
 			return new Cell(tweet.text, { 
 				'custom_class' : 'tweet',
-				'created_on'	 : new Date( Date.parse(tweet.created_at) ) 
+				'created_on'	 : new Date( Date.parse(tweet.created_at) ),
+				'source'			 : "http://www.twitter.com/" + tweet.user.screen_name + "/status/" + tweet.id
 			})
 		})
 	}
