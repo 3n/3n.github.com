@@ -54,6 +54,7 @@ var ImageCell = new Class({
 		this.html.on_has_width(function(){ 
 			this.setStyle('display','block').thumbnail(140,140)
 		}.bind(this.html))
+		
 		return this.parent()
 	}
 })

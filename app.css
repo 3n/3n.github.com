@@ -68,7 +68,10 @@ h1 {
 }
 
   .single-block.tweet {
-    background-color:#efefef;
+    background-color:#F5F5F5;
+    height:120px;
+    padding:10px;
+    width:120px;
   }
 
 
