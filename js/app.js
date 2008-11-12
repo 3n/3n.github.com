@@ -3,6 +3,7 @@ var _3n = {}
 var Cell = new Class({
 	Extends: Options,
 	options: {
+		main_class    : 'single-wide',
 		custom_class	: '',
 		title 				: '',
 		created_on		: new Date(1985,5,31),
@@ -18,7 +19,7 @@ var Cell = new Class({
 	
 	create_element: function(){
 		var tmp = new Element('div', {
-			'class': 'single-block ' + this.options.custom_class,
+			'class': this.options.main_class + ' ' + this.options.custom_class,
 			'title': this.options.title
 		})
 		if 			($type(this.html) === 'element') tmp.adopt(this.html)
@@ -98,8 +99,9 @@ var TwitterGrid = new Class({
 	},
 	
 	create_cells: function(data){
-		return data.map(function(tweet){
+		return data.map(function(tweet,i){
 			return new Cell(tweet.text, { 
+				'main_class'	 : (i==0 || tweet.text.length > 100) ? 'double-wide' : 'single-wide',
 				'custom_class' : 'tweet',
 				'created_on'	 : new Date( Date.parse(tweet.created_at) ),
 				'source'			 : "http://www.twitter.com/" + tweet.user.screen_name + "/status/" + tweet.id

@@ -60,18 +60,35 @@ h1 {
 }
 
 
-.single-block {
-  float   : left;
-  margin  : 0 20px 20px 0;
-  width   : 140px;
-  height  : 140px;  
+.single-wide, .double-wide {
+  float    : left;
+  margin   : 0 20px 20px 0;  
+  overflow : hidden;
 }
 
-  .single-block.tweet {
-    background-color:#F5F5F5;
-    height:120px;
-    padding:10px;
-    width:120px;
+.single-wide {
+  width  : 140px;
+  height : 140px;  
+}
+
+  .single-wide.tweet {
+    font-size        : 1.1em;
+    background-color : #F5F5F5;
+    height           : 120px;
+    padding          : 10px;
+    width            : 120px;
+  }
+
+.double-wide {
+  width  : 300px;
+  height : 140px;  
+}
+  .double-wide.tweet {
+    font-size        : 1.2em;    
+    background-color : #F5F5F5;
+    height           : 120px;
+    padding          : 10px;
+    width            : 280px;
   }
 
 
