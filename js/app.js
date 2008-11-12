@@ -1,3 +1,5 @@
+var _3n = {}
+
 var Cell = new Class({
 	Extends: Options,
 	options: {
@@ -63,7 +65,8 @@ var FlickrGrid = new Class({
 		return data.items.map(function(flickr_item){
 			return new ImageCell(flickr_item.media.m, { 
 				'title' 		: flickr_item.title, 
-				'created_on': new Date( Date.parse(flickr_item.published) ) })
+				'created_on': new Date( Date.parse(flickr_item.published) ) 
+			})
 	  })
 	}
 })
@@ -76,7 +79,10 @@ var TwitterGrid = new Class({
 	
 	create_cells: function(data){
 		return data.map(function(tweet){
-			return new Cell(tweet.text, { custom_class: 'tweet' })
+			return new Cell(tweet.text, { 
+				'custom_class' : 'tweet',
+				'created_on'	 : new Date( Date.parse(tweet.created_at) ) 
+			})
 		})
 	}
 })
@@ -91,13 +97,15 @@ window.addEvent('domready', function(){
 			format : 'json'
 		},
 		onComplete: function(r){
-			$('main').adopt( new FlickrGrid(r).to_html() )
+			_3n.flickr_grid = new FlickrGrid(r)
+			$('main').adopt( _3n.flickr_grid.to_html() )
 		}
 	}).request();
 	
 	new JsonP("http://twitter.com/statuses/user_timeline/8846642.json", {
 		onComplete: function(r){
-			$('main').adopt( new TwitterGrid(r).to_html() )
+			_3n.twitter_grid = new TwitterGrid(r)
+			$('main').adopt( _3n.twitter_grid.to_html() )
 		}
 	}).request();
 	
