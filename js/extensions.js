@@ -3,12 +3,22 @@
 	Element.thumbnail
 	Element.on_has_width
 	Element.BrawndoStyles
+	params
 	
 	dbug
 	JsonP (custom)
 	Date
 	Date.Extras // should probably try to replace these Date classes - way big
 */
+
+function params() {
+  var hash = {}
+  var query = window.location.search.substring(1);
+  query.split("&").each(function(pair){
+    hash[pair.split("=")[0]] = decodeURIComponent(pair.split("=")[1])
+  })
+  return hash
+}
 
 var InvisibleDimensions = new Class({
 	Implements: Options,

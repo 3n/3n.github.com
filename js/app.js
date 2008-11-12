@@ -105,11 +105,14 @@ var TwitterGrid = new Class({
 })
 
 window.addEvent('domready', function(){
+	
+	_3n.twitter_user = params()['twitter_user'] || '8846642'
+	_3n.flickr_user  = params()['flickr_user']  || '52179512@N00'	
 
 	new JsonP("http://api.flickr.com/services/feeds/photos_public.gne", {
 		global_function : 'jsonFlickrFeed',
 		data: {
-			id 	 	 : "52179512@N00",
+			id 	 	 : _3n.flickr_user,
 			lang 	 : "en-us",
 			format : 'json'
 		},
@@ -119,7 +122,7 @@ window.addEvent('domready', function(){
 		}
 	}).request();
 	
-	new JsonP("http://twitter.com/statuses/user_timeline/8846642.json", {
+	new JsonP("http://twitter.com/statuses/user_timeline/" + _3n.twitter_user + ".json", {
 		onComplete: function(r){
 			_3n.twitter_grid = new TwitterGrid(r)
 			$('main').adopt( _3n.twitter_grid.to_html() )
