@@ -162,6 +162,14 @@ var JsonP = new Class({
 			if(this.options.queryString) jurl += "&"+this.options.queryString;
 			jurl += "&"+Hash.toQueryString(this.options.data);
 		} else var jurl = this.url;
+		
+		// begin 3n
+		if ($chk(this.options.global_function))
+			window[this.options.global_function] = function(r){
+				JsonP.requestors[index].handleResults(r)
+			}
+		// end 3n
+		
 		return {url: jurl, index: index};
 	},
 	handleResults: function(data){
