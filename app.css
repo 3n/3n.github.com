@@ -25,7 +25,7 @@ input, textarea, select{font-family:inherit;font-size:inherit;font-weight:inheri
 table {font-size:inherit;font:100%;}
 /**
  * Bump up IE to get to 13px equivalent
- */
+ */ 
 pre,code,kbd,samp,tt {font-family:monospace;*font-size:108%;line-height:99%;}
 
 
@@ -34,9 +34,9 @@ pre,code,kbd,samp,tt {font-family:monospace;*font-size:108%;line-height:99%;}
 
 
 body {
-  font-family      : "Helvetica";
+  font-family      : Helvetica,Arial,Geneva,sans-serif;
   background-color : #efefef;
-  color            : #bababa;
+  color            : #aaa;
 }
 
 a {
@@ -78,33 +78,33 @@ h1 {
   position : relative;
   cursor   : pointer;
 }
+  .cell.single-wide {
+    width  : 140px;
+    height : 140px;  
+  }
+  .cell.double-wide {
+    width  : 300px;
+    height : 140px;  
+  }
 
-.single-wide {
-  width  : 140px;
-  height : 140px;  
+
+.tweet {
+  line-height: 1.3em;
 }
-
-  .single-wide.tweet {
-    font-size        : 1.1em;
+  .tweet.single-wide {
+    font-size        : 1em;
     background-color : #F5F5F5;
     height           : 120px;
     padding          : 10px;
     width            : 120px;
   }
-
-.double-wide {
-  width  : 300px;
-  height : 140px;  
-}
-  .double-wide.tweet {
+  .tweet.double-wide {
     font-size        : 1.2em;    
     background-color : #F5F5F5;
     height           : 120px;
     padding          : 10px;
     width            : 280px;
   }
-
-
 
 
 
