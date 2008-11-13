@@ -12,15 +12,33 @@
 	Date.Extras // should probably try to replace these Date classes - way big
 */
 
+// twitter shit
+String.implement({
+	link_replies: function(){
+		return this.replace(/[\@]+([A-Za-z0-9-_]+)/gi, '<a href="http://twitter.com/$1">@$1</a>')
+	},
+	link_hashcodes: function(){
+		return this.replace(/[\#]+([A-Za-z0-9-_]+)/gi, '<a href="http://search.twitter.com/search?q=&tag=$1">#$1</a>')
+	}
+})
+
 Element.implement({
 	act_like_link: function(alt_href){
 		var href = alt_href || this.get('href')
 		this.addEvent('click', function(e){
+			if (e.event.target.get('tag') == 'a') return 
+			e.stop()
 			if (e.meta)
 				window.open(href)
 			else
 				document.location = href
 		})
+	}
+})
+
+String.implement({
+	make_urls_links: function(){
+		return this.replace(/(\w+:\/\/[A-Za-z0-9-_]+\.[A-Za-z0-9-_:%&\?\/.=]+)/gi, '<a href="$1">$1</a>')
 	}
 })
 

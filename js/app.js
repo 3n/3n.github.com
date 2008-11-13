@@ -101,7 +101,8 @@ var TwitterGrid = new Class({
 	
 	create_cells: function(data){
 		return data.results.map(function(tweet,i){
-			return new Cell(tweet.text, { 
+			var tweet_html = tweet.text.make_urls_links().link_replies().link_hashcodes()
+			return new Cell(tweet_html, { 
 				'main_class'	 : (i==0 || tweet.text.length > 100) ? 'double-wide' : 'single-wide',
 				'custom_class' : 'tweet',
 				'created_on'	 : new Date( Date.parse(tweet.created_at) ),
@@ -139,4 +140,4 @@ window.addEvent('domready', function(){
 		}
 	}).request();
 	
-})
+}) 
