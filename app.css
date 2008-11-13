@@ -31,11 +31,22 @@ pre,code,kbd,samp,tt {font-family:monospace;*font-size:108%;line-height:99%;}
 
 
 
+
+
 body {
   font-family      : "Helvetica";
   background-color : #efefef;
   color            : #bababa;
 }
+
+a {
+  text-decoration : none;
+  color           : #8F9EA8;
+}
+  a:hover {
+    color: #658DA8;
+  }
+
 
 #wrapper {
   width   : 860px;
