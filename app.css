@@ -107,8 +107,21 @@ h1 {
   }
 
 
-
-
+.tip {
+  width            : 140px;
+  font-size        : 12px;
+  background-color : white;
+  line-height      : 1.4em;
+  padding          : 4px 0;
+}
+  .tip .title {
+    font-size : 14px;
+    color     : #666;
+    display   : block;
+  }
+  .tip .date {
+    font-size : 12px;
+  }
 
 
 

@@ -22,8 +22,7 @@ var Cell = new Class({
 	
 	create_element: function(){
 		var tmp = new Element('div', {
-			'class': 'cell ' + this.options.main_class + ' ' + this.options.custom_class,
-			'title': this.options.title
+			'class': 'cell ' + this.options.main_class + ' ' + this.options.custom_class
 		})
 		if 			($type(this.html) === 'element') tmp.adopt(this.html)
 		else if ($type(this.html) === 'string')  tmp.set('html', this.html)
@@ -32,6 +31,11 @@ var Cell = new Class({
 	
 	add_events: function(){
 		this.element.act_like_link(this.options.source)
+		
+		new JustTheTip(this.element, {
+			tip_html  : "<a class='title' href='" + this.options.source + "'>" + this.options.title + "</a><span class='date'>" + this.options.created_on.format() + "</span>",
+			showDelay : 500
+		})
 	},
 	
 	to_html: function(){

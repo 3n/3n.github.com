@@ -943,3 +943,79 @@ Array.implement({
 		return this
 	}
 })
+
+
+
+// Class : JustTheTip
+var JustTheTip = new Class({
+	Implements: [Options, Events],
+	
+	options : {
+		showDelay : 400,
+		hideDelay : 200,
+		tip_html  : ''		
+	},
+	
+	initialize: function(elements, options){
+		this.setOptions(options)
+		
+		this.the_tip = new Element('div', {
+			'class' 	: 'tip',
+			'styles' 	: {
+				'display' 	: 'none',
+				'position' 	: 'absolute',
+				'top' 			: 0,
+				'left' 			: 0
+			}
+		}).inject(document.body)
+			.addEvents({
+				'mouseenter' : this.tip_enter.bind(this),
+				'mouseleave' : this.tip_leave.bind(this)	
+			})
+			.set('html', this.options.tip_html)
+			
+		this.is_it_in_yet = false
+		this.attach_events(elements)
+		
+		return this
+	},
+	
+	attach_events: function(elements){
+		$$(elements).each(function(elem){
+			elem.addEvents({
+				'mouseenter' : this.show_tip.bind(this, elem),	
+				'mouseleave' : this.hide_tip.bind(this)
+			})
+		}.bind(this))
+	},
+
+	show_tip: function(elem){
+		$clear(this.timer)
+		this.timer = (function(){
+			this.current_element = elem
+			this.the_tip.setStyles({
+				'display' : 'block',
+				'left' : elem.getLeft(),
+				'top' : elem.getTop() + elem.getHeight()
+			})
+			this.fireEvent('tipShown')
+		}).delay(this.options.showDelay, this)
+	},	
+	hide_tip: function(){
+		$clear(this.timer)
+		this.timer = (function(){
+			if (!this.is_it_in_yet) {
+				this.the_tip.setStyle('display', 'none')
+				this.fireEvent('tipHidden')
+			}
+		}).delay(this.options.hideDelay, this)
+	},
+	
+	tip_enter: function(){
+		this.is_it_in_yet = true
+	},
+	tip_leave: function(){			
+		this.is_it_in_yet = false
+		this.hide_tip()
+	}
+})
