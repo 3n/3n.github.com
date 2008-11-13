@@ -15,11 +15,6 @@ var Cell = new Class({
 		
 		this.element = this.create_element()
 		
-		this.hover_element = new Element('div', {
-			'class' : 'hover-info',
-			'html'  : this.options.created_on.format()
-		}).inject(this.element, 'top')
-		
 		this.add_events()
 		
 		return this
@@ -36,12 +31,6 @@ var Cell = new Class({
 	},
 	
 	add_events: function(){
-		this.element.addEvent('mouseenter', function(){
-			this.hover_element.setStyle('display','block')
-		}.bind(this))
-		this.element.addEvent('mouseleave', function(){
-			this.hover_element.setStyle('display','none')
-		}.bind(this))
 	},
 	
 	to_html: function(){
@@ -110,12 +99,12 @@ var TwitterGrid = new Class({
 	},
 	
 	create_cells: function(data){
-		return data.map(function(tweet,i){
+		return data.results.map(function(tweet,i){
 			return new Cell(tweet.text, { 
 				'main_class'	 : (i==0 || tweet.text.length > 100) ? 'double-wide' : 'single-wide',
 				'custom_class' : 'tweet',
 				'created_on'	 : new Date( Date.parse(tweet.created_at) ),
-				'source'			 : "http://www.twitter.com/" + tweet.user.screen_name + "/status/" + tweet.id
+				'source'			 : "http://www.twitter.com/" + tweet.from_user + "/status/" + tweet.id
 			})
 		})
 	}
@@ -123,7 +112,7 @@ var TwitterGrid = new Class({
 
 window.addEvent('domready', function(){
 	
-	_3n.twitter_user = params()['twitter_user'] || '8846642'
+	_3n.twitter_user = params()['twitter_user'] || '3n'
 	_3n.flickr_user  = params()['flickr_user']  || '52179512@N00'	
 
 	new JsonP("http://api.flickr.com/services/feeds/photos_public.gne", {
@@ -139,7 +128,10 @@ window.addEvent('domready', function(){
 		}
 	}).request();
 	
-	new JsonP("http://twitter.com/statuses/user_timeline/" + _3n.twitter_user + ".json", {
+	new JsonP("http://search.twitter.com/search.json", {
+		data: {
+			q : "from:" + _3n.twitter_user
+		},
 		onComplete: function(r){
 			_3n.twitter_grid = new TwitterGrid(r)
 			$('main').adopt( _3n.twitter_grid.to_html(10) )
