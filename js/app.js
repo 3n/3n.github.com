@@ -22,7 +22,7 @@ var Cell = new Class({
 	
 	create_element: function(){
 		var tmp = new Element('div', {
-			'class': this.options.main_class + ' ' + this.options.custom_class,
+			'class': 'cell ' + this.options.main_class + ' ' + this.options.custom_class,
 			'title': this.options.title
 		})
 		if 			($type(this.html) === 'element') tmp.adopt(this.html)
@@ -31,6 +31,7 @@ var Cell = new Class({
 	},
 	
 	add_events: function(){
+		this.element.act_like_link(this.options.source)
 	},
 	
 	to_html: function(){
@@ -124,7 +125,7 @@ window.addEvent('domready', function(){
 		},
 		onComplete: function(r){
 			_3n.flickr_grid = new FlickrGrid(r)
-			$('main').adopt( _3n.flickr_grid.to_html(5) )
+			$('main').adopt( _3n.flickr_grid.to_html() )
 		}
 	}).request();
 	
@@ -134,7 +135,7 @@ window.addEvent('domready', function(){
 		},
 		onComplete: function(r){
 			_3n.twitter_grid = new TwitterGrid(r)
-			$('main').adopt( _3n.twitter_grid.to_html(10) )
+			$('main').adopt( _3n.twitter_grid.to_html() )
 		}
 	}).request();
 	

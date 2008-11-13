@@ -12,6 +12,18 @@
 	Date.Extras // should probably try to replace these Date classes - way big
 */
 
+Element.implement({
+	act_like_link: function(alt_href){
+		var href = alt_href || this.get('href')
+		this.addEvent('click', function(e){
+			if (e.meta)
+				window.open(href)
+			else
+				document.location = href
+		})
+	}
+})
+
 function params() {
   var hash = {}
   var query = window.location.search.substring(1);

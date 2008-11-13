@@ -60,11 +60,12 @@ h1 {
 }
 
 
-.single-wide, .double-wide {
+.cell {
   float    : left;
   margin   : 0 20px 20px 0;  
   overflow : hidden;
   position : relative;
+  cursor   : pointer;
 }
 
 .single-wide {
