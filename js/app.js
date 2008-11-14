@@ -31,10 +31,14 @@ var Cell = new Class({
 	
 	add_events: function(){
 		this.element.act_like_link(this.options.source)
-		
+
 		new JustTheTip(this.element, {
-			tip_html  : "<a class='title' href='" + this.options.source + "'>" + this.options.title + "</a><span class='date'>" + this.options.created_on.format() + "</span>",
-			showDelay : 500
+			tip_html   : "<a class='title' href='" + this.options.source + "'>" + this.options.title + "</a><span class='date'>" + this.options.created_on.timeAgoInWords() + "</span>",
+			showDelay  : 400,
+			x_location : 'left',
+			y_location : 'bottom',
+			fade_in_duration  : 100,
+			fade_out_duration : 200
 		})
 	},
 	
@@ -87,10 +91,10 @@ var FlickrGrid = new Class({
 	},
 	
 	create_cells: function(data){
-		return data.items.map(function(flickr_item){
+		return data.items.map(function(flickr_item){			
 			return new ImageCell(flickr_item.media.m, { 
 				'title' 		: flickr_item.title, 
-				'created_on': new Date( Date.parse(flickr_item.published) ),
+				'created_on': Date.parse(flickr_item.published),
 				'source' 		: flickr_item.link
 			})
 	  })
@@ -109,7 +113,7 @@ var TwitterGrid = new Class({
 			return new Cell(tweet_html, { 
 				'main_class'	 : (i==0 || tweet.text.length > 100) ? 'double-wide' : 'single-wide',
 				'custom_class' : 'tweet',
-				'created_on'	 : new Date( Date.parse(tweet.created_at) ),
+				'created_on'	 : Date.parse(tweet.created_at),
 				'source'			 : "http://www.twitter.com/" + tweet.from_user + "/status/" + tweet.id
 			})
 		})

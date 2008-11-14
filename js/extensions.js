@@ -3,6 +3,7 @@
 	Element.thumbnail
 	Element.on_has_width
 	Element.BrawndoStyles
+	Element.BrawndoDisplaying
 	params
 	Array.BrawndoExtras
 	
@@ -38,7 +39,7 @@ Element.implement({
 
 String.implement({
 	make_urls_links: function(){
-		return this.replace(/(\w+:\/\/[A-Za-z0-9-_]+\.[A-Za-z0-9-_:%&\?\/.=]+)/gi, '<a href="$1">$1</a>')
+		return this.replace(/(\w+:\/\/[A-Za-z0-9-_]+\.[A-Za-z0-9-_:;,%&\?\/.=]+)/gi, '<a href="$1">$1</a>')
 	}
 })
 
@@ -101,6 +102,54 @@ Element.implement({
 })
 
 
+/*
+Script: Element.BrawndoDisplaying.js
+	Extends the Element class (using .implement) with various methods for hiding/showing, fading, toggling element.
+*/
+
+Element.implement({
+	simple_hide: function() {
+		return this.setStyle('display','none');
+  },
+  simple_show: function(disp) {
+		if ($chk(disp)) return this.setStyle('display',disp);
+		
+		var tag = this.get('tag')
+		var to  = ''
+		if (tag == 'tr')
+			Browser.Engine.trident ? to = 'block' : to = 'table-row';
+		else if (['div','p','form','table', 'ul'].contains(tag))
+			to = 'block'
+		else if (['span','a'].contains(tag))
+			to = 'inline'
+			
+		return this.setStyle("display", to)
+  },
+	toggle_display: function(){
+		if (!this.getStyle('display')) return null;
+
+		if (this.getStyle('display') == "none")
+			return this.simple_show()	
+		else 
+		  return this.simple_hide()
+	},
+	is_visible: function(){
+    return (this.getStyle('display') || 'none') != 'none' && this.getStyle('visibility') != 'hidden';
+  },
+  f4de: function(how, duration, complete_callback) {
+    var opts = {};
+		if (complete_callback) { opts = {'onComplete': complete_callback }}
+		
+    if(how == "in") {
+      this.fade('hide');
+      opts = $merge(opts, { 'onStart': this.setStyle('display','block') })
+    } else if (how == "out")
+      if (!$defined(complete_callback)) opts = $merge(opts, { 'onComplete': this.simple_hide.bind(this) })
+    this.set('tween', $extend({duration: $pick(duration, 300)}, opts));
+    this.fade(how);
+		return this
+  }
+})
 
 
 Element.implement({
@@ -741,30 +790,33 @@ $extend(Date, {
 		return Date.getTimePhrase(((toTime.getTime() - fromTime.getTime()) / 1000).toInt());
 	},
 	getTimePhrase: function(delta) {
-		var res = Date.$resources[Date.$language]; //saving bytes
+		var res = Date.$resources[Date.$language]; //saving bytes		
 		var getPhrase = function(){
 			if(delta < 60) {
 				return res.lessThanMinute;
 			} else if(delta < 120) {
 				return res.minute;
 			} else if(delta < (45*60)) {
-				return (delta / 60).round() + ' ' + res.minutes;
+				delta = (delta / 60).round()
+				return res.minutes;
 			} else if(delta < (90*60)) {
 				return res.hour;
 			} else if(delta < (24*60*60)) {
-				return res.hours[0] + ' ' + (delta / 3600).round() + ' ' + res.hours[1];
+				delta = (delta / 3600).round();
+				return res.hours;
 			} else if(delta < (48*60*60)) {
 				return res.day;
 			} else {
-				var days = (delta / 86400).round();
-				if(days > 30) {
-						var fmt  = '%B %d';
-						if(toTime.getYear() != fromTime.getYear()) { fmt += ', %Y'; }
-						if(includeTime) fmt += ' %I:%M %p';
-						return fromTime.strftime(fmt);
-				} else {
+				// var days = (delta / 86400).round();
+				// if(days > 30) {
+				// 		var fmt  = '%B %d';
+				// 		if(toTime.getYear() != fromTime.getYear()) { fmt += ', %Y'; }
+				// 		if(includeTime) fmt += ' %I:%M %p';
+				// 		return fromTime.strftime(fmt);
+				// } else {
+					delta = (delta / 86400).round()
 					return res.days;
-				}
+				// }
 			}
 		};
 		return getPhrase().substitute({delta: delta});
@@ -946,21 +998,36 @@ Array.implement({
 
 
 
-// Class : JustTheTip
+/*
+Script: JustTheTip.js
+	Tool-tip class that allows for arbitrary HTML and provides lots of events
+	to hook into. 
+	
+	Each instance of JustTheTip creates only one element and positions it
+	absolutely. You can use the events to change the HTML for each element's tip.
+	
+	The tip will stay up as long as your mouse is in the element, or the tip itself.
+*/
+
 var JustTheTip = new Class({
 	Implements: [Options, Events],
 	
 	options : {
-		showDelay : 400,
-		hideDelay : 200,
-		tip_html  : ''		
+		show_delay : 400,
+		hide_delay : 200,
+		tip_html   : '',
+		tip_class  : 'tip',
+		fade_in_duration  : 0,
+		fade_out_duration : 0,
+		x_location : 'right',
+		y_location : 'top'
 	},
 	
 	initialize: function(elements, options){
 		this.setOptions(options)
 		
 		this.the_tip = new Element('div', {
-			'class' 	: 'tip',
+			'class' 	: this.options.tip_class,
 			'styles' 	: {
 				'display' 	: 'none',
 				'position' 	: 'absolute',
@@ -993,22 +1060,37 @@ var JustTheTip = new Class({
 		$clear(this.timer)
 		this.timer = (function(){
 			this.current_element = elem
-			this.the_tip.setStyles({
-				'display' : 'block',
-				'left' : elem.getLeft(),
-				'top' : elem.getTop() + elem.getHeight()
-			})
-			this.fireEvent('tipShown')
-		}).delay(this.options.showDelay, this)
+			
+			switch(this.options.x_location){
+				case 'left'   : var x = elem.getLeft(); break;
+				case 'right'  : var x = elem.getLeft() + elem.getWidth(); break;
+				case 'middle' : var x = elem.getLeft() + elem.getWidth().toInt()/2; break;
+			}
+			switch(this.options.y_location){
+				case 'top'    : var y = elem.getTop(); break;
+				case 'bottom' : var y = elem.getTop() + elem.getHeight(); break;
+				case 'middle' : var y = elem.getLeft() + elem.getHeight().toInt()/2; break;
+			}
+			
+			this.the_tip.setStyles({ 'left' : x, 'top' : y })
+			
+			this.the_tip.f4de('in', this.options.fade_in_duration)
+				
+			this.fireEvent('tipShown', [this.the_tip, this.current_element])	
+			
+		}).delay(this.options.show_delay, this)
 	},	
 	hide_tip: function(){
 		$clear(this.timer)
 		this.timer = (function(){
-			if (!this.is_it_in_yet) {
-				this.the_tip.setStyle('display', 'none')
-				this.fireEvent('tipHidden')
+			if (!this.is_it_in_yet) {				
+				this.the_tip.f4de(
+					'out', 
+					this.options.fade_out_duration, 
+					this.fireEvent.bind(this, ['tipHidden', [this.the_tip, this.current_element]])
+				)				
 			}
-		}).delay(this.options.hideDelay, this)
+		}).delay(this.options.hide_delay, this)
 	},
 	
 	tip_enter: function(){
