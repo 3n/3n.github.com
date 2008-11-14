@@ -92,14 +92,14 @@ h1 {
   line-height: 1.3em;
 }
   .tweet.single-wide {
-    font-size        : 1em;
+    font-size        : 15px;
     background-color : #F5F5F5;
     height           : 120px;
     padding          : 10px;
     width            : 120px;
   }
   .tweet.double-wide {
-    font-size        : 1.2em;    
+    font-size        : 19px;    
     background-color : #F5F5F5;
     height           : 120px;
     padding          : 10px;
@@ -120,7 +120,9 @@ h1 {
     display   : block;
   }
   .tip .date {
-    font-size : 12px;
+    color       : #C0C0C0;
+    font-size   : 12px;
+    font-weight : bold;
   }
 
 
