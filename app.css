@@ -111,13 +111,13 @@ h1 {
   width            : 140px;
   font-size        : 12px;
   background-color : white;
-  line-height      : 1.4em;
-  padding          : 4px 0;
+  line-height      : 1.3em;
 }
   .tip .title {
-    font-size : 14px;
-    color     : #666;
-    display   : block;
+    font-size   : 14px;
+    color       : #666;
+    display     : block;
+    padding-top : 4px;
   }
   .tip .date {
     color       : #C0C0C0;
