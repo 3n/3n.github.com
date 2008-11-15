@@ -86,6 +86,9 @@ h1 {
     width  : 300px;
     height : 140px;  
   }
+  .cell.full-width {
+    width : 780px;
+  }
 
 
 .tweet {
@@ -131,13 +134,15 @@ h1 {
 
 
 #delicious-block {
-  float:left;
   font-size:14px;
   line-height:1.5em;
 }
   #delicious-block .delicious-bookmark {
-    margin-right:20px;
+    margin-right:40px;
     float:left;
     letter-spacing:-0.4px;
+  }
+  #delicious-block .delicious-bookmark.even {
+    float:right;
   }
 

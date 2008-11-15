@@ -128,10 +128,10 @@ var DeliciousCell = new Class({
 	
 	generate_element: function(data){
 		var tmp = new Element('div', {'id':'delicious-block', 'class':'cell full-width'}).adopt([
-			data.map(function(bookmark){
+			data.map(function(bookmark,i){
 				return new Element('a', {
 					'html':bookmark.d,
-					'class':'delicious-bookmark'
+					'class':'delicious-bookmark ' + (coin_toss() ? 'even' : 'odd')
 				}).set('href', bookmark.u)
 			})
 		])		

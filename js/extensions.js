@@ -13,6 +13,16 @@
 	Date.Extras // should probably try to replace these Date classes - way big
 */
 
+function coin_toss(){
+	return Math.random() > 0.5
+}
+
+Number.implement({
+	is_even: function(){
+		return this % 2 == 0
+	}
+});
+
 // twitter shit
 String.implement({
 	link_replies: function(){
