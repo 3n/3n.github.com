@@ -131,7 +131,7 @@ var DeliciousCell = new Class({
 			data.map(function(bookmark,i){
 				return new Element('a', {
 					'html':bookmark.d,
-					'class':'delicious-bookmark ' + (coin_toss() ? 'even' : 'odd')
+					'class':'delicious-bookmark ' + (i.is_even() ? 'even' : 'odd')
 				}).set('href', bookmark.u)
 			})
 		])		
