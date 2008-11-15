@@ -134,15 +134,17 @@ h1 {
 
 
 #delicious-block {
-  font-size:14px;
-  line-height:1.5em;
+  font-size        : 14px;
+  line-height      : 1.5em;
+  background-color : #eee;
 }
   #delicious-block .delicious-bookmark {
-    margin-right:40px;
-    float:left;
-    letter-spacing:-0.4px;
+    background-color : white;
+    float            : left;
+    letter-spacing   : -0.4px;
+    padding          : 0 10px;
   }
   #delicious-block .delicious-bookmark.even {
-    float:right;
+    float : right;
   }
 
