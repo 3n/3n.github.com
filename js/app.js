@@ -120,10 +120,38 @@ var TwitterGrid = new Class({
 	}
 })
 
+var DeliciousCell = new Class({
+	initialize: function(data){		
+		this.element = this.generate_element(data)
+		return this
+	},
+	
+	generate_element: function(data){
+		var tmp = new Element('div', {'id':'delicious-block', 'class':'cell full-width'}).adopt([
+			data.map(function(bookmark){
+				return new Element('a', {
+					'html':bookmark.d,
+					'class':'delicious-bookmark'
+				}).set('href', bookmark.u)
+			})
+		])		
+		return tmp
+	},
+	
+	to_html: function(){
+		return this.element
+	}
+})
+
+function get_user_names(){
+	[['twitter_user','3n'], ['flickr_user','52179512@N00'	], ['delicious_user','3n']].each(function(u){
+		_3n[u[0]] = params()[u[0]] || u[1]
+	})
+}
+
 window.addEvent('domready', function(){
 	
-	_3n.twitter_user = params()['twitter_user'] || '3n'
-	_3n.flickr_user  = params()['flickr_user']  || '52179512@N00'	
+	get_user_names()
 
 	new JsonP("http://api.flickr.com/services/feeds/photos_public.gne", {
 		global_function : 'jsonFlickrFeed',
@@ -148,4 +176,13 @@ window.addEvent('domready', function(){
 		}
 	}).request();
 	
+	new JsonP("http://feeds.delicious.com/v2/json/" + _3n.delicious_user + "/awesome", {
+		data: { count : 100	},
+		onComplete: function(r){
+			_3n.delicious_cell = new DeliciousCell(r)
+			$('main').adopt( _3n.delicious_cell.to_html() )
+		}
+	}).request()
+	
 }) 
+

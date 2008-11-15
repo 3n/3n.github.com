@@ -36,7 +36,7 @@ pre,code,kbd,samp,tt {font-family:monospace;*font-size:108%;line-height:99%;}
 body {
   font-family      : Helvetica,Arial,Geneva,sans-serif;
   background-color : #efefef;
-  color            : #aaa;
+  color            : #a0a0a0;
 }
 
 a {
@@ -89,7 +89,8 @@ h1 {
 
 
 .tweet {
-  line-height: 1.3em;
+  line-height    : 1.3em;
+  letter-spacing : 0.3px;
 }
   .tweet.single-wide {
     font-size        : 15px;
@@ -105,6 +106,9 @@ h1 {
     padding          : 10px;
     width            : 280px;
   }
+  .tweet a {
+    letter-spacing : -0.5px;
+  }
 
 
 .tip {
@@ -114,17 +118,26 @@ h1 {
   line-height      : 1.3em;
 }
   .tip .title {
-    font-size   : 14px;
+    font-size   : 15px;
     color       : #666;
     display     : block;
     padding-top : 4px;
   }
   .tip .date {
-    color       : #C0C0C0;
-    font-size   : 12px;
-    font-weight : bold;
+    color          : #C0C0C0;
+    font-size      : 12px;
+    letter-spacing : -0.5px;
   }
 
 
-
+#delicious-block {
+  float:left;
+  font-size:14px;
+  line-height:1.5em;
+}
+  #delicious-block .delicious-bookmark {
+    margin-right:20px;
+    float:left;
+    letter-spacing:-0.4px;
+  }
 
