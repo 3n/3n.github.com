@@ -13,8 +13,8 @@
 	Date.Extras // should probably try to replace these Date classes - way big
 */
 
-function coin_toss(){
-	return Math.random() > 0.5
+function coin_toss(prob){
+	return Math.random() > 1 - (prob || 0.5)
 }
 
 Number.implement({

@@ -95,6 +95,10 @@ h1 {
   line-height    : 1.3em;
   letter-spacing : 0.3px;
 }
+  .tweet.inverted {
+    background-color : #ddd !important;
+    color            : white !important;
+  }
   .tweet.single-wide {
     font-size        : 15px;
     background-color : #F5F5F5;
@@ -135,8 +139,8 @@ h1 {
 
 #delicious-block {
   font-size        : 14px;
-  line-height      : 1.5em;
-  background-color : #F5F5F5;
+  line-height      : 1.8em;
+  background-color : #f1f1f1;
 }
   #delicious-block .delicious-bookmark {
     background-color : white;

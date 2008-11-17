@@ -22,7 +22,7 @@ var Cell = new Class({
 	
 	create_element: function(){
 		var tmp = new Element('div', {
-			'class': 'cell ' + this.options.main_class + ' ' + this.options.custom_class
+			'class': 'cell ' + this.options.main_class + ' ' + this.options.custom_class + ' ' + (coin_toss(0.1) ? 'inverted' : '')
 		})
 		if 			($type(this.html) === 'element') tmp.adopt(this.html)
 		else if ($type(this.html) === 'string')  tmp.set('html', this.html)
