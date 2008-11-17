@@ -166,13 +166,8 @@ Element.implement({
 	thumbnail: function(x,y,c){
 		var height = this.getHeight()
 		var width  = this.getWidth()
-
-		if (height > width)
-			this.setStyles({'width':x, 'height':1/(width/height)*x})
-		else
-			this.setStyles({'height':x, 'width':(width/height)*x})
 			
-		new Element('div', {
+		var wrapper = new Element('div', {
 			'class' 			: c || '',
 			'styles':{
 				"overflow"	: "hidden",
@@ -181,6 +176,11 @@ Element.implement({
 			}
 		}).wraps(this)
 		
+		if (height > width)
+			this.setStyles({'width':x, 'height': 1/(width/height)*x, 'margin-top': -(1/(width/height)*x - x)/2 })
+		else
+			this.setStyles({'height':x, 'width': width/height*x, 'margin-left': -(width/height*x - x)/2 })
+
 		return this
 	},
 	copyStyles: function(elem, styles){
