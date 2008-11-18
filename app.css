@@ -96,9 +96,18 @@ h1 {
     width : 780px;
   }
   body.iphone .cell.full-width {
-      width : 460px;
-    }
+    width : 460px;
+  }
 
+.grid-title {
+  background-color : #e0e0e0;
+  color            : white;
+  font-size        : 20px;
+  height           : 120px !important;
+  padding          : 10px;
+  width            : 120px !important;
+  cursor           : default !important;
+}
 
 .tweet {
   line-height    : 1.3em;

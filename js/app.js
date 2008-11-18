@@ -163,15 +163,25 @@ var DeliciousCell = new Class({
 })
 
 var DataSource = new Class({
-	initialize: function(url, nombre, wrapper_class, jsonp_opts){
+	Implements: Options,
+	options : {
+		limit : 100
+	},
+	initialize: function(url, nombre, wrapper_class, jsonp_opts, options){
+		this.setOptions(options)
+		
 		this.url           = url
 		this.nombre        = name
 		this.wrapper_class = wrapper_class
 		this.jsonp_opts    = jsonp_opts || {}
 		
 		this.jsonp_opts.onComplete = this.jsonp_opts.onComplete || function(r){
+			var title_elem = new Element('div', {
+				'class':'cell single-wide grid-title', 
+				html:nombre
+			})
 			this.wrapper_instance = new wrapper_class(r)
-			$('main').adopt( this.wrapper_instance.to_html() )
+			$('main').adopt( title_elem, this.wrapper_instance.to_html(this.options.limit) )
 		}.bind(this)
 		
 		this.get_data()
@@ -198,9 +208,9 @@ var DeliciousGridSource = new Class({
 	Extends: DataSource,
 	initialize: function(tag){
 		var url = "http://feeds.delicious.com/v2/json/" + _3n.delicious_user + "/" + tag
-		var nombre = "delicious_" + tag + "_grid"
+		var nombre = tag.toUpperCase()
 		
-		return this.parent(url, nombre, DeliciousGrid, {data: { count: 20 }})
+		return this.parent(url, nombre, DeliciousGrid, {data: { count: 20 }}, { limit : 9 })
 	}
 })
 
@@ -219,24 +229,28 @@ window.addEvent('domready', function(){
 	
 	new DataSource (
 		"http://api.flickr.com/services/feeds/photos_public.gne", 
-		"flickr_grid", 
-		FlickrGrid, {
-		globalFunction : 'jsonFlickrFeed',
-		data: {
-			id 	 	 : _3n.flickr_user,
-			lang 	 : "en-us",
-			format : 'json'
-		}
-	})
+		"SEEING",
+		FlickrGrid, 
+		{ globalFunction : 'jsonFlickrFeed',
+			data: {
+				id 	 	 : _3n.flickr_user,
+				lang 	 : "en-us",
+				format : 'json'
+			}
+		},
+		{ limit : 9 }
+	)
 	
 	new DataSource (
 		"http://search.twitter.com/search.json", 
-		"twitter_grid", 
-		TwitterGrid, {
-		data: {
-			q : "from:" + _3n.twitter_user
-		}
-	})
+		"SAYING", 
+		TwitterGrid, 
+		{ data: {
+				q : "from:" + _3n.twitter_user
+			}
+		},
+		{ limit : 19 }
+	)
 	
 	new DeliciousGridSource('awesome')
 	new DeliciousGridSource('humor')

@@ -18,7 +18,7 @@ Inspiration:
 
 var MooTools = {
 	'version': '1.2.1',
-	'build': 'e6ced5dc3d6af76423a90b0104442f91bbf71ce2'
+	'build': 'cb33b210598d75b7e665ee77c35b4cf9b06e5e11'
 };
 
 var Native = function(options){
@@ -4140,6 +4140,7 @@ Element.implement({
 			else
 				document.location = href
 		})
+		return this
 	}
 });
 
