@@ -120,6 +120,25 @@ var TwitterGrid = new Class({
 	}
 })
 
+var DeliciousGrid = new Class({
+	Extends: FeedGrid,
+	initialize: function(data){
+		return this.parent(data)
+	},
+	
+	create_cells: function(data){
+		return data.map(function(bookmark,i){
+			var html = new Element('a', {html:bookmark.d, href:bookmark.u})
+			return new Cell(html, {
+				'main_class'	 : 'single-wide',
+				'custom_class' : 'delicious ' + (i==0 ? 'first' : ''),
+				'created_on'	 : Date.parse(bookmark.dt),
+				'source'			 : bookmark.u
+			})
+		})
+	}
+})
+
 var DeliciousCell = new Class({
 	initialize: function(data){		
 		this.element = this.generate_element(data)
@@ -165,13 +184,23 @@ var DataSource = new Class({
 	}
 })
 
-var DeliciousSource = new Class({
+var DeliciousCellSource = new Class({
 	Extends: DataSource,
 	initialize: function(tag){
 		var url = "http://feeds.delicious.com/v2/json/" + _3n.delicious_user + "/" + tag
 		var nombre = "delicious_" + tag
 		
 		return this.parent(url, nombre, DeliciousCell, {data: { count: 20 }})
+	}
+})
+
+var DeliciousGridSource = new Class({
+	Extends: DataSource,
+	initialize: function(tag){
+		var url = "http://feeds.delicious.com/v2/json/" + _3n.delicious_user + "/" + tag
+		var nombre = "delicious_" + tag + "_grid"
+		
+		return this.parent(url, nombre, DeliciousGrid, {data: { count: 20 }})
 	}
 })
 
@@ -209,8 +238,8 @@ window.addEvent('domready', function(){
 		}
 	})
 	
-	new DeliciousSource('awesome')
-	new DeliciousSource('humor')
+	new DeliciousGridSource('awesome')
+	new DeliciousGridSource('humor')
 	
 }) 
 
