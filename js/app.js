@@ -143,6 +143,28 @@ var DeliciousCell = new Class({
 	}
 })
 
+var DataSource = new Class({
+	initialize: function(url, nombre, wrapper_class, jsonp_opts){
+		this.url           = url
+		this.nombre        = name
+		this.wrapper_class = wrapper_class
+		this.jsonp_opts    = jsonp_opts || {}
+		
+		this.jsonp_opts.onComplete = this.jsonp_opts.onComplete || function(r){
+			this.wrapper_instance = new wrapper_class(r)
+			$('main').adopt( this.wrapper_instance.to_html() )
+		}.bind(this)
+		
+		this.get_data()
+		
+		return this
+	},
+	
+	get_data: function(){
+		new JsonP(this.url, this.jsonp_opts).request()
+	}
+})
+
 function get_user_names(){
 	[['twitter_user','3n'], ['flickr_user','52179512@N00'	], ['delicious_user','3n']].each(function(u){
 		_3n[u[0]] = params()[u[0]] || u[1]
@@ -152,37 +174,34 @@ function get_user_names(){
 window.addEvent('domready', function(){
 	
 	get_user_names()
-
-	new JsonP("http://api.flickr.com/services/feeds/photos_public.gne", {
+	
+	new DataSource (
+		"http://api.flickr.com/services/feeds/photos_public.gne", 
+		"flickr_grid", 
+		FlickrGrid, {
 		globalFunction : 'jsonFlickrFeed',
 		data: {
 			id 	 	 : _3n.flickr_user,
 			lang 	 : "en-us",
 			format : 'json'
-		},
-		onComplete: function(r){
-			_3n.flickr_grid = new FlickrGrid(r)
-			$('main').adopt( _3n.flickr_grid.to_html() )
 		}
-	}).request();
+	})
 	
-	new JsonP("http://search.twitter.com/search.json", {
+	new DataSource (
+		"http://search.twitter.com/search.json", 
+		"twitter_grid", 
+		TwitterGrid, {
 		data: {
 			q : "from:" + _3n.twitter_user
-		},
-		onComplete: function(r){
-			_3n.twitter_grid = new TwitterGrid(r)
-			$('main').adopt( _3n.twitter_grid.to_html() )
 		}
-	}).request();
+	})
 	
-	new JsonP("http://feeds.delicious.com/v2/json/" + _3n.delicious_user + "/awesome", {
-		data: { count : 100	},
-		onComplete: function(r){
-			_3n.delicious_cell = new DeliciousCell(r)
-			$('main').adopt( _3n.delicious_cell.to_html() )
-		}
-	}).request()
+	new DataSource ( 
+		"http://feeds.delicious.com/v2/json/" + _3n.delicious_user + "/awesome", 
+		"delicious_awesome", 
+		DeliciousCell, {
+		data: { count : 100	}
+	})
 	
 }) 
 
