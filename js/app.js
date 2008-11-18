@@ -154,7 +154,7 @@ window.addEvent('domready', function(){
 	get_user_names()
 
 	new JsonP("http://api.flickr.com/services/feeds/photos_public.gne", {
-		global_function : 'jsonFlickrFeed',
+		globalFunction : 'jsonFlickrFeed',
 		data: {
 			id 	 	 : _3n.flickr_user,
 			lang 	 : "en-us",
