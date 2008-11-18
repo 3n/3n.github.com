@@ -1,7 +1,7 @@
 var _3n = {}
 
 var Cell = new Class({
-	Extends: Options,
+	Implements: Options,
 	options: {
 		main_class    : 'single-wide',
 		custom_class	: '',
@@ -112,7 +112,7 @@ var TwitterGrid = new Class({
 			var tweet_html = tweet.text.make_urls_links().link_replies().link_hashcodes()
 			return new Cell(tweet_html, { 
 				'main_class'	 : (i==0 || tweet.text.length > 100) ? 'double-wide' : 'single-wide',
-				'custom_class' : 'tweet',
+				'custom_class' : 'tweet ' + (i==0 ? 'first' : ''),
 				'created_on'	 : Date.parse(tweet.created_at),
 				'source'			 : "http://www.twitter.com/" + tweet.from_user + "/status/" + tweet.id
 			})
@@ -165,6 +165,16 @@ var DataSource = new Class({
 	}
 })
 
+var DeliciousSource = new Class({
+	Extends: DataSource,
+	initialize: function(tag){
+		var url = "http://feeds.delicious.com/v2/json/" + _3n.delicious_user + "/" + tag
+		var nombre = "delicious_" + tag
+		
+		return this.parent(url, nombre, DeliciousCell, {data: { count: 20 }})
+	}
+})
+
 function get_user_names(){
 	[['twitter_user','3n'], ['flickr_user','52179512@N00'	], ['delicious_user','3n']].each(function(u){
 		_3n[u[0]] = params()[u[0]] || u[1]
@@ -172,6 +182,9 @@ function get_user_names(){
 }
 
 window.addEvent('domready', function(){
+	
+	if (navigator.userAgent.match('iPhone'))
+		document.body.addClass('iphone')
 	
 	get_user_names()
 	
@@ -196,12 +209,8 @@ window.addEvent('domready', function(){
 		}
 	})
 	
-	new DataSource ( 
-		"http://feeds.delicious.com/v2/json/" + _3n.delicious_user + "/awesome", 
-		"delicious_awesome", 
-		DeliciousCell, {
-		data: { count : 100	}
-	})
+	new DeliciousSource('awesome')
+	new DeliciousSource('humor')
 	
 }) 
 

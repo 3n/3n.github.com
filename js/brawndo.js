@@ -18,7 +18,7 @@ Inspiration:
 
 var MooTools = {
 	'version': '1.2.1',
-	'build': 'bdbe1e2feefaae8ba39972c99f2eecd032e7d5df'
+	'build': 'e6ced5dc3d6af76423a90b0104442f91bbf71ce2'
 };
 
 var Native = function(options){
@@ -4169,7 +4169,7 @@ String.implement({
 		return this.substring(0,(num||1))
 	},
 	make_urls_links: function(){
-		return this.replace(/(\w+:\/\/[A-Za-z0-9-_]+\.[A-Za-z0-9-_:%&\?\/.=]+)/gi, '<a href="$1">$1</a>')
+		return this.replace(/(\w+:\/\/[A-Za-z0-9-_]+\.[A-Za-z0-9-_:;\(\)%&\?\/.=]+)/gi, '<a href="$1">$1</a>')
 	}
 })
 

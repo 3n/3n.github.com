@@ -52,6 +52,9 @@ a {
   width   : 860px;
   margin  : 40px auto;  
 }
+  body.iphone #wrapper {
+    width: 540px !important;
+  }
 
 h1 {
   background        : url(images/3n.png);
@@ -61,7 +64,7 @@ h1 {
   width             : 150px;
 }
 
-#main {  
+#main {
   overflow           : auto;
   margin             : 40px 0;
   padding            : 40px 20px 20px 40px;
@@ -69,6 +72,9 @@ h1 {
   background-color   : white;
   -webkit-box-shadow : 0 0 8px rgba(0, 0, 0, 0.05);	
 }
+  body.iphone #main {
+    width:480px !important;
+  }
 
 
 .cell {
@@ -89,26 +95,27 @@ h1 {
   .cell.full-width {
     width : 780px;
   }
+  body.iphone .cell.full-width {
+      width : 460px;
+    }
 
 
 .tweet {
   line-height    : 1.3em;
   letter-spacing : 0.3px;
+  background-color : #F5F5F5;
 }
-  .tweet.inverted {
-    background-color : #ddd !important;
-    color            : white !important;
+  .tweet.inverted, .tweet.first {
+/*    background-color : #eaeaea !important;*/
   }
   .tweet.single-wide {
     font-size        : 15px;
-    background-color : #F5F5F5;
     height           : 120px;
     padding          : 10px;
     width            : 120px;
   }
   .tweet.double-wide {
     font-size        : 19px;    
-    background-color : #F5F5F5;
     height           : 120px;
     padding          : 10px;
     width            : 280px;
