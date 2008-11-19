@@ -109,30 +109,30 @@ h1 {
   letter-spacing   : -1.5px;
 }
 
-.tweet {
+.text {
   line-height    : 1.3em;
   letter-spacing : 0.3px;
   background-color : #F5F5F5;
 }
-  .tweet.inverted, .tweet.first {
-/*    background-color : #eaeaea !important;*/
-  }
-  .tweet.single-wide {
+  .text.single-wide {
     font-size        : 15px;
     height           : 120px;
     padding          : 10px;
     width            : 120px;
   }
-  .tweet.double-wide {
+  .text.double-wide {
     font-size        : 19px;    
     height           : 120px;
     padding          : 10px;
     width            : 280px;
   }
-  .tweet a {
+  .text a {
     letter-spacing : -0.5px;
   }
 
+.tweet.inverted, .tweet.first {
+/*    background-color : #eaeaea !important;*/
+}
 
 .tip {
   width            : 140px;
@@ -167,4 +167,3 @@ h1 {
   #delicious-block .delicious-bookmark.even {
     float : right;
   }
-

@@ -123,12 +123,28 @@ var TwitterGrid = new Class({
 			var tweet_html = tweet.text.make_urls_links().link_replies().link_hashcodes()
 			return new Cell(tweet_html, { 
 				'main_class'	 : (i==0 || tweet.text.length > 100) ? 'double-wide' : 'single-wide',
-				'custom_class' : 'tweet ' + (i==0 ? 'first' : ''),
+				'custom_class' : 'text tweet ' + (i==0 ? 'first' : ''),
 				'created_on'	 : Date.parse(tweet.created_at),
 				'source'			 : "http://www.twitter.com/" + tweet.from_user + "/status/" + tweet.id
 			})
 		})
 	}
+})
+
+var LastFMGrid = new Class({
+  Extends: FeedGrid,
+  initialize: function(data){
+    return this.parent(data)
+  },
+  
+  create_cells: function(data){
+    return data.groups.RSS_Item.map(function(song){
+      return new Cell(song.Title[0].value, {
+        'custom_class' : 'text lastfm-song',
+        'created_on'   : Date.parse(song.Publication_Date[0].value)
+      })
+    })
+  }
 })
 
 var DeliciousGrid = new Class({
@@ -141,7 +157,7 @@ var DeliciousGrid = new Class({
 		return data.map(function(bookmark,i){
 			var html = new Element('a', {html:bookmark.d, href:bookmark.u})
 			
-			if (bookmark.u.test(/png|git|jpg|jpeg|bmp|svg/i)) { // todo put in brawndo
+			if (bookmark.u.test(/png|gif|jpg|jpeg|bmp|svg/i)) { // todo put in brawndo
 			  return new ImageCell(bookmark.u, {
 			    'title'        : bookmark.d,
   				'created_on'	 : Date.parse(bookmark.dt),
@@ -290,6 +306,15 @@ window.addEvent('domready', function(){
 	
 	new DeliciousGridSource('awesome')
 	new DeliciousGridSource('humor')
+	
+	new DataSource (
+	  "http://www.dapper.net/transform.php?dappName=3NsRecentlyPlayedTracks&transformer=JSON&extraArg_callbackFunctionWrapper=dapperData&applyToUrl=http%3A%2F%2Fws.audioscrobbler.com%2F1.0%2Fuser%2F3N%2Frecenttracks.rss",
+	  "HEARING",
+	  "http://www.last.fm/user/3N",
+	  LastFMGrid,
+	  { globalFunction : 'dapperData' },
+	  { limit : 20 }
+	)
 	
   if ( !document.location.href.match(/~ian/) ) goog()
 	
