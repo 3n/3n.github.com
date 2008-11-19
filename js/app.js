@@ -129,12 +129,21 @@ var DeliciousGrid = new Class({
 	create_cells: function(data){
 		return data.map(function(bookmark,i){
 			var html = new Element('a', {html:bookmark.d, href:bookmark.u})
-			return new Cell(html, {
-				'main_class'	 : 'single-wide',
-				'custom_class' : 'delicious ' + (i==0 ? 'first' : ''),
-				'created_on'	 : Date.parse(bookmark.dt),
-				'source'			 : bookmark.u
-			})
+			
+			if (bookmark.u.test(/png|git|jpg|jpeg|bmp|svg/i)) { // todo put in brawndo
+			  return new ImageCell(bookmark.u, {
+			    'title'        : bookmark.d,
+  				'created_on'	 : Date.parse(bookmark.dt),
+  				'source'			 : bookmark.u
+  			})
+			} else {
+			 	return new Cell(html, {
+  				'main_class'	 : 'single-wide',
+  				'custom_class' : 'delicious ' + (i==0 ? 'first' : ''),
+  				'created_on'	 : Date.parse(bookmark.dt),
+  				'source'			 : bookmark.u
+  			}) 
+			}
 		})
 	}
 })
@@ -223,8 +232,17 @@ function get_user_names(){
 	})
 }
 
+function goog(){    
+  var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+  new Element('script', {'src':gaJsHost + 'google-analytics.com/ga.js', 'type':'text/javascript'}).inject(document.body, 'bottom')
+  try {
+    var pageTracker = _gat._getTracker("UA-6319958-1");
+    pageTracker._trackPageview();
+  } catch(err) {}    
+}
+
 window.addEvent('domready', function(){
-	
+
 	if (navigator.userAgent.match('iPhone'))
 		document.body.addClass('iphone')
 	
@@ -259,6 +277,8 @@ window.addEvent('domready', function(){
 	
 	new DeliciousGridSource('awesome')
 	new DeliciousGridSource('humor')
+	
+  if ( !document.location.href.match(/~ian/) ) goog()
 	
 }) 
 
