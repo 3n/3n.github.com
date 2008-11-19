@@ -91,8 +91,7 @@ var FlickrGrid = new Class({
 	},
 	
 	create_cells: function(data){
-		return data.items.map(function(flickr_item){			
-		  console.log(flickr_item)
+		return data.items.map(function(flickr_item){
 			return new ImageCell(flickr_item.media.m, { 
 				'title' 		: flickr_item.title, 
 				'created_on': Date.parse(flickr_item.date_taken),
@@ -168,19 +167,20 @@ var DataSource = new Class({
 	options : {
 		limit : 100
 	},
-	initialize: function(url, nombre, wrapper_class, jsonp_opts, options){
+	initialize: function(url, nombre, link_href, wrapper_class, jsonp_opts, options){
 		this.setOptions(options)
 		
 		this.url           = url
-		this.nombre        = name
+		this.nombre        = nombre
+		this.link_href     = link_href
 		this.wrapper_class = wrapper_class
 		this.jsonp_opts    = jsonp_opts || {}
 		
 		this.jsonp_opts.onComplete = this.jsonp_opts.onComplete || function(r){
 			var title_elem = new Element('div', {
-				'class':'cell single-wide grid-title', 
-				html:nombre
-			})
+				'class' : 'cell single-wide grid-title', 
+				'html'  : this.nombre
+			}).act_like_link(this.link_href)
 			this.wrapper_instance = new wrapper_class(r)
 			$('main').adopt( title_elem, this.wrapper_instance.to_html(this.options.limit) )
 		}.bind(this)
@@ -200,8 +200,9 @@ var DeliciousCellSource = new Class({
 	initialize: function(tag){
 		var url = "http://feeds.delicious.com/v2/json/" + _3n.delicious_user + "/" + tag
 		var nombre = "delicious_" + tag
+		var href   = "http://www.delicious.com/" + _3n.delicious_user + "/" + tag
 		
-		return this.parent(url, nombre, DeliciousCell, {data: { count: 20 }})
+		return this.parent(url, nombre, href, DeliciousCell, {data: { count: 20 }})
 	}
 })
 
@@ -210,13 +211,14 @@ var DeliciousGridSource = new Class({
 	initialize: function(tag){
 		var url = "http://feeds.delicious.com/v2/json/" + _3n.delicious_user + "/" + tag
 		var nombre = tag.toUpperCase()
+    var href   = "http://www.delicious.com/" + _3n.delicious_user + "/" + tag
 		
-		return this.parent(url, nombre, DeliciousGrid, {data: { count: 20 }}, { limit : 9 })
+		return this.parent(url, nombre, href, DeliciousGrid, {data: { count: 20 }}, { limit : 9 })
 	}
 })
 
 function get_user_names(){
-	[['twitter_user','3n'], ['flickr_user','52179512@N00'	], ['delicious_user','3n']].each(function(u){
+	[['twitter_user','3n'], ['flickr_user','52179512@N00'	], ['flickr_name','3n'], ['delicious_user','3n']].each(function(u){
 		_3n[u[0]] = params()[u[0]] || u[1]
 	})
 }
@@ -231,6 +233,7 @@ window.addEvent('domready', function(){
 	new DataSource (
 		"http://api.flickr.com/services/feeds/photos_public.gne", 
 		"SEEING",
+		"http://www.flickr.com/photos/" + _3n.flickr_name,
 		FlickrGrid, 
 		{ globalFunction : 'jsonFlickrFeed',
 			data: {
@@ -244,7 +247,8 @@ window.addEvent('domready', function(){
 	
 	new DataSource (
 		"http://search.twitter.com/search.json", 
-		"SAYING", 
+		"SAYING",
+		"http://www.twitter.com/" + _3n.twitter_user,
 		TwitterGrid, 
 		{ data: {
 				q : "from:" + _3n.twitter_user
