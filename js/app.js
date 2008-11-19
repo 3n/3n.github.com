@@ -15,6 +15,7 @@ var Cell = new Class({
 		
 		this.element = this.create_element()
 		
+		this.setup_tip()
 		this.add_events()
 		
 		return this
@@ -26,26 +27,36 @@ var Cell = new Class({
 		})
 		if 			($type(this.html) === 'element') tmp.adopt(this.html)
 		else if ($type(this.html) === 'string')  tmp.set('html', this.html)
+		
+		tmp.store('source',  this.options.source)
+		tmp.store('title',   this.options.title)
+		tmp.store('created', this.options.created_on.timeAgoInWords())
+		
 		return tmp
+	},
+	
+	setup_tip: function(){
+	  Cell.tip = Cell.tip || new JustTheTip(null, {
+    	showDelay  : 400,
+    	x_location : 'left',
+    	y_location : 'bottom',
+    	fade_in_duration  : 100,
+    	fade_out_duration : 200
+    }).addEvent('tipShown', function(tip,elem){
+        tip.set('html', "<a class='title' href='" + elem.retrieve('source') + "'>" + elem.retrieve('title') + "</a><span class='date'>" + elem.retrieve('created') + "</span>")
+      })
 	},
 	
 	add_events: function(){
 		this.element.act_like_link(this.options.source)
-
-		new JustTheTip(this.element, {
-			tip_html   : "<a class='title' href='" + this.options.source + "'>" + this.options.title + "</a><span class='date'>" + this.options.created_on.timeAgoInWords() + "</span>",
-			showDelay  : 400,
-			x_location : 'left',
-			y_location : 'bottom',
-			fade_in_duration  : 100,
-			fade_out_duration : 200
-		})
+		Cell.tip.add_element(this.element)
 	},
 	
 	to_html: function(){
 		return this.element
 	}
 })
+Cell.tip = null
 
 var ImageCell = new Class({
 	Extends: Cell,

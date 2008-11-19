@@ -18,7 +18,7 @@ Inspiration:
 
 var MooTools = {
 	'version': '1.2.1',
-	'build': 'cb33b210598d75b7e665ee77c35b4cf9b06e5e11'
+	'build': 'c58bf3322bb0e8e08055bd3fb80eed859dc452bf'
 };
 
 var Native = function(options){
@@ -4012,7 +4012,6 @@ var JustTheTip = new Class({
 	
 	initialize: function(elements, options){
 		this.setOptions(options)
-		
 		this.the_tip = new Element('div', {
 			'class' 	: this.options.tip_class,
 			'styles' 	: {
@@ -4027,10 +4026,8 @@ var JustTheTip = new Class({
 				'mouseleave' : this.tip_leave.bind(this)	
 			})
 			.set('html', this.options.tip_html)
-			
 		this.is_it_in_yet = false
 		this.attach_events(elements)
-		
 		return this
 	},
 	
@@ -4062,7 +4059,7 @@ var JustTheTip = new Class({
 			this.the_tip.setStyles({ 'left' : x, 'top' : y })
 			
 			this.the_tip.f4de('in', this.options.fade_in_duration)
-				
+
 			this.fireEvent('tipShown', [this.the_tip, this.current_element])	
 			
 		}).delay(this.options.show_delay, this)
@@ -4078,6 +4075,11 @@ var JustTheTip = new Class({
 				)				
 			}
 		}).delay(this.options.hide_delay, this)
+	},
+	
+	add_element: function(elem){
+	  this.attach_events(elem)
+	  return this
 	},
 	
 	tip_enter: function(){
@@ -4343,7 +4345,7 @@ Array.implement({
 		})
 		return total/this.length
 	},
-	sort_numericly: function(){
+	sort_numerically: function(){
 		this.sort(function(a,b){
 			var x = a.toInt()
 			var y = b.toInt()
