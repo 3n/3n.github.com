@@ -92,9 +92,10 @@ var FlickrGrid = new Class({
 	
 	create_cells: function(data){
 		return data.items.map(function(flickr_item){			
+		  console.log(flickr_item)
 			return new ImageCell(flickr_item.media.m, { 
 				'title' 		: flickr_item.title, 
-				'created_on': Date.parse(flickr_item.published),
+				'created_on': Date.parse(flickr_item.date_taken),
 				'source' 		: flickr_item.link
 			})
 	  })
@@ -238,7 +239,7 @@ window.addEvent('domready', function(){
 				format : 'json'
 			}
 		},
-		{ limit : 9 }
+		{ limit : 14 }
 	)
 	
 	new DataSource (
