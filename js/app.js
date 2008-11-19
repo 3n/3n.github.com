@@ -243,6 +243,8 @@ function goog(){
 
 window.addEvent('domready', function(){
 
+  document.body.set('html', '<div id="wrapper"><h1>3N</h1><div id="main"></div></div>')
+
 	if (navigator.userAgent.match('iPhone'))
 		document.body.addClass('iphone')
 	
