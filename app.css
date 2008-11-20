@@ -36,7 +36,7 @@ pre,code,kbd,samp,tt {font-family:monospace;*font-size:108%;line-height:99%;}
 body {
   font-family      : Helvetica,Arial,Geneva,sans-serif;
   background-color : #efefef;
-  color            : #a0a0a0;
+  color            : #999;
 }
 
 a {
@@ -170,9 +170,16 @@ h1 {
   }
 
 
+.lastfm-song .artist {
+  font-size:20px !important;
+  display:block !important;
+}
+.lastfm-song.single-wide .track {
+  font-size:14px;
+}
+.lastfm-song.double-wide .track {
+  font-size:10px;
+}
 .lastfm-song.double-wide {
   line-height:0.8em;
-}
-.lastfm-song .track {
-  font-size:10px;
 }
