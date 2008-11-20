@@ -138,6 +138,20 @@ var LastFMGrid = new Class({
   },
   
   create_cells: function(data){
+		console.dir(data)	
+		
+		var tmp = []
+		
+		for (var i=0; i<data.groups.lol.length; i+=3){
+			tmp.push(
+				new Cell(data.groups.lol[i].all[0].value + " " + data.groups.lol[i+1].all[0].value, {
+					'custom_class' : 'text lastfm-song'					
+				})
+			)
+		}
+		
+		return tmp
+		
     return data.groups.RSS_Item.map(function(song){
       return new Cell(song.Title[0].value, {
         'custom_class' : 'text lastfm-song',
@@ -316,12 +330,12 @@ window.addEvent('domready', function(){
 	new DeliciousGridSource('humor')
 	
 	new DataSource (
-	  "http://www.dapper.net/transform.php?dappName=3NsRecentlyPlayedTracks&transformer=JSON&extraArg_callbackFunctionWrapper=dapperData&applyToUrl=http%3A%2F%2Fws.audioscrobbler.com%2F1.0%2Fuser%2F3N%2Frecenttracks.rss",
+	  "http://www.dapper.net/transform.php?dappName=lastfmrecentlyplayed3n&transformer=JSON&extraArg_callbackFunctionWrapper=lastFMData&applyToUrl=http%3A%2F%2Fwww.last.fm%2Fuser%2F3N%2Ftracks",
 	  "HEARING",
 	  "http://www.last.fm/user/3N",
 	  LastFMGrid,
-	  { globalFunction : 'dapperData' },
-	  { limit : 20 }
+	  { globalFunction : 'lastFMData' },
+	  { limit : 50 }
 	)
 	
   if ( !document.location.href.match(/~ian/) ) goog()
