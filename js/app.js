@@ -148,13 +148,14 @@ var LastFMGrid = new Class({
 		for (var i=0; i<data.groups.lol.length; i+=3){
 			var artist = data.groups.lol[i].all[0].value
 			var track  = data.groups.lol[i+1].all[0].value
-			var html   = artist + " " + track
+			var html   = "<span class='artist'>" + artist + "</span> <span class='track'>" + track + "</span>"
 
 			if (artist.test(/It’s/)) continue;
 
 			if (i > 2 && data.groups.lol[i-3].all[0].value === artist ){
 				if (prev_cell) {
-					prev_cell.html += " " + track
+					prev_cell.html += "<span class='track'>, " + track + "</span>"
+					prev_cell.options.main_class = 'double-wide'
 					prev_cell.update_element()
 				}
 			} else {
