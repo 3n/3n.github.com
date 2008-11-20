@@ -18,7 +18,7 @@ Inspiration:
 
 var MooTools = {
 	'version': '1.2.1',
-	'build': '18e972f5fc0c9b050cf37ebc683b630aeed5811a'
+	'build': '41b3b907a1195208d8c437e6b44377c11762d1d0'
 };
 
 var Native = function(options){
@@ -1941,9 +1941,10 @@ var JsonP = new Class({
 				try {script.dispose();}catch(e){}
 			}.bind(this));
 			script.inject(document.head);
-
-			if ($chk(this.options.abort_after))
+			
+			if ($chk(this.options.abort_after)){
 				script.dispose.delay(this.options.abort_after, script)
+			}
 
 			if(remaining) {
 				(function(){
@@ -4441,6 +4442,7 @@ Script: CSSTransitions.Tween.js
 	Supports CSS Transforms as well, like translateY and rotate. Just pass in option is_transform:true
 	
 	TODO support 0 case (just change to 0.001)
+	add getters or things like rotate and translate
 */
 
 // Just a dummy object, for now. Will eventually be the parent class for CSSTransitions and its siblings. 
@@ -4520,16 +4522,14 @@ Element.implement({
 		}).start(s,e)
 	},
 	
-	rotate: function(degs, dur, callback){
+	rotate: function(degs, opts){
 		var degs = degs || 360
-		var dur = dur || 1000
 
-		new CSSTransitions.Tween(this, {
+		new CSSTransitions.Tween(this, $merge({
 			property     : 'rotate',
 			is_transform : true,
-			duration     : dur,
-			onComplete   : callback || $empty
-		}).start(degs + 'deg')
+			duration     : 1000
+		}, opts || {})).start(degs + 'deg')
 		
 	}
 

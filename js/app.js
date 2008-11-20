@@ -295,20 +295,32 @@ window.addEvent('domready', function(){
 
 	// haha lol
 	$('main').addEvent('click', function(){ 
-		this.rotate(360,6000, this.rotate.bind(this, [0.01,0.01])); 
+		this.rotate(360,{
+			duration   : 6000, 
+			onComplete : this.rotate.bind(this, [0.01,{duration:0.01}])
+		}); 
 	}) 
 	$('title').addEvent('click', function(){ 
-		this.rotate(1800,2000, this.rotate.bind(this, [0.01,0.01])) 
+		this.rotate(1800,{
+			duration   : 2000, 
+			onComplete : this.rotate.bind(this, [0.01,{duration:0.01}])
+		}) 
 	})
 	window.addEvent('keyup', function(e){
 		if (e.key == 'g'){
 			var sex = new Element('div', {'styles':{'float':'left','border':'10px solid red'}}).adopt(
 				new Element('iframe', {'src':'http://www.google.com', 'width':'500px', 'height':'500px'})
 			).inject(document.body,'top')	
-			sex.addEvent('click', sex.rotate.bind(sex, [360,2000, sex.rotate.bind(sex,[0.01,0.01])]))
+			sex.addEvent('click', sex.rotate.bind(sex, [360,{
+				duration   : 2000, 
+				onComplete : sex.rotate.bind(sex,[0.01,{duration:0.01}])
+			}]))
 		}else
 		if (e.key == 'b'){
-			$$('body').rotate(1800,2000, $$('body').rotate.bind($$('body'), [0.01,0.01])) 
+			$$('body').rotate(1800,{
+				duration   : 2000, 
+				onComplete : $$('body').rotate.bind($$('body'), [0.01,{duration:0.01}])
+			}) 
 		}
 	})
 
