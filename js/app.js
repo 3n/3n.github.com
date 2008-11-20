@@ -300,6 +300,14 @@ window.addEvent('domready', function(){
 	$('title').addEvent('click', function(){ 
 		this.rotate(1800,2000, this.rotate.bind(this, [0.01,0.01])) 
 	})
+	// $$('body').first().addEvent('click', function(){ 
+	// 	this.rotate(1800,2000, this.rotate.bind(this, [0.01,0.01])) 
+	// })
+	
+	// var sex = new Element('div', {'styles':{'float':'left','border':'10px solid red'}}).adopt(
+	// 	new Element('iframe', {'src':'http://www.google.com', 'width':'500px', 'height':'500px'})
+	// ).inject(document.body,'top')	
+	// sex.addEvent('click', sex.rotate.bind(sex, [1080,5000]))
 
 	if (navigator.userAgent.match('iPhone'))
 		document.body.addClass('iphone')
