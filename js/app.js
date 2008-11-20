@@ -13,7 +13,7 @@ var Cell = new Class({
 		this.setOptions(options)
 		this.html = html
 		
-		this.element = this.create_element()
+		this.update_element()
 		
 		this.setup_tip()
 		this.add_events()
@@ -33,6 +33,11 @@ var Cell = new Class({
 		tmp.store('created', this.options.created_on.timeAgoInWords())
 		
 		return tmp
+	},
+	
+	update_element: function(){
+		this.element = this.create_element()
+		return this
 	},
 	
 	setup_tip: function(){
@@ -138,26 +143,27 @@ var LastFMGrid = new Class({
   },
   
   create_cells: function(data){
-		console.dir(data)	
-		
 		var tmp = []
 		
 		for (var i=0; i<data.groups.lol.length; i+=3){
-			tmp.push(
-				new Cell(data.groups.lol[i].all[0].value + " " + data.groups.lol[i+1].all[0].value, {
-					'custom_class' : 'text lastfm-song'					
-				})
-			)
+			var artist = data.groups.lol[i].all[0].value
+			var track  = data.groups.lol[i+1].all[0].value
+			var html   = artist + " " + track
+
+			if (artist.test(/It’s/)) continue;
+
+			if (i > 2 && data.groups.lol[i-3].all[0].value === artist ){
+				if (prev_cell) {
+					prev_cell.html += " " + track
+					prev_cell.update_element()
+				}
+			} else {
+				var prev_cell = new Cell(html, { 'custom_class' : 'text lastfm-song' })
+				tmp.push(prev_cell)
+			}
 		}
 		
 		return tmp
-		
-    return data.groups.RSS_Item.map(function(song){
-      return new Cell(song.Title[0].value, {
-        'custom_class' : 'text lastfm-song',
-        'created_on'   : Date.parse(song.Publication_Date[0].value)
-      })
-    })
   }
 })
 
