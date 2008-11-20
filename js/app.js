@@ -270,7 +270,15 @@ function goog(){
 
 window.addEvent('domready', function(){
 
-  document.body.set('html', '<div id="wrapper"><h1>3N</h1><div id="main"></div></div>')
+  document.body.set('html', '<div id="wrapper"><h1 id="title">3N</h1><div id="main"></div></div>')
+
+	// haha lol
+	$('main').addEvent('click', function(){ 
+		this.rotate(360,5000, this.rotate.bind(this, [0.01,0.01])); 
+	}) 
+	$('title').addEvent('click', function(){ 
+		this.rotate(1800,2000, this.rotate.bind(this, [0.01,0.01])) 
+	})
 
 	if (navigator.userAgent.match('iPhone'))
 		document.body.addClass('iphone')

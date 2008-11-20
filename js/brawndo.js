@@ -18,7 +18,7 @@ Inspiration:
 
 var MooTools = {
 	'version': '1.2.1',
-	'build': 'c58bf3322bb0e8e08055bd3fb80eed859dc452bf'
+	'build': '18e972f5fc0c9b050cf37ebc683b630aeed5811a'
 };
 
 var Native = function(options){
@@ -3952,10 +3952,10 @@ Element.implement({
 		var to  = ''
 		if (tag == 'tr')
 			Browser.Engine.trident ? to = 'block' : to = 'table-row';
-		else if (['div','p','form','table', 'ul'].contains(tag))
-			to = 'block'
 		else if (['span','a'].contains(tag))
 			to = 'inline'
+		else 
+		  to = 'block'
 			
 		return this.setStyle("display", to)
   },
@@ -3994,6 +3994,8 @@ Script: JustTheTip.js
 	absolutely. You can use the events to change the HTML for each element's tip.
 	
 	The tip will stay up as long as your mouse is in the element, or the tip itself.
+	
+	You can add elements to a given tip instance whenever you want using add_element()
 */
 
 var JustTheTip = new Class({
@@ -4012,6 +4014,7 @@ var JustTheTip = new Class({
 	
 	initialize: function(elements, options){
 		this.setOptions(options)
+		
 		this.the_tip = new Element('div', {
 			'class' 	: this.options.tip_class,
 			'styles' 	: {
@@ -4026,8 +4029,10 @@ var JustTheTip = new Class({
 				'mouseleave' : this.tip_leave.bind(this)	
 			})
 			.set('html', this.options.tip_html)
+			
 		this.is_it_in_yet = false
 		this.attach_events(elements)
+		
 		return this
 	},
 	
@@ -4059,7 +4064,7 @@ var JustTheTip = new Class({
 			this.the_tip.setStyles({ 'left' : x, 'top' : y })
 			
 			this.the_tip.f4de('in', this.options.fade_in_duration)
-
+				
 			this.fireEvent('tipShown', [this.the_tip, this.current_element])	
 			
 		}).delay(this.options.show_delay, this)
@@ -4243,6 +4248,9 @@ var InvisibleDimensions = new Class({
 			'font-weight', 'font-size', 'font-family', 'border-width', 'border-style', 'line-height', 'width'
 		]);
 		
+		// todo maybe needed in iphone
+		// if (this.fake_div.getStyle('width') == '0px') this.fake_div.setStyle('width', 'auto')
+		
 		return this;
 	},
 	getSize: function(){
@@ -4423,4 +4431,104 @@ Element.Events.domready = {
 	}
 
 })();
+
+/*
+Script: CSSTransitions.Tween.js
+	Mirrors the API for Fx.Tween but uses CSS Transitions for effects. Does not depend on Fx. 
+	Supports CSS Transforms as well, like translateY and rotate. Just pass in option is_transform:true
+	
+	TODO support 0 case (just change to 0.001)
+*/
+
+// Just a dummy object, for now. Will eventually be the parent class for CSSTransitions and its siblings. 
+var CSSTransitions = {}
+
+CSSTransitions.Tween = new Class({
+	
+	Implements: [Options, Events],
+	
+	options : {
+		duration					: 500,
+		transition				: 'linear',
+		initial_delay 		: 1,
+		is_transform      : false,
+		clear_style_after : false
+	},
+	
+	initialize: function(element, options){
+		this.element = $(element);		
+		this.setOptions(options)
+	},
+	
+	clear_css_properties: function(){
+		this.element.setStyle('-webkit-transition-property', 				null)
+		this.element.setStyle('-webkit-transition-duration', 				null)
+		this.element.setStyle('-webkit-transition-timing-function', null)
+		this.element.setStyle('-webkit-transition-repeat-count', 		null)
+	},
+	
+	prepare: function(from, to){
+		if (!$chk(to)){
+			to = from;
+			from = this.element.getStyle(this.options.property);
+		}			
+		return {from: from, to: to};
+	},
+	
+	start: function(from, to){
+		this.fireEvent('onStart')
+		this.prepared = this.prepare(from, to)
+		this.transition_string = (this.options.is_transform ? '-webkit-transform' : this.options.property) + ' ' + (this.options.duration/1000) + 's ' + this.options.transition
+		
+		if ($defined(from)) this.element.setStyle(this.options.property, this.prepared.from)
+
+		this.element.setStyle.delay(this.options.initial_delay, this.element, ['-webkit-transition', this.transition_string])
+		if (this.options.is_transform)
+			this.element.setStyle.delay(this.options.initial_delay, this.element, ['-webkit-transform', this.options.property + '(' + this.prepared.to + ')'])
+		else
+			this.element.setStyle.delay(this.options.initial_delay, this.element, [this.options.property, this.prepared.to])
+		
+		this.done.delay(this.options.duration + this.options.initial_delay, this)
+		
+		return this
+	}, 
+	
+	done: function(){
+		this.clear_css_properties()
+		if (this.options.clear_style_after) this.element.setStyle(this.options.property, null)
+		this.fireEvent('onComplete')
+	}
+})
+
+
+Element.implement({
+
+	css_highlight: function(opts){
+		var opts = opts || {}
+		var s = opts.start || '#EFDB4A'
+		var e = opts.end || 'white'
+		var d = opts.duration || 1000
+	
+		new CSSTransitions.Tween(this, {
+			property					: 'background-color',
+			duration					: d,
+			clear_style_after	: true,
+			initial_delay			: 1000
+		}).start(s,e)
+	},
+	
+	rotate: function(degs, dur, callback){
+		var degs = degs || 360
+		var dur = dur || 1000
+
+		new CSSTransitions.Tween(this, {
+			property     : 'rotate',
+			is_transform : true,
+			duration     : dur,
+			onComplete   : callback || $empty
+		}).start(degs + 'deg')
+		
+	}
+
+})
 
