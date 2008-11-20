@@ -300,14 +300,18 @@ window.addEvent('domready', function(){
 	$('title').addEvent('click', function(){ 
 		this.rotate(1800,2000, this.rotate.bind(this, [0.01,0.01])) 
 	})
-	// $$('body').first().addEvent('click', function(){ 
-	// 	this.rotate(1800,2000, this.rotate.bind(this, [0.01,0.01])) 
-	// })
-	
-	// var sex = new Element('div', {'styles':{'float':'left','border':'10px solid red'}}).adopt(
-	// 	new Element('iframe', {'src':'http://www.google.com', 'width':'500px', 'height':'500px'})
-	// ).inject(document.body,'top')	
-	// sex.addEvent('click', sex.rotate.bind(sex, [1080,5000]))
+	window.addEvent('keyup', function(e){
+		if (e.key == 'g'){
+			var sex = new Element('div', {'styles':{'float':'left','border':'10px solid red'}}).adopt(
+				new Element('iframe', {'src':'http://www.google.com', 'width':'500px', 'height':'500px'})
+			).inject(document.body,'top')	
+			sex.addEvent('click', sex.rotate.bind(sex, [1080,5000]))
+		}else
+		if (e.key == 'b'){
+			$$('body').rotate(1800,2000, $$('body').rotate.bind($$('body'), [0.01,0.01])) 
+		}
+	})
+
 
 	if (navigator.userAgent.match('iPhone'))
 		document.body.addClass('iphone')
@@ -343,15 +347,16 @@ window.addEvent('domready', function(){
 	
 	new DeliciousGridSource('awesome')
 	new DeliciousGridSource('humor')
-	
-	new DataSource (
-	  "http://www.dapper.net/transform.php?dappName=lastfmrecentlyplayed3n&transformer=JSON&extraArg_callbackFunctionWrapper=lastFMData&applyToUrl=http%3A%2F%2Fwww.last.fm%2Fuser%2F3N%2Ftracks",
-	  "HEARING",
-	  "http://www.last.fm/user/3N",
-	  LastFMGrid,
-	  { globalFunction : 'lastFMData' },
-	  { limit : 9 }
-	)
+
+  // todo make the timeout work in jsonp	
+	// new DataSource (
+	//   "http://www.dapper.net/transform.php?dappName=lastfmrecentlyplayed3n&transformer=JSON&extraArg_callbackFunctionWrapper=lastFMData&applyToUrl=http%3A%2F%2Fwww.last.fm%2Fuser%2F3N%2Ftracks",
+	//   "HEARING",
+	//   "http://www.last.fm/user/3N",
+	//   LastFMGrid,
+	//   { globalFunction : 'lastFMData', timeout : 1000 },
+	//   { limit : 9 }
+	// )
 	
   if ( !document.location.href.match(/~ian/) ) goog()
 	
