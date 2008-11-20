@@ -168,3 +168,11 @@ h1 {
   #delicious-block .delicious-bookmark.even {
     float : right;
   }
+
+
+.lastfm-song.double-wide {
+  line-height:0.8em;
+}
+.lastfm-song .track {
+  font-size:10px;
+}
