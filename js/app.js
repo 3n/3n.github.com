@@ -305,7 +305,7 @@ window.addEvent('domready', function(){
 			var sex = new Element('div', {'styles':{'float':'left','border':'10px solid red'}}).adopt(
 				new Element('iframe', {'src':'http://www.google.com', 'width':'500px', 'height':'500px'})
 			).inject(document.body,'top')	
-			sex.addEvent('click', sex.rotate.bind(sex, [1080,5000]))
+			sex.addEvent('click', sex.rotate.bind(sex, [360,2000, sex.rotate.bind(sex,[0.01,0.01])]))
 		}else
 		if (e.key == 'b'){
 			$$('body').rotate(1800,2000, $$('body').rotate.bind($$('body'), [0.01,0.01])) 
