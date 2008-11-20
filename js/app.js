@@ -342,7 +342,7 @@ window.addEvent('domready', function(){
 	  "http://www.last.fm/user/3N",
 	  LastFMGrid,
 	  { globalFunction : 'lastFMData' },
-	  { limit : 50 }
+	  { limit : 9 }
 	)
 	
   if ( !document.location.href.match(/~ian/) ) goog()
