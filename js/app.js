@@ -274,7 +274,7 @@ window.addEvent('domready', function(){
 
 	// haha lol
 	$('main').addEvent('click', function(){ 
-		this.rotate(360,5000, this.rotate.bind(this, [0.01,0.01])); 
+		this.rotate(360,6000, this.rotate.bind(this, [0.01,0.01])); 
 	}) 
 	$('title').addEvent('click', function(){ 
 		this.rotate(1800,2000, this.rotate.bind(this, [0.01,0.01])) 
