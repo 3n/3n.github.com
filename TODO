@@ -10,3 +10,5 @@ add last.fm w/ artist photos through dapper
 add 'refresh' to each block and whole page
 
 add top gradient 
+
+look for image bucket error pages and bank out

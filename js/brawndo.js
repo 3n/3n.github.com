@@ -1942,6 +1942,9 @@ var JsonP = new Class({
 			}.bind(this));
 			script.inject(document.head);
 
+			if ($chk(this.options.abort_after))
+				script.dispose.delay(this.options.abort_after, script)
+
 			if(remaining) {
 				(function(){
 					this.triesRemaining[requestIndex] = remaining - 1;

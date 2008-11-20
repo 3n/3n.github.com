@@ -349,14 +349,14 @@ window.addEvent('domready', function(){
 	new DeliciousGridSource('humor')
 
   // todo make the timeout work in jsonp	
-	// new DataSource (
-	//   "http://www.dapper.net/transform.php?dappName=lastfmrecentlyplayed3n&transformer=JSON&extraArg_callbackFunctionWrapper=lastFMData&applyToUrl=http%3A%2F%2Fwww.last.fm%2Fuser%2F3N%2Ftracks",
-	//   "HEARING",
-	//   "http://www.last.fm/user/3N",
-	//   LastFMGrid,
-	//   { globalFunction : 'lastFMData', timeout : 1000 },
-	//   { limit : 9 }
-	// )
+	new DataSource (
+	  "http://www.dapper.net/transform.php?dappName=lastfmrecentlyplayed3n&transformer=JSON&extraArg_callbackFunctionWrapper=lastFMData&applyToUrl=http%3A%2F%2Fwww.last.fm%2Fuser%2F3N%2Ftracks",
+	  "HEARING",
+	  "http://www.last.fm/user/3N",
+	  LastFMGrid,
+	  { globalFunction : 'lastFMData', abort_after : 2000 },
+	  { limit : 9 }
+	)
 	
   if ( !document.location.href.match(/~ian/) ) goog()
 	
