@@ -70,8 +70,8 @@ h1 {
   padding            : 40px 20px 20px 40px;
   width              : 800px;  
   background-color   : white;
-  -webkit-box-shadow : 0 0 8px rgba(0, 0, 0, 0.05);	
-  -moz-box-shadow    : 0 0 8px rgba(0, 0, 0, 0.05);
+  -webkit-box-shadow : 0 0 8px rgba(0, 0, 0, 0.1);	
+  -moz-box-shadow    : 0 0 8px rgba(0, 0, 0, 0.1);
 }
   body.iphone #main {
     width:480px !important;
