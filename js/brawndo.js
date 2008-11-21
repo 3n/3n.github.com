@@ -18,7 +18,7 @@ Inspiration:
 
 var MooTools = {
 	'version': '1.2.1',
-	'build': 'f9bf39251e62485d17478e62f0e344a97c880f19'
+	'build': 'af51a878d292eb43575c4a9eba438dd3774a76fa'
 };
 
 var Native = function(options){
@@ -1906,6 +1906,7 @@ var JsonP = new Class({
 	options: {
 //	onComplete: $empty,
 //	globalFunction: '',
+//	abortAfter: 0,
 		callBackKey: "callback",
 		queryString: "",
 		data: {},
@@ -1941,6 +1942,8 @@ var JsonP = new Class({
 				try {script.dispose();}catch(e){}
 			}.bind(this));
 			script.inject(document.head);
+			
+			if ($chk(this.options.abortAfter) && ! remaining) script.dispose.delay(this.options.abortAfter, script);
 
 			if(remaining) {
 				(function(){
@@ -4128,7 +4131,7 @@ Element.implement({
 		return null;
 	},
 	separate_tags: function(tag, s){
-		this.set('html',this.get('html').replace( new RegExp(tag+'([^>]*)><','gi'), tag+' $1>'+s+'<' ))
+		this.set('html',this.get('html').replace( new RegExp(tag+'><','gi'), tag+'>'+s+'<' ))
 		return this
 	},
 	remove_class_from_children: function(){
@@ -4238,9 +4241,9 @@ var InvisibleDimensions = new Class({
 		}
 
 		this.fake_div.setStyles({
-			'position': 			'absolute',
-			'left':           '-100000px',
-			'top': 						'-100000px'
+			'position' : 'absolute',
+			'left'     : '-100000px',
+			'top'      : '-100000px'
 		});
 
 		this.fake_div.copyStyles(this.element,[

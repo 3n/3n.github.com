@@ -253,7 +253,7 @@ var DataSource = new Class({
 	},
 	
 	get_data: function(){
-		new JsonP(this.url, this.jsonp_opts).request()
+		new JsonP(this.url, $merge({abortAfter:1500},this.jsonp_opts)).request()
 	}
 })
 
