@@ -109,10 +109,10 @@ h1 {
   width            : 120px !important;
   letter-spacing   : -1.5px;
 }
-  .grid-title.flickr    { border-top:4px solid #ED217C; }
-  .grid-title.twitter   { border-top:4px solid #38BBC7; }  
-  .grid-title.delicious { border-top:4px solid #0053B9; }  
-  .grid-title.lastfm    { border-top:4px solid #ED2121; }  
+  .grid-title.flickr    { background-color: #ED217C; }
+  .grid-title.twitter   { background-color: #38BBC7; }  
+  .grid-title.delicious { background-color: #0053B9; }  
+  .grid-title.lastfm    { background-color: #ED2121; }  
 
 .text {
   line-height    : 1.3em;

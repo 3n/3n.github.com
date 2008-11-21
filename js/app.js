@@ -130,7 +130,7 @@ var TwitterGrid = new Class({
 		return data.results.map(function(tweet,i){
 			var tweet_html = tweet.text.make_urls_links().link_replies().link_hashcodes()
 			return new Cell(tweet_html, { 
-				'main_class'	 : (i==0 || tweet.text.length > 100) ? 'double-wide' : 'single-wide',
+				'main_class'	 : (i==0 || tweet.text.length > 90) ? 'double-wide' : 'single-wide',
 				'custom_class' : 'text tweet ' + (i==0 ? 'first' : ''),
 				'created_on'	 : Date.parse(tweet.created_at),
 				'source'			 : "http://www.twitter.com/" + tweet.from_user + "/status/" + tweet.id
