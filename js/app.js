@@ -191,7 +191,7 @@ var DeliciousGrid = new Class({
   			})
 			} else {
 			 	return new Cell(html, {
-  				'main_class'	 : 'single-wide',
+  				'main_class'	 : (bookmark.d.length > 90) ? 'double-wide' : 'single-wide',
   				'custom_class' : 'delicious ' + (i==0 ? 'first' : ''),
   				'created_on'	 : Date.parse(bookmark.dt),
   				'source'			 : bookmark.u
