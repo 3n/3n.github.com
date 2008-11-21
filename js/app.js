@@ -299,7 +299,7 @@ function they_spinnin(){
 	}) 
 	$('title').addEvent('click', function(){ 
 		this.rotate(1440,{
-			duration   : 2000, 
+			duration   : 2000,
 			onComplete : this.rotate.bind(this, [0.01,{duration:0.01}]),
 			transition : 'cubic-bezier(0.3,0.1,0.1,1)'
 		}) 
@@ -364,7 +364,6 @@ window.addEvent('domready', function(){
 	new DeliciousGridSource('awesome')
 	new DeliciousGridSource('humor')
 
-  // todo make the timeout work in jsonp	
 	new DataSource (
 	  "http://www.dapper.net/transform.php?dappName=lastfmrecentlyplayed3n&transformer=JSON&extraArg_callbackFunctionWrapper=lastFMData&applyToUrl=http%3A%2F%2Fwww.last.fm%2Fuser%2F3N%2Ftracks",
 	  "HEARING",
