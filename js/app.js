@@ -290,7 +290,8 @@ function goog(){
 }
 
 function they_spinnin(){
-	$('main').addEvent('click', function(){ 
+	$('main').addEvent('click', function(e){ 
+		if (e.target.match('a')) return;
 		this.rotate(this.get_transform_int() + 180,{
 			duration   : 3000,
 			transition : 'ease-in-out'
