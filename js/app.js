@@ -23,7 +23,10 @@ var Cell = new Class({
 	
 	create_element: function(){
 		this.element = this.element || new Element('div')
-		this.element.addClass('cell ' + this.options.main_class + ' ' + this.options.custom_class + ' ' + (coin_toss(0.1) ? 'inverted' : ''))
+		this.element.addClass('cell')
+								.addClass(this.options.main_class)
+								.addClass(this.options.custom_class)
+								.addClass((coin_toss(0.1) ? 'inverted' : ''))
 		
 		if 			($type(this.html) === 'element') this.element.adopt(this.html)
 		else if ($type(this.html) === 'string')  this.element.set('html', this.html)
@@ -237,7 +240,7 @@ var DataSource = new Class({
 		
 		this.jsonp_opts.onComplete = this.jsonp_opts.onComplete || function(r){
 			var title_elem = new Element('div', {
-				'class' : 'cell single-wide grid-title', 
+				'class' : 'cell single-wide grid-title ' + this.options.site_name, 
 				'html'  : this.nombre
 			}).act_like_link(this.link_href)
 			this.wrapper_instance = new wrapper_class(r)
@@ -272,7 +275,7 @@ var DeliciousGridSource = new Class({
 		var nombre = tag.toUpperCase()
     var href   = "http://www.delicious.com/" + _3n.delicious_user + "/" + tag
 		
-		return this.parent(url, nombre, href, DeliciousGrid, {data: { count: 20 }}, { limit : 9 })
+		return this.parent(url, nombre, href, DeliciousGrid, {data: { count: 20 }}, { limit : 9, site_name : 'delicious' })
 	}
 })
 
@@ -348,7 +351,7 @@ window.addEvent('domready', function(){
 				format : 'json'
 			}
 		},
-		{ limit : 14 }
+		{ limit : 14, site_name : 'flickr' }
 	)
 	
 	new DataSource (
@@ -360,7 +363,7 @@ window.addEvent('domready', function(){
 				q : "from:" + _3n.twitter_user
 			}
 		},
-		{ limit : 19 }
+		{ limit : 19, site_name : 'twitter' }
 	)
 	
 	new DeliciousGridSource('awesome')
@@ -379,7 +382,7 @@ window.addEvent('domready', function(){
 				outtype : 'js'
 			} 
 		},
-	  { limit : 9 }
+	  { limit : 9, site_name : 'lastfm' }
 	)
 	
   if ( !document.location.href.match(/~ian/) ) goog()
