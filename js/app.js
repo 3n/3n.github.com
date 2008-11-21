@@ -280,7 +280,7 @@ var DeliciousGridSource = new Class({
 })
 
 function get_user_names(){
-	[['global_user',null],['twitter_user','3n'],['flickr_user','52179512@N00'],['flickr_name','3n'],['delicious_user','3n'],['lastfm_user','3n']].each(function(u){
+	[['global_user',null],['twitter_user','3n'],['flickr_user','52179512@N00'],['flickr_name','3n'],['delicious_user','3n'],['lastfm_user','3n'],['delicious_tags','humor+awesome']].each(function(u){
 		_3n[u[0]] = params()[u[0]] || u[1]
 	})
 }
@@ -367,8 +367,9 @@ window.addEvent('domready', function(){
 		{ limit : 19, site_name : 'twitter' }
 	)
 	
-	new DeliciousGridSource('awesome')
-	new DeliciousGridSource('humor')
+	_3n.delicious_tags.split('+').each(function(tag){
+		new DeliciousGridSource(tag)
+	})
 
 	new DataSource (
 		"http://lastfm-api-ext.appspot.com/2.0/",
