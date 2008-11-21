@@ -289,21 +289,18 @@ function goog(){
   } catch(err) {}    
 }
 
-window.addEvent('domready', function(){
-
-  document.body.set('html', '<div id="wrapper"><h1 id="title">3N</h1><div id="main"></div></div>')
-
-	// haha lol
+function they_spinnin(){
 	$('main').addEvent('click', function(){ 
-		this.rotate(360,{
-			duration   : 6000, 
-			onComplete : this.rotate.bind(this, [0.01,{duration:0.01}])
+		this.rotate(this.get_transform_int() + 180,{
+			duration   : 3000,
+			transition : 'ease-in-out'
 		}); 
 	}) 
 	$('title').addEvent('click', function(){ 
-		this.rotate(1800,{
+		this.rotate(1440,{
 			duration   : 2000, 
-			onComplete : this.rotate.bind(this, [0.01,{duration:0.01}])
+			onComplete : this.rotate.bind(this, [0.01,{duration:0.01}]),
+			transition : 'cubic-bezier(0.3,0.1,0.1,1)'
 		}) 
 	})
 	window.addEvent('keyup', function(e){
@@ -323,7 +320,13 @@ window.addEvent('domready', function(){
 			}) 
 		}
 	})
+}
 
+window.addEvent('domready', function(){
+
+  document.body.set('html', '<div id="wrapper"><h1 id="title">3N</h1><div id="main"></div></div>')
+
+	they_spinnin()
 
 	if (navigator.userAgent.match('iPhone'))
 		document.body.addClass('iphone')
