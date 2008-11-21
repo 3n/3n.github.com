@@ -163,7 +163,7 @@ var LastFMGrid = new Class({
 			} else {
 				var prev_cell = new Cell(html, {
 					'custom_class' : 'text lastfm-song',
-					'created_on'	 : Date.parse(data[i].date.text)
+					'created_on'	 : Date.parse(data[i].date.text).decrement('hour',8)
 				})
 				tmp.push(prev_cell)
 			}
