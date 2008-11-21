@@ -53,7 +53,7 @@ var Cell = new Class({
 	},
 	
 	add_events: function(){
-		this.element.act_like_link(this.options.source)
+		if (this.options.source.length > 4) this.element.act_like_link(this.options.source)
 		Cell.tip.add_element(this.element)
 	},
 	
@@ -293,7 +293,7 @@ function goog(){
 
 function they_spinnin(){
 	$('main').addEvent('click', function(e){ 
-		if (e.target.match('a')) return;
+		if (e.target.id !== 'main') return;
 		this.rotate(this.get_transform_int() + 180,{
 			duration   : 3000,
 			transition : 'ease-in-out'
