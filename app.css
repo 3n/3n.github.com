@@ -101,6 +101,7 @@ h1 {
   }
 
 .grid-title {
+  clear            : both;
   background-color : #e0e0e0;
   color            : white;
   font-size        : 23px;

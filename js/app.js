@@ -260,9 +260,9 @@ var DataSource = new Class({
 var DeliciousCellSource = new Class({
 	Extends: DataSource,
 	initialize: function(tag){
-		var url = "http://feeds.delicious.com/v2/json/" + _3n.delicious_user + "/" + tag
+		var url = "http://feeds.delicious.com/v2/json/" + (_3n.global_user || _3n.delicious_user) + "/" + tag
 		var nombre = "delicious_" + tag
-		var href   = "http://www.delicious.com/" + _3n.delicious_user + "/" + tag
+		var href   = "http://www.delicious.com/" + (_3n.global_user || _3n.delicious_user) + "/" + tag
 		
 		return this.parent(url, nombre, href, DeliciousCell, {data: { count: 20 }})
 	}
@@ -271,16 +271,16 @@ var DeliciousCellSource = new Class({
 var DeliciousGridSource = new Class({
 	Extends: DataSource,
 	initialize: function(tag){
-		var url = "http://feeds.delicious.com/v2/json/" + _3n.delicious_user + "/" + tag
+		var url = "http://feeds.delicious.com/v2/json/" + (_3n.global_user || _3n.delicious_user) + "/" + tag
 		var nombre = tag.toUpperCase()
-    var href   = "http://www.delicious.com/" + _3n.delicious_user + "/" + tag
+    var href   = "http://www.delicious.com/" + (_3n.global_user || _3n.delicious_user) + "/" + tag
 		
 		return this.parent(url, nombre, href, DeliciousGrid, {data: { count: 20 }}, { limit : 9, site_name : 'delicious' })
 	}
 })
 
 function get_user_names(){
-	[['twitter_user','3n'],['flickr_user','52179512@N00'],['flickr_name','3n'],['delicious_user','3n'],['lastfm_user','3n']].each(function(u){
+	[['global_user',null],['twitter_user','3n'],['flickr_user','52179512@N00'],['flickr_name','3n'],['delicious_user','3n'],['lastfm_user','3n']].each(function(u){
 		_3n[u[0]] = params()[u[0]] || u[1]
 	})
 }
@@ -320,9 +320,10 @@ function they_spinnin(){
 			}]))
 		}else
 		if (e.key == 'b'){
-			$$('body').rotate(1800,{
+			$$('body').rotate(1440,{
 				duration   : 2000, 
-				onComplete : $$('body').rotate.bind($$('body'), [0.01,{duration:0.01}])
+				onComplete : $$('body').rotate.bind($$('body'), [0.01,{duration:0.01}]),
+				transition : 'cubic-bezier(0.3,0.1,0,1)'
 			}) 
 		}
 	})
@@ -346,7 +347,7 @@ window.addEvent('domready', function(){
 		FlickrGrid, 
 		{ globalFunction : 'jsonFlickrFeed',
 			data: {
-				id 	 	 : _3n.flickr_user,
+				id 	 	 : _3n.global_user || _3n.flickr_user,
 				lang 	 : "en-us",
 				format : 'json'
 			}
@@ -357,10 +358,10 @@ window.addEvent('domready', function(){
 	new DataSource (
 		"http://search.twitter.com/search.json", 
 		"SAYING",
-		"http://www.twitter.com/" + _3n.twitter_user,
+		"http://www.twitter.com/" + (_3n.global_user || _3n.twitter_user),
 		TwitterGrid, 
 		{ data: {
-				q : "from:" + _3n.twitter_user
+				q : "from:" + (_3n.global_user || _3n.twitter_user)
 			}
 		},
 		{ limit : 19, site_name : 'twitter' }
@@ -376,7 +377,7 @@ window.addEvent('domready', function(){
 	  LastFMGrid,
 	  { data: {
 				method  : 'user.getRecentTracks',
-				user    : _3n.lastfm_user,
+				user    : _3n.global_user || _3n.lastfm_user,
 				api_key : 'b25b959554ed76058ac220b7b2e0a026',
 				limit   : 100,
 				outtype : 'js'
