@@ -18,7 +18,7 @@ Inspiration:
 
 var MooTools = {
 	'version': '1.2.1',
-	'build': '41b3b907a1195208d8c437e6b44377c11762d1d0'
+	'build': 'f9bf39251e62485d17478e62f0e344a97c880f19'
 };
 
 var Native = function(options){
@@ -4178,7 +4178,7 @@ String.implement({
     	return escape(this);
 	},
 	first: function(num){
-		return this.substring(0,(num||1))
+		return this.substring(0,($chk(num) ? num : 1))
 	},
 	make_urls_links: function(){
 		return this.replace(/(\w+:\/\/[A-Za-z0-9-_]+\.[A-Za-z0-9-_:;\(\)%&\?\/.=]+)/gi, '<a href="$1">$1</a>')
@@ -4252,14 +4252,10 @@ var InvisibleDimensions = new Class({
 			'font-weight', 'font-size', 'font-family', 'border-width', 'border-style', 'line-height', 'width'
 		]);
 		
-		// todo maybe needed in iphone
-		// if (this.fake_div.getStyle('width') == '0px') this.fake_div.setStyle('width', 'auto')
-		
 		return this;
 	},
 	getSize: function(){
-		this.fake_div.inject(this.element,'before')
-								 .destroy.delay(3000, this.fake_div)
+		this.fake_div.inject(document.body,'bottom').destroy.delay(3000, this.fake_div)
 		
 		if (this.options.getSize_updates_width) this.fake_div.setStyle('width', this.element.getWidth())
 		if (this.options.getSize_nulls_height) 	this.fake_div.setStyle('height', null)
@@ -4440,9 +4436,6 @@ Element.Events.domready = {
 Script: CSSTransitions.Tween.js
 	Mirrors the API for Fx.Tween but uses CSS Transitions for effects. Does not depend on Fx. 
 	Supports CSS Transforms as well, like translateY and rotate. Just pass in option is_transform:true
-	
-	TODO support 0 case (just change to 0.001)
-	add getters or things like rotate and translate
 */
 
 // Just a dummy object, for now. Will eventually be the parent class for CSSTransitions and its siblings. 
@@ -4461,7 +4454,7 @@ CSSTransitions.Tween = new Class({
 	},
 	
 	initialize: function(element, options){
-		this.element = $(element);		
+		this.element = $(element);
 		this.setOptions(options)
 	},
 	
@@ -4475,8 +4468,11 @@ CSSTransitions.Tween = new Class({
 	prepare: function(from, to){
 		if (!$chk(to)){
 			to = from;
-			from = this.element.getStyle(this.options.property);
-		}			
+			if (!this.options.is_transform) from = this.element.getStyle(this.options.property);
+		}
+		if (to == 0)   to = 0.0001
+		if (from == 0) from = 0.0001
+		
 		return {from: from, to: to};
 	},
 	
@@ -4485,7 +4481,7 @@ CSSTransitions.Tween = new Class({
 		this.prepared = this.prepare(from, to)
 		this.transition_string = (this.options.is_transform ? '-webkit-transform' : this.options.property) + ' ' + (this.options.duration/1000) + 's ' + this.options.transition
 		
-		if ($defined(from)) this.element.setStyle(this.options.property, this.prepared.from)
+		if ($defined(from) && !this.options.is_transform) this.element.setStyle(this.options.property, this.prepared.from)
 
 		this.element.setStyle.delay(this.options.initial_delay, this.element, ['-webkit-transition', this.transition_string])
 		if (this.options.is_transform)
@@ -4508,29 +4504,32 @@ CSSTransitions.Tween = new Class({
 
 Element.implement({
 
-	css_highlight: function(opts){
-		var opts = opts || {}
-		var s = opts.start || '#EFDB4A'
-		var e = opts.end || 'white'
-		var d = opts.duration || 1000
-	
-		new CSSTransitions.Tween(this, {
+	css_highlight: function(s,e,opts){
+		new CSSTransitions.Tween(this, $merge({
 			property					: 'background-color',
-			duration					: d,
+			duration					: 500,
 			clear_style_after	: true,
-			initial_delay			: 1000
-		}).start(s,e)
+			initial_delay			: 800
+		}, opts || {})).start(s||'#EFDB4A', e||'white')
 	},
 	
 	rotate: function(degs, opts){
-		var degs = degs || 360
+		if (!$chk(degs)) var degs = 360
+		if (degs==0) degs = 0.0001
 
 		new CSSTransitions.Tween(this, $merge({
 			property     : 'rotate',
 			is_transform : true,
 			duration     : 1000
-		}, opts || {})).start(degs + 'deg')
-		
+		}, opts || {})).start(degs + 'deg')		
+	},
+	
+	get_transform_int: function(){
+		var tmp = this.getStyle('-webkit-transform')
+		if (!tmp.test(/matrix3d/) && tmp.match(/(\d+)/))
+			return tmp.match(/(\d+)/)[0].toInt()
+		else 
+			return 0
 	}
 
 })

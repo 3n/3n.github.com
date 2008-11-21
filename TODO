@@ -12,3 +12,5 @@ add 'refresh' to each block and whole page
 add top gradient 
 
 look for image bucket error pages and bank out
+
+lastFM JSON http://lastfm-api-ext.appspot.com/2.0/?method=user.getRecentTracks&user=3n&api_key=b25b959554ed76058ac220b7b2e0a026&limit=100
