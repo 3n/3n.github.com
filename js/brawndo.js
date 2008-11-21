@@ -1941,10 +1941,6 @@ var JsonP = new Class({
 				try {script.dispose();}catch(e){}
 			}.bind(this));
 			script.inject(document.head);
-			
-			if ($chk(this.options.abort_after)){
-				script.dispose.delay(this.options.abort_after, script)
-			}
 
 			if(remaining) {
 				(function(){
@@ -2433,7 +2429,7 @@ $extend(Date, {
 					delta = (delta / 60).round();
 					return res.until.minutes;
 				} else if (delta < (90*60)) {
-					return res.hour;
+					return res.until.hour;
 				} else if (delta < (24*60*60)) {
 					delta = (delta / 3600).round();
 					return res.until.hours;

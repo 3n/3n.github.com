@@ -22,17 +22,17 @@ var Cell = new Class({
 	},
 	
 	create_element: function(){
-		var tmp = new Element('div', {
-			'class': 'cell ' + this.options.main_class + ' ' + this.options.custom_class + ' ' + (coin_toss(0.1) ? 'inverted' : '')
-		})
-		if 			($type(this.html) === 'element') tmp.adopt(this.html)
-		else if ($type(this.html) === 'string')  tmp.set('html', this.html)
+		this.element = this.element || new Element('div')
+		this.element.addClass('cell ' + this.options.main_class + ' ' + this.options.custom_class + ' ' + (coin_toss(0.1) ? 'inverted' : ''))
 		
-		tmp.store('source',  this.options.source)
-		tmp.store('title',   this.options.title)
-		tmp.store('created', this.options.created_on.timeAgoInWords())
-		
-		return tmp
+		if 			($type(this.html) === 'element') this.element.adopt(this.html)
+		else if ($type(this.html) === 'string')  this.element.set('html', this.html)
+
+		this.element.store('source',  this.options.source)
+		this.element.store('title',   this.options.title)
+		this.element.store('created', this.options.created_on.timeDiffInWords())
+
+		return this.element
 	},
 	
 	update_element: function(){
@@ -144,22 +144,24 @@ var LastFMGrid = new Class({
   
   create_cells: function(data){
 		var tmp = []
+		var data = data.recenttracks
 		
-		for (var i=0; i<data.groups.lol.length; i+=3){
-			var artist = data.groups.lol[i].all[0].value
-			var track  = data.groups.lol[i+1].all[0].value
-			var html   = "<span class='artist'>" + artist + "</span> <span class='track'>" + track + "</span>"
+		for (var i=0; i < data.length; i++){
+			var artist = data[i].artist.name
+			var track  = data[i].name
+			var html   = "<span class='artist'>" + artist + "</span> <a class='track' href='" + data[i].url + "'>" + track + "</span>"
 
-			if (artist.test(/It’s/)) continue;
-
-			if (i > 2 && data.groups.lol[i-3].all[0].value === artist ){
+			if (i > 0 && data[i-1].artist.name === artist ){
 				if (prev_cell) {
 					prev_cell.html += "<span class='track'>, " + track + "</span>"
 					prev_cell.options.main_class = 'double-wide'
 					prev_cell.update_element()
 				}
 			} else {
-				var prev_cell = new Cell(html, { 'custom_class' : 'text lastfm-song' })
+				var prev_cell = new Cell(html, {
+					'custom_class' : 'text lastfm-song',
+					'created_on'	 : Date.parse(data[i].date.text)
+				})
 				tmp.push(prev_cell)
 			}
 		}
@@ -275,7 +277,7 @@ var DeliciousGridSource = new Class({
 })
 
 function get_user_names(){
-	[['twitter_user','3n'], ['flickr_user','52179512@N00'	], ['flickr_name','3n'], ['delicious_user','3n']].each(function(u){
+	[['twitter_user','3n'],['flickr_user','52179512@N00'],['flickr_name','3n'],['delicious_user','3n'],['lastfm_user','3n']].each(function(u){
 		_3n[u[0]] = params()[u[0]] || u[1]
 	})
 }
@@ -365,11 +367,18 @@ window.addEvent('domready', function(){
 	new DeliciousGridSource('humor')
 
 	new DataSource (
-	  "http://www.dapper.net/transform.php?dappName=lastfmrecentlyplayed3n&transformer=JSON&extraArg_callbackFunctionWrapper=lastFMData&applyToUrl=http%3A%2F%2Fwww.last.fm%2Fuser%2F3N%2Ftracks",
+		"http://lastfm-api-ext.appspot.com/2.0/",
 	  "HEARING",
 	  "http://www.last.fm/user/3N",
 	  LastFMGrid,
-	  { globalFunction : 'lastFMData', abort_after : 2000 },
+	  { data: {
+				method  : 'user.getRecentTracks',
+				user    : _3n.lastfm_user,
+				api_key : 'b25b959554ed76058ac220b7b2e0a026',
+				limit   : 100,
+				outtype : 'js'
+			} 
+		},
 	  { limit : 9 }
 	)
 	
