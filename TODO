@@ -1,16 +1,18 @@
 Sweetass clock whose hand(s) are the string of the time
 
-Showing only grid cells a few with UI for adding more
+click and drag on logo to start spinning (like bottle) or clic and pull, then let go to spin. 
+
+add last.fm artist photos
 
 remembering last seen item per feed and highlighting new ones. 
 on iphone maybe only showing new ones
 
 bff proxy for each cell
 
-add last.fm artist photos
-
 add 'refresh' to each block and whole page
 
 add top gradient 
 
-click and drag on logo to start spinning (like bottle) or clic and pull, then let go to spin. 
+Showing only grid cells a few with UI for adding more
+
+last_fm track links should have some hover effect. same with all the other links. 

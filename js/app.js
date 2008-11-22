@@ -1,5 +1,11 @@
 var _3n = {}
 
+var App = new Class({
+	initialize: function(main){
+		this.main = main
+	}
+})
+
 var Cell = new Class({
 	Implements: Options,
 	options: {
