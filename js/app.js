@@ -151,10 +151,8 @@ var Flickr = new Class({
 				tags        : json_item.tags
 			}
 	  })
-
-		$('main').adopt( this.to_cells() )
 	
-		this.fireEvent('dataReady')		
+		this.fireEvent('dataReady', this)		
 		return this.db
 	},
 	
@@ -167,8 +165,45 @@ var Flickr = new Class({
 	}
 })
 
+var Twitter = new Class({
+	Extends: Model,
+	
+	site_name  : "twitter",
+	nombre     : "SAYING",
+	json_url   : "http://search.twitter.com/search.json",
+	web_source : "http://www.twitter.com/" + (_3n.global_user || _3n.twitter_user),
+	json_opts  : { data: { q : "from:" + (_3n.global_user || _3n.twitter_user) } },
+  
+  initialize: function(){
+		return this.parent()
+  },
 
-var Model = new Class({
+	process_data: function(json){
+		this.db = json.results.map(function(json_item){
+			return {
+				title       : json_item.text,
+				created_on  : Date.parse(json_item.created_at),
+				source      : "http://www.twitter.com/" + json_item.from_user + "/status/" + json_item.id
+			}
+	  })
+	
+		this.fireEvent('dataReady', this)		
+		return this.db
+	},					
+	
+	_to_cell: function(){
+		var tweet_html = this.title.make_urls_links().link_replies().link_hashcodes()
+		return new Cell(tweet_html, { 
+			'main_class'	 : (this.title.length > 90) ? 'double-wide' : 'single-wide',
+			'custom_class' : 'text tweet ',
+			'created_on'	 : this.created_on,
+			'source'			 : this.source
+		})
+	}	
+})
+
+
+var MModel = new Class({
 	initialize: function(data, controller){
 		this.cells  = this.view(data)
 		this.controller = controller
@@ -404,7 +439,13 @@ window.addEvent('domready', function(){
 
 	if (navigator.userAgent.match('iPhone')) document.body.addClass('iphone')
 	
-	new Flickr().get_data()
+	new Flickr()
+		.addEvent('dataReady', function(f){ $('main').adopt( f.to_cells()) })
+		.get_data()
+		
+	new Twitter()
+		.addEvent('dataReady', function(f){ $('main').adopt( f.to_cells()) })
+		.get_data()		
 	
 	// new App([
 	// 
