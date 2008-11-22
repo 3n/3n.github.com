@@ -16,3 +16,69 @@ add top gradient
 Showing only grid cells a few with UI for adding more
 
 last_fm track links should have some hover effect. same with all the other links. 
+
+global || user => helper current_user('flickr')
+
+
+
+ARCHITECTURE
+
+rename 'data' as it is now to 'json' 
+
+model has array called DB and methods like 'all' and 'first(int)' that return items (rows) from DB
+
+model has to_cells method that does title_elem + this.db.map(function(row){return row.to_cell()})
+DB item has to_cell (passed in by model at creation time) that makes a cell.
+
+model has make method that takes in json and returns DB
+or
+model calls json.asdf.arraypart.map(f) where f returns an DB
+
+Cell is a template - takes in an object and makes html/events
+
+a cell has a title, html and classes. it doesn't have a created_on. 
+
+each DB item (row) from a given model can be unique but should have created_on (standard column)
+
+NO CONTROLERS - the way it is now if you want two twitter grids you'd have to copy and paste the 
+instantiation call. no state outside of instantiation laaame. 
+
+
+GOAL - return items that act like arrays but have special methods
+
+model.first(10).to_cells()
+model.first(10).get('created_on')
+
+	is this better than just using map?
+
+
+
+
+
+
+
+
+
+
+	// var DeliciousCell = new Class({
+	// 	initialize: function(data){		
+	// 		this.element = this.generate_element(data)
+	// 		return this
+	// 	},
+	// 	
+	// 	generate_element: function(data){
+	// 		var tmp = new Element('div', {'id':'delicious-block', 'class':'cell full-width'}).adopt([
+	// 			data.map(function(bookmark,i){
+	// 				return new Element('a', {
+	// 					'html':bookmark.d,
+	// 					'class':'delicious-bookmark ' + (i.is_even() ? 'even' : 'odd')
+	// 				}).set('href', bookmark.u)
+	// 			})
+	// 		])		
+	// 		return tmp
+	// 	},
+	// 	
+	// 	to_html: function(){
+	// 		return this.element
+	// 	}
+	// })

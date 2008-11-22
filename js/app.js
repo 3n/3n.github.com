@@ -1,8 +1,18 @@
 var _3n = {}
+get_user_names()
 
 var App = new Class({
-	initialize: function(main){
-		this.main = main
+	initialize: function(main, gridz){
+		this.main  = main
+		this.gridz = gridz
+		
+		this.inject_grids()
+	},
+	
+	inject_grids: function(){
+		this.grids.each(function(grid){
+
+		})
 	}
 })
 
@@ -95,27 +105,97 @@ var ImageCell = new Class({
 })
 
 
-var FeedGrid = new Class({
-	initialize: function(data){
-		this.cells = this.create_cells(data)
+var Model = new Class({
+	Implements: Events,
+	initialize: function(){
+		this.db = []
 		return this
 	},
 	
-	to_html: function(limit){
-		return this.cells.first(limit||100).map(function(c){
-			return c.to_html()
+	get_data: function(){
+		new JsonP(
+			this.json_url, 
+			$merge(	{abortAfter : 1500, onComplete : this.process_data.bind(this) }, this.json_opts) 
+		).request()
+	},
+	
+	to_cells: function(){
+		return this.db.map(function(row){ return this._to_cell.apply(row).to_html() }.bind(this))
+	}
+})
+
+var Flickr = new Class({
+	Extends: Model,
+	
+	site_name  : "flickr",
+	nombre     : "SEEING",
+	json_url   : "http://api.flickr.com/services/feeds/photos_public.gne",
+	web_source : "http://www.flickr.com/photos/" + (_3n.global_user || _3n.flickr_name),
+	json_opts  : { globalFunction : 'jsonFlickrFeed',
+								 data: { id     : _3n.flickr_user,
+												 lang   : "en-us",
+									       format : 'json' } },
+	
+	initialize: function(){		
+		return this.parent()
+	},
+	
+	process_data: function(json){
+		this.db = json.items.map(function(json_item){
+			return {
+				title       : json_item.title,
+				created_on  : Date.parse(json_item.date_taken),
+				img_url     : json_item.media.m,
+				source      : json_item.link,
+				description : json_item.description,
+				tags        : json_item.tags
+			}
+	  })
+
+		$('main').adopt( this.to_cells() )
+	
+		this.fireEvent('dataReady')		
+		return this.db
+	},
+	
+	_to_cell: function(){
+		return new ImageCell(this.img_url, { 
+			'title' 		: this.title, 
+			'created_on': this.created_on,
+			'source' 		: this.source
 		})
 	}
 })
 
 
+var Model = new Class({
+	initialize: function(data, controller){
+		this.cells  = this.view(data)
+		this.controller = controller
+		
+		this.title_elem = new Element('div', {
+			'class' : 'cell single-wide grid-title ' + this.controller.options.site_name, 
+			'html'  : this.controller.nombre
+		}).act_like_link(this.controller.link_href)
+		
+		return this
+	},
+	
+	to_html: function(limit){
+		return [this.title_elem].combine(this.cells.first(limit||100).map(function(c){
+			return c.to_html()
+		}))
+	}
+})
+
+
 var FlickrGrid = new Class({
-	Extends: FeedGrid,
+	Extends: Model,
 	initialize: function(data){
 		return this.parent(data)
 	},
 	
-	create_cells: function(data){
+	view: function(data){
 		return data.items.map(function(flickr_item){
 			return new ImageCell(flickr_item.media.m, { 
 				'title' 		: flickr_item.title, 
@@ -127,12 +207,12 @@ var FlickrGrid = new Class({
 })
 
 var TwitterGrid = new Class({
-	Extends: FeedGrid,
+	Extends: Model,
 	initialize: function(data){
 		return this.parent(data)
 	},
 	
-	create_cells: function(data){
+	view: function(data){
 		return data.results.map(function(tweet,i){
 			var tweet_html = tweet.text.make_urls_links().link_replies().link_hashcodes()
 			return new Cell(tweet_html, { 
@@ -146,12 +226,12 @@ var TwitterGrid = new Class({
 })
 
 var LastFMGrid = new Class({
-  Extends: FeedGrid,
+  Extends: Model,
   initialize: function(data){
     return this.parent(data)
   },
   
-  create_cells: function(data){
+  view: function(data){
 		var tmp = []
 		var data = data.recenttracks
 		
@@ -180,12 +260,12 @@ var LastFMGrid = new Class({
 })
 
 var DeliciousGrid = new Class({
-	Extends: FeedGrid,
+	Extends: Model,
 	initialize: function(data){
 		return this.parent(data)
 	},
 	
-	create_cells: function(data){
+	view: function(data){
 		return data.map(function(bookmark,i){
 			var html = new Element('a', {html:bookmark.d, href:bookmark.u})
 			
@@ -207,81 +287,62 @@ var DeliciousGrid = new Class({
 	}
 })
 
-var DeliciousCell = new Class({
-	initialize: function(data){		
-		this.element = this.generate_element(data)
-		return this
-	},
-	
-	generate_element: function(data){
-		var tmp = new Element('div', {'id':'delicious-block', 'class':'cell full-width'}).adopt([
-			data.map(function(bookmark,i){
-				return new Element('a', {
-					'html':bookmark.d,
-					'class':'delicious-bookmark ' + (i.is_even() ? 'even' : 'odd')
-				}).set('href', bookmark.u)
-			})
-		])		
-		return tmp
-	},
-	
-	to_html: function(){
-		return this.element
-	}
-})
 
-var DataSource = new Class({
+
+var Controller = new Class({
 	Implements: Options,
 	options : {
-		limit : 100
+		limit : 100,
+		jsonp_opts : {},
+		bucket : 0
 	},
-	initialize: function(url, nombre, link_href, wrapper_class, jsonp_opts, options){
+	initialize: function(url, nombre, link_href, model, options){
 		this.setOptions(options)
 		
-		this.url           = url
-		this.nombre        = nombre
-		this.link_href     = link_href
-		this.wrapper_class = wrapper_class
-		this.jsonp_opts    = jsonp_opts || {}
+		this.url        = url
+		this.nombre     = nombre
+		this.link_href  = link_href
+		this.model      = model
 		
-		this.jsonp_opts.onComplete = this.jsonp_opts.onComplete || function(r){
-			var title_elem = new Element('div', {
-				'class' : 'cell single-wide grid-title ' + this.options.site_name, 
-				'html'  : this.nombre
-			}).act_like_link(this.link_href)
-			this.wrapper_instance = new wrapper_class(r)
-			$('main').adopt( title_elem, this.wrapper_instance.to_html(this.options.limit) )
-		}.bind(this)
+		// this.title_elem = new Element('div', {
+		// 	'class' : 'cell single-wide grid-title ' + this.options.site_name, 
+		// 	'html'  : this.nombre
+		// }).act_like_link(this.link_href)
+		
+		// this.jsonp_opts.onComplete = this.options.jsonp_opts.onComplete || function(r){
+			// this.grid = new model(r)
+			// $('main').adopt( this.title_elem, this.grid.to_html(this.options.limit) )
+		// }.bind(this)
 		
 		this.get_data()
 		
 		return this
 	},
 	
-	get_data: function(){
-		new JsonP(this.url, $merge({abortAfter:1500},this.jsonp_opts)).request()
+	get_data: function(oc){
+		new JsonP(this.url, $merge({abortAfter:1500,onComplete:oc},this.options.jsonp_opts)).request()
 	}
 })
 
-var DeliciousCellSource = new Class({
-	Extends: DataSource,
-	initialize: function(tag){
-		var url = "http://feeds.delicious.com/v2/json/" + (_3n.global_user || _3n.delicious_user) + "/" + tag
-		var nombre = "delicious_" + tag
-		var href   = "http://www.delicious.com/" + (_3n.global_user || _3n.delicious_user) + "/" + tag
-		
-		return this.parent(url, nombre, href, DeliciousCell, {data: { count: 20 }})
-	}
-})
+// var DeliciousCellSource = new Class({
+// 	Extends: Controller,
+// 	initialize: function(tag){
+// 		var url = "http://feeds.delicious.com/v2/json/" + (_3n.global_user || _3n.delicious_user) + "/" + tag
+// 		var nombre = "delicious_" + tag
+// 		var href   = "http://www.delicious.com/" + (_3n.global_user || _3n.delicious_user) + "/" + tag
+// 		
+// 		return this.parent(url, nombre, href, DeliciousCell, {data: { count: 20 }})
+// 	}
+// })
 
-var DeliciousGridSource = new Class({
-	Extends: DataSource,
+var Delicious = new Class({
+	Extends: Controller,
 	initialize: function(tag){
 		var url = "http://feeds.delicious.com/v2/json/" + (_3n.global_user || _3n.delicious_user) + "/" + tag
 		var nombre = tag.toUpperCase()
     var href   = "http://www.delicious.com/" + (_3n.global_user || _3n.delicious_user) + "/" + tag
 		
-		return this.parent(url, nombre, href, DeliciousGrid, {data: { count: 20 }}, { limit : 9, site_name : 'delicious' })
+		return this.parent(url, nombre, href, DeliciousGrid, { jsonp_opts:{data: { count: 20 }},limit : 9, site_name : 'delicious' })
 	}
 })
 
@@ -341,57 +402,69 @@ window.addEvent('domready', function(){
 
 	they_spinnin()
 
-	if (navigator.userAgent.match('iPhone'))
-		document.body.addClass('iphone')
+	if (navigator.userAgent.match('iPhone')) document.body.addClass('iphone')
 	
-	get_user_names()
+	new Flickr().get_data()
 	
-	new DataSource (
-		"http://api.flickr.com/services/feeds/photos_public.gne", 
-		"SEEING",
-		"http://www.flickr.com/photos/" + _3n.flickr_name,
-		FlickrGrid, 
-		{ globalFunction : 'jsonFlickrFeed',
-			data: {
-				id 	 	 : _3n.global_user || _3n.flickr_user,
-				lang 	 : "en-us",
-				format : 'json'
-			}
-		},
-		{ limit : 14, site_name : 'flickr' }
-	)
-	
-	new DataSource (
-		"http://search.twitter.com/search.json", 
-		"SAYING",
-		"http://www.twitter.com/" + (_3n.global_user || _3n.twitter_user),
-		TwitterGrid, 
-		{ data: {
-				q : "from:" + (_3n.global_user || _3n.twitter_user)
-			}
-		},
-		{ limit : 19, site_name : 'twitter' }
-	)
-	
-	_3n.delicious_tags.split('+').each(function(tag){
-		new DeliciousGridSource(tag)
-	})
-
-	new DataSource (
-		"http://lastfm-api-ext.appspot.com/2.0/",
-	  "HEARING",
-	  "http://www.last.fm/user/3N",
-	  LastFMGrid,
-	  { data: {
-				method  : 'user.getRecentTracks',
-				user    : _3n.global_user || _3n.lastfm_user,
-				api_key : 'b25b959554ed76058ac220b7b2e0a026',
-				limit   : 100,
-				outtype : 'js'
-			} 
-		},
-	  { limit : 9, site_name : 'lastfm' }
-	)
+	// new App([
+	// 
+	// 	new Controller (
+	// 		"http://api.flickr.com/services/feeds/photos_public.gne", 
+	// 		"SEEING",
+	// 		"http://www.flickr.com/photos/" + (_3n.global_user || _3n.flickr_name),
+	// 		FlickrGrid, {
+	// 			jsonp_opts : {
+	// 				globalFunction : 'jsonFlickrFeed',
+	// 				data: {
+	// 					id 	 	 : _3n.global_user || _3n.flickr_user,
+	// 					lang 	 : "en-us",
+	// 					format : 'json'
+	// 				}
+	// 			},
+	// 			limit     : 14, 
+	// 			site_name : 'flickr'
+	// 		}
+	// 	),
+	// 
+	// 	new Controller (
+	// 		"http://search.twitter.com/search.json", 
+	// 		"SAYING",
+	// 		"http://www.twitter.com/" + (_3n.global_user || _3n.twitter_user),
+	// 		TwitterGrid, {
+	// 			jsonp_opts : { 
+	// 				data: {
+	// 					q : "from:" + (_3n.global_user || _3n.twitter_user)
+	// 				}
+	// 			},
+	// 			limit      : 19, 
+	// 			site_name  : 'twitter'
+	// 		}
+	// 	),
+	// 
+	// 	_3n.delicious_tags.split('+').map(function(tag){
+	// 		new Delicious(tag)
+	// 	}),
+	// 
+	// 	new Controller (
+	// 		"http://lastfm-api-ext.appspot.com/2.0/",
+	// 	  "HEARING",
+	// 	  "http://www.last.fm/user/3N",
+	// 	  LastFMGrid, {
+	// 			jsonp_opts:{ 
+	// 				data: {
+	// 					method  : 'user.getRecentTracks',
+	// 					user    : _3n.global_user || _3n.lastfm_user,
+	// 					api_key : 'b25b959554ed76058ac220b7b2e0a026',
+	// 					limit   : 100,
+	// 					outtype : 'js'
+	// 				} 
+	// 			},
+	// 			limit     : 9, 
+	// 			site_name : 'lastfm' 
+	// 		}
+	// 	)
+	// 	
+	// ], $('main'))	
 	
   if ( !document.location.href.match(/~ian/) ) goog()
 	
