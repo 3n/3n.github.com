@@ -376,9 +376,9 @@ window.addEvent('domready', function(){
 
 	if (navigator.userAgent.match('iPhone')) document.body.addClass('iphone');
 
-	[Flickr, Twitter, LastFM].each(function(Bone){
-		new Bone()
-			.addEvent('dataReady', function(f){ $('main').adopt( f.to_cells(10)) })
+	[ [Flickr,15], [Twitter,20], [LastFM,10]].each(function(Bone){
+		new Bone[0]()
+			.addEvent('dataReady', function(f){ $('main').adopt( f.to_cells(Bone[1])) })
 			.get_data()
 	});	
 	
