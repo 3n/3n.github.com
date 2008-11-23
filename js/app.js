@@ -261,6 +261,10 @@ var LastFM = new Class({
 		}
 		
 		return [this.title_elem].combine(tmp.map(function(t){ return t.to_html() })).first(limit||100)
+		// return [this.title_elem].combine(tmp.map(function(cell){ 
+		// 	cell.element.hasClass('double-wide') ? limit -= 2 : --limit
+		// 	if (limit > 0) return cell.to_html()
+		// }.bind(this)).flatten())
 	}
 
 })
