@@ -108,6 +108,7 @@ var Model = new Class({
 			this.json_url, 
 			$merge(	{abortAfter : 1500, onComplete : this.process_data.bind(this) }, this.json_opts) 
 		).request()
+		return this
 	},
 	
 	to_cells: function(limit){	
