@@ -1,21 +1,6 @@
 var _3n = {}
 get_user_names()
 
-var App = new Class({
-	initialize: function(main, gridz){
-		this.main  = main
-		this.gridz = gridz
-		
-		this.inject_grids()
-	},
-	
-	inject_grids: function(){
-		this.grids.each(function(grid){
-
-		})
-	}
-})
-
 var Cell = new Class({
 	Implements: Options,
 	options: {
@@ -109,6 +94,12 @@ var Model = new Class({
 	Implements: Events,
 	initialize: function(){
 		this.db = []
+		
+		this.title_elem = new Element('div', {
+			'class' : 'cell single-wide grid-title ' + this.site_name, 
+			'html'  : this.nombre
+		}).act_like_link(this.web_source)
+		
 		return this
 	},
 	
@@ -119,8 +110,8 @@ var Model = new Class({
 		).request()
 	},
 	
-	to_cells: function(){
-		return this.db.map(function(row){ return this._to_cell.apply(row).to_html() }.bind(this))
+	to_cells: function(){		
+		return [this.title_elem].combine(this.db.map(function(row){ return this._to_cell.apply(row).to_html() }.bind(this)))
 	}
 })
 
@@ -183,7 +174,8 @@ var Twitter = new Class({
 			return {
 				title       : json_item.text,
 				created_on  : Date.parse(json_item.created_at),
-				source      : "http://www.twitter.com/" + json_item.from_user + "/status/" + json_item.id
+				source      : "http://www.twitter.com/" + json_item.from_user + "/status/" + json_item.id,
+				html        : json_item.text.make_urls_links().link_replies().link_hashcodes()
 			}
 	  })
 	
@@ -192,8 +184,7 @@ var Twitter = new Class({
 	},					
 	
 	_to_cell: function(){
-		var tweet_html = this.title.make_urls_links().link_replies().link_hashcodes()
-		return new Cell(tweet_html, { 
+		return new Cell(this.html, { 
 			'main_class'	 : (this.title.length > 90) ? 'double-wide' : 'single-wide',
 			'custom_class' : 'text tweet ',
 			'created_on'	 : this.created_on,
@@ -202,63 +193,66 @@ var Twitter = new Class({
 	}	
 })
 
-
-var MModel = new Class({
-	initialize: function(data, controller){
-		this.cells  = this.view(data)
-		this.controller = controller
-		
-		this.title_elem = new Element('div', {
-			'class' : 'cell single-wide grid-title ' + this.controller.options.site_name, 
-			'html'  : this.controller.nombre
-		}).act_like_link(this.controller.link_href)
-		
-		return this
-	},
-	
-	to_html: function(limit){
-		return [this.title_elem].combine(this.cells.first(limit||100).map(function(c){
-			return c.to_html()
-		}))
-	}
-})
-
-
-var FlickrGrid = new Class({
+var LastFM = new Class({
 	Extends: Model,
-	initialize: function(data){
-		return this.parent(data)
-	},
 	
-	view: function(data){
-		return data.items.map(function(flickr_item){
-			return new ImageCell(flickr_item.media.m, { 
-				'title' 		: flickr_item.title, 
-				'created_on': Date.parse(flickr_item.date_taken),
-				'source' 		: flickr_item.link
-			})
+	site_name  : "lastfm",
+	nombre     : "HEARING",
+	json_url   : "http://lastfm-api-ext.appspot.com/2.0/",
+	web_source : "http://www.last.fm/user/" + (_3n.global_user || _3n.lastfm_user),
+	json_opts  : { data : { method  : 'user.getRecentTracks',
+	 												user    : _3n.global_user || _3n.lastfm_user,
+													api_key : 'b25b959554ed76058ac220b7b2e0a026',
+													limit   : 100,
+													outtype : 'js' } },
+													
+  initialize: function(){
+		return this.parent()
+  },
+
+	process_data: function(json){
+		this.db = json.recenttracks.map(function(json_item){
+			return {
+				track       : json_item.name,
+				track_url   : json_item.url,
+				artist      : json_item.artist.name,
+				html        : "<span class='artist'>" + json_item.artist.name + "</span> <a class='track' href='" + json_item.url + "'>" + json_item.name + "</span>",
+				created_on  : Date.parse(json_item.date.text).decrement('hour',8)
+			}
 	  })
-	}
-})
 
-var TwitterGrid = new Class({
-	Extends: Model,
-	initialize: function(data){
-		return this.parent(data)
+		this.fireEvent('dataReady', this)		
+		return this.db
+	},					
+
+	_to_cell: function(){
+		return new Cell(this.html, { 
+			'custom_class' : 'text lastfm-song',
+			'created_on'	 : this.created_on
+		})
 	},
 	
-	view: function(data){
-		return data.results.map(function(tweet,i){
-			var tweet_html = tweet.text.make_urls_links().link_replies().link_hashcodes()
-			return new Cell(tweet_html, { 
-				'main_class'	 : (i==0 || tweet.text.length > 90) ? 'double-wide' : 'single-wide',
-				'custom_class' : 'text tweet ' + (i==0 ? 'first' : ''),
-				'created_on'	 : Date.parse(tweet.created_at),
-				'source'			 : "http://www.twitter.com/" + tweet.from_user + "/status/" + tweet.id
-			})
-		})
+	to_cells: function(){		
+		var tmp = []
+		
+		for (var i=0; i < this.db.length; i++){
+			if (i > 0 && this.db[i-1].artist === this.db[i].artist ){
+				if (prev_cell) {
+					prev_cell.html += "<span class='track'>, " + this.db[i].track + "</span>"
+					prev_cell.options.main_class = 'double-wide'
+					prev_cell.update_element()
+				}
+			} else {
+				var prev_cell = this._to_cell.apply(this.db[i])
+				tmp.push(prev_cell)
+			}
+		}
+		
+		return [this.title_elem].combine(tmp.map(function(t){ return t.to_html() }))
 	}
+
 })
+
 
 var LastFMGrid = new Class({
   Extends: Model,
@@ -359,17 +353,6 @@ var Controller = new Class({
 	}
 })
 
-// var DeliciousCellSource = new Class({
-// 	Extends: Controller,
-// 	initialize: function(tag){
-// 		var url = "http://feeds.delicious.com/v2/json/" + (_3n.global_user || _3n.delicious_user) + "/" + tag
-// 		var nombre = "delicious_" + tag
-// 		var href   = "http://www.delicious.com/" + (_3n.global_user || _3n.delicious_user) + "/" + tag
-// 		
-// 		return this.parent(url, nombre, href, DeliciousCell, {data: { count: 20 }})
-// 	}
-// })
-
 var Delicious = new Class({
 	Extends: Controller,
 	initialize: function(tag){
@@ -445,7 +428,11 @@ window.addEvent('domready', function(){
 		
 	new Twitter()
 		.addEvent('dataReady', function(f){ $('main').adopt( f.to_cells()) })
-		.get_data()		
+		.get_data()	
+	
+	new LastFM()
+		.addEvent('dataReady', function(f){ $('main').adopt( f.to_cells()) })
+		.get_data()			
 	
 	// new App([
 	// 
