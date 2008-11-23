@@ -355,9 +355,7 @@ function they_spinnin(){
 
 window.addEvent('domready', function(){
 
-  document.body.set('html', '<div id="wrapper"><h1 id="title">3N</h1><div id="main"></div></div>')
-
-	they_spinnin()
+  document.body.set('html', '<div id="wrapper"><h1 id="title">3N</h1><div id="main"></div></div>')	
 
 	if (navigator.userAgent.match('iPhone')) document.body.addClass('iphone');
 
@@ -373,6 +371,7 @@ window.addEvent('domready', function(){
 			.get_data()
 	})
 	
+	if ( Browser.Engine.webkit ) they_spinnin()
   if ( !document.location.href.match(/~ian/) ) goog()
 	
 }) 
