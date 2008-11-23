@@ -112,6 +112,10 @@ var Model = new Class({
 	
 	to_cells: function(){		
 		return [this.title_elem].combine(this.db.map(function(row){ return this._to_cell.apply(row).to_html() }.bind(this)))
+	},
+	
+	current_user: function(){
+		return current_user(this.site_name)
 	}
 })
 
@@ -127,7 +131,8 @@ var Flickr = new Class({
 												 lang   : "en-us",
 									       format : 'json' } },
 	
-	initialize: function(){		
+	initialize: function(){
+		if (this.json_opts.data.id === '') this.json_url = null
 		return this.parent()
 	},
 	
@@ -262,8 +267,8 @@ var Delicious = new Class({
   initialize: function(tag){
 		this.tag = tag
 		this.nombre = tag.toUpperCase()
-		this.json_url = "http://feeds.delicious.com/v2/json/" + current_user('delicious') + "/" + this.tag
-		this.web_source = "http://www.delicious.com/" + current_user('delicious') + "/" + this.tag
+		this.json_url = "http://feeds.delicious.com/v2/json/" + this.current_user() + "/" + this.tag
+		this.web_source = "http://www.delicious.com/" + this.current_user() + "/" + this.tag
 		return this.parent()
   },
 
@@ -304,8 +309,9 @@ function current_user(site){
 }
 
 function get_user_names(){
-	[['global_user',null],['twitter_user','3n'],['flickr_id','52179512@N00'],['flickr_user','3n'],['delicious_user','3n'],['lastfm_user','3n'],['delicious_tags','humor+awesome']].each(function(u){
-		_3n[u[0]] = params()[u[0]] || u[1]
+	[['global_user',null],['twitter_user','3n'],['flickr_id','52179512@N00'],['flickr_user','3n'],['delicious_user','3n'],['lastfm_user','3n']].each(function(u){
+		var passed_in = params()[u[0]]
+		_3n[u[0]] = ((_3n.global_user && !passed_in) || passed_in === '') ? '' : (passed_in || u[1])
 	})
 }
 
@@ -365,7 +371,8 @@ window.addEvent('domready', function(){
 			.get_data()
 	});	
 	
-	_3n.delicious_tags.split('+').each(function(tag){
+	_3n.delicious_tags = params()['delicious_tags'] || 'humor-awesome'
+	_3n.delicious_tags.split('-').each(function(tag){
 		new Delicious(tag)
 			.addEvent('dataReady', function(f){ $('main').adopt( f.to_cells()) })
 			.get_data()
