@@ -121,9 +121,9 @@ var Flickr = new Class({
 	site_name  : "flickr",
 	nombre     : "SEEING",
 	json_url   : "http://api.flickr.com/services/feeds/photos_public.gne",
-	web_source : "http://www.flickr.com/photos/" + (_3n.global_user || _3n.flickr_name),
+	web_source : "http://www.flickr.com/photos/" + current_user('flickr'),
 	json_opts  : { globalFunction : 'jsonFlickrFeed',
-								 data: { id     : _3n.flickr_user,
+								 data: { id     : _3n.flickr_id,
 												 lang   : "en-us",
 									       format : 'json' } },
 	
@@ -162,8 +162,8 @@ var Twitter = new Class({
 	site_name  : "twitter",
 	nombre     : "SAYING",
 	json_url   : "http://search.twitter.com/search.json",
-	web_source : "http://www.twitter.com/" + (_3n.global_user || _3n.twitter_user),
-	json_opts  : { data: { q : "from:" + (_3n.global_user || _3n.twitter_user) } },
+	web_source : "http://www.twitter.com/" + current_user('twitter'),
+	json_opts  : { data: { q : "from:" + current_user('twitter') } },
   
   initialize: function(){
 		return this.parent()
@@ -199,9 +199,9 @@ var LastFM = new Class({
 	site_name  : "lastfm",
 	nombre     : "HEARING",
 	json_url   : "http://lastfm-api-ext.appspot.com/2.0/",
-	web_source : "http://www.last.fm/user/" + (_3n.global_user || _3n.lastfm_user),
+	web_source : "http://www.last.fm/user/" + current_user('lastfm'),
 	json_opts  : { data : { method  : 'user.getRecentTracks',
-	 												user    : _3n.global_user || _3n.lastfm_user,
+	 												user    : current_user('lastfm'),
 													api_key : 'b25b959554ed76058ac220b7b2e0a026',
 													limit   : 100,
 													outtype : 'js' } },
@@ -257,13 +257,13 @@ var Delicious = new Class({
 	Extends: Model,
 	
 	site_name  : "delicious",
-	json_opts  : { data: { q : "from:" + (_3n.global_user || _3n.twitter_user) } },
+	jsonp_opts : {data: { count: 20 }},
   
   initialize: function(tag){
 		this.tag = tag
 		this.nombre = tag.toUpperCase()
-		this.json_url = "http://feeds.delicious.com/v2/json/" + (_3n.global_user || _3n.delicious_user) + "/" + this.tag
-		this.web_source = "http://www.delicious.com/" + (_3n.global_user || _3n.delicious_user) + "/" + this.tag
+		this.json_url = "http://feeds.delicious.com/v2/json/" + current_user('delicious') + "/" + this.tag
+		this.web_source = "http://www.delicious.com/" + current_user('delicious') + "/" + this.tag
 		return this.parent()
   },
 
@@ -299,8 +299,12 @@ var Delicious = new Class({
 	}	
 })
 
+function current_user(site){
+	return _3n.global_user || _3n[site + '_user']
+}
+
 function get_user_names(){
-	[['global_user',null],['twitter_user','3n'],['flickr_user','52179512@N00'],['flickr_name','3n'],['delicious_user','3n'],['lastfm_user','3n'],['delicious_tags','humor+awesome']].each(function(u){
+	[['global_user',null],['twitter_user','3n'],['flickr_id','52179512@N00'],['flickr_user','3n'],['delicious_user','3n'],['lastfm_user','3n'],['delicious_tags','humor+awesome']].each(function(u){
 		_3n[u[0]] = params()[u[0]] || u[1]
 	})
 }
