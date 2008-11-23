@@ -112,12 +112,12 @@ var Model = new Class({
 	
 	to_cells: function(limit){	
 		var limit = limit || 100	
-		return [this.title_elem].combine(this.db.map(function(row){ 
-			var cell = this._to_cell.apply(row)
-			cell.element.hasClass('double-wide') ? limit -= 2 : --limit
-			if (limit > 0) return cell.to_html()
-		}.bind(this)).flatten())
-		return [this.title_elem].combine(this.db.map(function(row){ return this._to_cell.apply(row).to_html() })).first(limit||100)
+		// return [this.title_elem].combine(this.db.map(function(row){ 
+		// 	var cell = this._to_cell.apply(row)
+		// 	cell.element.hasClass('double-wide') ? limit -= 2 : --limit
+		// 	if (limit > 0) return cell.to_html()
+		// }.bind(this)).flatten())
+		return [this.title_elem].combine(this.db.map(function(row){ return this._to_cell.apply(row).to_html() }.bind(this))).first(limit||100)
 	},
 	
 	current_user: function(){
