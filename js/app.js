@@ -82,6 +82,7 @@ var ImageCell = new Class({
 	
 	to_html: function(){
 		this.html.on_has_width(function(){ 
+			// console.log(this.getWidth())
 			this.setStyle('display','block').thumbnail(140,140)
 		}.bind(this.html))
 		
@@ -347,12 +348,12 @@ var Grid = new Class({
 	},
 	
 	handle_model: function(model){		
-		var finished_models = this.buckets[model.bucket].filter(function(m){ return m.cells })
+		var finished_models = this.buckets.flatten().filter(function(m){ return m.cells })
 		var injected = false
 		
 		if (finished_models.length > 0){			
 			finished_models.each(function(fm){
-				if (fm.sort_by('created_on').first().created_on < model.sort_by('created_on').first().created_on && fm.bucket <= model.bucket){
+				if (model.bucket < fm.bucket || (fm.sort_by('created_on').first().created_on < model.sort_by('created_on').first().created_on && fm.bucket <= model.bucket)){
 					if (!model.cells) model.to_cells(model.initial_limit).each(function(cell){ cell.inject(fm.cells.first(),'before') })
 					injected = true
 				}
