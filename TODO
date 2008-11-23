@@ -4,7 +4,7 @@ click and drag on logo to start spinning (like bottle) or clic and pull, then le
 
 add last.fm artist photos
 
-remembering last seen item per feed and highlighting new ones. 
+remembering last seen item per feed and highlighting new ones. property should be on db.row
 on iphone maybe only showing new ones
 
 bff proxy for each cell
@@ -17,7 +17,7 @@ Showing only grid cells a few with UI for adding more
 
 last_fm track links should have some hover effect. same with all the other links. 
 
-global || user => helper current_user('flickr')
+
 
 
 
