@@ -253,115 +253,50 @@ var LastFM = new Class({
 
 })
 
-
-var LastFMGrid = new Class({
-  Extends: Model,
-  initialize: function(data){
-    return this.parent(data)
-  },
-  
-  view: function(data){
-		var tmp = []
-		var data = data.recenttracks
-		
-		for (var i=0; i < data.length; i++){
-			var artist = data[i].artist.name
-			var track  = data[i].name
-			var html   = "<span class='artist'>" + artist + "</span> <a class='track' href='" + data[i].url + "'>" + track + "</span>"
-
-			if (i > 0 && data[i-1].artist.name === artist ){
-				if (prev_cell) {
-					prev_cell.html += "<span class='track'>, " + track + "</span>"
-					prev_cell.options.main_class = 'double-wide'
-					prev_cell.update_element()
-				}
-			} else {
-				var prev_cell = new Cell(html, {
-					'custom_class' : 'text lastfm-song',
-					'created_on'	 : Date.parse(data[i].date.text).decrement('hour',8)
-				})
-				tmp.push(prev_cell)
-			}
-		}
-		
-		return tmp
-  }
-})
-
-var DeliciousGrid = new Class({
-	Extends: Model,
-	initialize: function(data){
-		return this.parent(data)
-	},
-	
-	view: function(data){
-		return data.map(function(bookmark,i){
-			var html = new Element('a', {html:bookmark.d, href:bookmark.u})
-			
-			if (bookmark.u.test(/png|gif|jpg|jpeg|bmp|svg/i)) { // todo put in brawndo
-			  return new ImageCell(bookmark.u, {
-			    'title'        : bookmark.d,
-  				'created_on'	 : Date.parse(bookmark.dt),
-  				'source'			 : bookmark.u
-  			})
-			} else {
-			 	return new Cell(html, {
-  				'main_class'	 : (bookmark.d.length > 90) ? 'double-wide' : 'single-wide',
-  				'custom_class' : 'delicious ' + (i==0 ? 'first' : ''),
-  				'created_on'	 : Date.parse(bookmark.dt),
-  				'source'			 : bookmark.u
-  			}) 
-			}
-		})
-	}
-})
-
-
-
-var Controller = new Class({
-	Implements: Options,
-	options : {
-		limit : 100,
-		jsonp_opts : {},
-		bucket : 0
-	},
-	initialize: function(url, nombre, link_href, model, options){
-		this.setOptions(options)
-		
-		this.url        = url
-		this.nombre     = nombre
-		this.link_href  = link_href
-		this.model      = model
-		
-		// this.title_elem = new Element('div', {
-		// 	'class' : 'cell single-wide grid-title ' + this.options.site_name, 
-		// 	'html'  : this.nombre
-		// }).act_like_link(this.link_href)
-		
-		// this.jsonp_opts.onComplete = this.options.jsonp_opts.onComplete || function(r){
-			// this.grid = new model(r)
-			// $('main').adopt( this.title_elem, this.grid.to_html(this.options.limit) )
-		// }.bind(this)
-		
-		this.get_data()
-		
-		return this
-	},
-	
-	get_data: function(oc){
-		new JsonP(this.url, $merge({abortAfter:1500,onComplete:oc},this.options.jsonp_opts)).request()
-	}
-})
-
 var Delicious = new Class({
-	Extends: Controller,
-	initialize: function(tag){
-		var url = "http://feeds.delicious.com/v2/json/" + (_3n.global_user || _3n.delicious_user) + "/" + tag
-		var nombre = tag.toUpperCase()
-    var href   = "http://www.delicious.com/" + (_3n.global_user || _3n.delicious_user) + "/" + tag
-		
-		return this.parent(url, nombre, href, DeliciousGrid, { jsonp_opts:{data: { count: 20 }},limit : 9, site_name : 'delicious' })
-	}
+	Extends: Model,
+	
+	site_name  : "delicious",
+	json_opts  : { data: { q : "from:" + (_3n.global_user || _3n.twitter_user) } },
+  
+  initialize: function(tag){
+		this.tag = tag
+		this.nombre = tag.toUpperCase()
+		this.json_url = "http://feeds.delicious.com/v2/json/" + (_3n.global_user || _3n.delicious_user) + "/" + this.tag
+		this.web_source = "http://www.delicious.com/" + (_3n.global_user || _3n.delicious_user) + "/" + this.tag
+		return this.parent()
+  },
+
+	process_data: function(json){
+		this.db = json.map(function(json_item){
+			return {
+				href        : json_item.u,
+				created_on  : Date.parse(json_item.dt),
+				text        : json_item.d,
+				html        : new Element('a', {html:json_item.d, href:json_item.u})
+			}
+	  })
+	
+		this.fireEvent('dataReady', this)		
+		return this.db
+	},					
+	
+	_to_cell: function(){
+		if (this.href.test(/png|gif|jpg|jpeg|bmp|svg/i)) { // todo put in brawndo
+		  return new ImageCell(this.href, {
+		    'title'        : this.text,
+				'created_on'	 : this.created_on,
+				'source'			 : this.href
+			})
+		} else {
+		 	return new Cell(this.html, {
+				'main_class'	 : (this.text.length > 90) ? 'double-wide' : 'single-wide',
+				'custom_class' : 'delicious',
+				'created_on'	 : this.created_on,
+				'source'			 : this.href
+			}) 
+		}
+	}	
 })
 
 function get_user_names(){
@@ -420,79 +355,19 @@ window.addEvent('domready', function(){
 
 	they_spinnin()
 
-	if (navigator.userAgent.match('iPhone')) document.body.addClass('iphone')
+	if (navigator.userAgent.match('iPhone')) document.body.addClass('iphone');
+
+	[Flickr, Twitter, LastFM].each(function(Bone){
+		new Bone()
+			.addEvent('dataReady', function(f){ $('main').adopt( f.to_cells()) })
+			.get_data()
+	});	
 	
-	new Flickr()
-		.addEvent('dataReady', function(f){ $('main').adopt( f.to_cells()) })
-		.get_data()
-		
-	new Twitter()
-		.addEvent('dataReady', function(f){ $('main').adopt( f.to_cells()) })
-		.get_data()	
-	
-	new LastFM()
-		.addEvent('dataReady', function(f){ $('main').adopt( f.to_cells()) })
-		.get_data()			
-	
-	// new App([
-	// 
-	// 	new Controller (
-	// 		"http://api.flickr.com/services/feeds/photos_public.gne", 
-	// 		"SEEING",
-	// 		"http://www.flickr.com/photos/" + (_3n.global_user || _3n.flickr_name),
-	// 		FlickrGrid, {
-	// 			jsonp_opts : {
-	// 				globalFunction : 'jsonFlickrFeed',
-	// 				data: {
-	// 					id 	 	 : _3n.global_user || _3n.flickr_user,
-	// 					lang 	 : "en-us",
-	// 					format : 'json'
-	// 				}
-	// 			},
-	// 			limit     : 14, 
-	// 			site_name : 'flickr'
-	// 		}
-	// 	),
-	// 
-	// 	new Controller (
-	// 		"http://search.twitter.com/search.json", 
-	// 		"SAYING",
-	// 		"http://www.twitter.com/" + (_3n.global_user || _3n.twitter_user),
-	// 		TwitterGrid, {
-	// 			jsonp_opts : { 
-	// 				data: {
-	// 					q : "from:" + (_3n.global_user || _3n.twitter_user)
-	// 				}
-	// 			},
-	// 			limit      : 19, 
-	// 			site_name  : 'twitter'
-	// 		}
-	// 	),
-	// 
-	// 	_3n.delicious_tags.split('+').map(function(tag){
-	// 		new Delicious(tag)
-	// 	}),
-	// 
-	// 	new Controller (
-	// 		"http://lastfm-api-ext.appspot.com/2.0/",
-	// 	  "HEARING",
-	// 	  "http://www.last.fm/user/3N",
-	// 	  LastFMGrid, {
-	// 			jsonp_opts:{ 
-	// 				data: {
-	// 					method  : 'user.getRecentTracks',
-	// 					user    : _3n.global_user || _3n.lastfm_user,
-	// 					api_key : 'b25b959554ed76058ac220b7b2e0a026',
-	// 					limit   : 100,
-	// 					outtype : 'js'
-	// 				} 
-	// 			},
-	// 			limit     : 9, 
-	// 			site_name : 'lastfm' 
-	// 		}
-	// 	)
-	// 	
-	// ], $('main'))	
+	_3n.delicious_tags.split('+').each(function(tag){
+		new Delicious(tag)
+			.addEvent('dataReady', function(f){ $('main').adopt( f.to_cells()) })
+			.get_data()
+	})
 	
   if ( !document.location.href.match(/~ian/) ) goog()
 	
