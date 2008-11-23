@@ -82,8 +82,7 @@ var ImageCell = new Class({
 	
 	to_html: function(){
 		this.html.on_has_width(function(){ 
-			// console.log(this.getWidth())
-			this.setStyle('display','block').thumbnail(140,140)
+			this.setStyle('display','block').thumbnail.delay(1, this, [140,140])
 		}.bind(this.html))
 		
 		return this.parent()
