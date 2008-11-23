@@ -353,7 +353,7 @@ var Grid = new Class({
 		
 		if (finished_models.length > 0){			
 			finished_models.each(function(fm){
-				if (model.bucket < fm.bucket || (fm.sort_by('created_on').first().created_on < model.sort_by('created_on').first().created_on && fm.bucket <= model.bucket)){
+				if (model.bucket < fm.bucket || (fm.sort_by('created_on').first().created_on < model.sort_by('created_on').first().created_on && fm.bucket >= model.bucket)){
 					if (!model.cells) model.to_cells(model.initial_limit).each(function(cell){ cell.inject(fm.cells.first(),'before') })
 					injected = true
 				}
