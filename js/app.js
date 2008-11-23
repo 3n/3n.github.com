@@ -117,6 +117,7 @@ var Model = new Class({
 			cell.element.hasClass('double-wide') ? limit -= 2 : --limit
 			if (limit > 0) return cell.to_html()
 		}.bind(this)).flatten())
+		return [this.title_elem].combine(this.db.map(function(row){ return this._to_cell.apply(row).to_html() })).first(limit||100)
 	},
 	
 	current_user: function(){
@@ -244,7 +245,7 @@ var LastFM = new Class({
 	
 	to_cells: function(limit){		
 		var tmp = []
-		var limit = limit || limit
+		var limit = limit || 100
 		
 		for (var i=0; i < this.db.length; i++){
 			if (i > 0 && this.db[i-1].artist === this.db[i].artist ){
@@ -259,11 +260,7 @@ var LastFM = new Class({
 			}
 		}
 		
-		// return [this.title_elem].combine(tmp.map(function(t){ return t.to_html() })).first(limit||100)
-		return [this.title_elem].combine(tmp.map(function(cell){ 
-			cell.element.hasClass('double-wide') ? limit -= 2 : --limit
-			if (limit > 0) return cell.to_html()
-		}.bind(this)).flatten())
+		return [this.title_elem].combine(tmp.map(function(t){ return t.to_html() })).first(limit||100)
 	}
 
 })
