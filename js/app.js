@@ -346,14 +346,14 @@ var Grid = new Class({
 		}, this)
 	},
 	
-	handle_model: function(model){
+	handle_model: function(model){		
 		var finished_models = this.buckets[model.bucket].filter(function(m){ return m.cells })
 		var injected = false
 		
 		if (finished_models.length > 0){			
 			finished_models.each(function(fm){
-				if (fm.sort_by('created_on').first().created_on < model.sort_by('created_on').first().created_on){
-					model.to_cells(model.initial_limit).each(function(cell){ cell.inject(fm.cells.first(),'before') })
+				if (fm.sort_by('created_on').first().created_on < model.sort_by('created_on').first().created_on && fm.bucket <= model.bucket){
+					if (!model.cells) model.to_cells(model.initial_limit).each(function(cell){ cell.inject(fm.cells.first(),'before') })
 					injected = true
 				}
 			})
