@@ -111,13 +111,20 @@ var Model = new Class({
 		return this
 	},
 	
+	sort_by: function(field){
+		return this.db.sort(function(a,b){
+			a[field] - b[field]
+		})
+	},
+	
 	to_cells: function(limit){	
 		var limit = limit || 100	
-		return [this.title_elem].combine(this.db.map(function(row){ 
+		this.cells = [this.title_elem].combine(this.db.map(function(row){ 
 			var cell = this._to_cell.apply(row)
 			cell.element.hasClass('double-wide') ? limit -= 2 : --limit
 			if (limit > 0) return cell.to_html()
 		}.bind(this)).flatten())
+		return this.cells
 		// return [this.title_elem].combine(this.db.map(function(row){ return this._to_cell.apply(row).to_html() }.bind(this))).first(limit||100)
 	},
 	
@@ -177,7 +184,7 @@ var Twitter = new Class({
 	json_url   : "http://search.twitter.com/search.json",
 	web_source : "http://www.twitter.com/" + current_user('twitter'),
 	json_opts  : { data: { q : "from:" + current_user('twitter') } },
- 	initial_limit : 20,	
+ 	initial_limit : 15,	
   
   initialize: function(){
 		return this.parent()
@@ -247,7 +254,7 @@ var LastFM = new Class({
 		})
 	},
 	
-	to_cells: function(limit){		
+	to_cells: function(limit){	
 		var tmp = []
 		var limit = limit || 100
 		
@@ -265,10 +272,12 @@ var LastFM = new Class({
 		}
 		
 		// return [this.title_elem].combine(tmp.map(function(t){ return t.to_html() })).first(limit||100)
-		return [this.title_elem].combine(tmp.map(function(cell){ 
+		this.cells = [this.title_elem].combine(tmp.map(function(cell){ 
 			cell.element.hasClass('double-wide') ? limit -= 2 : --limit
 			if (limit > 0) return cell.to_html()
 		}.bind(this)).flatten())
+		
+		return this.cells
 	}
 
 })
@@ -278,7 +287,7 @@ var Delicious = new Class({
 	
 	site_name  : "delicious",
 	jsonp_opts : {data: { count: 20 }},
-	initial_limit : 5,														
+	initial_limit : 10,														
   
   initialize: function(tag){
 		this.tag = tag
@@ -320,6 +329,7 @@ var Delicious = new Class({
 	}	
 })
 
+// both methods in here should be renamed to represent their sort order
 var Grid = new Class({
 	initialize: function(elem, buckets){
 		this.element = $(elem)
@@ -337,7 +347,19 @@ var Grid = new Class({
 	},
 	
 	handle_model: function(model){
-		this.element.adopt( model.to_cells(model.initial_limit))
+		var finished_models = this.buckets[model.bucket].filter(function(m){ return m.cells })
+		var injected = false
+		
+		if (finished_models.length > 0){			
+			finished_models.each(function(fm){
+				if (fm.sort_by('created_on').first().created_on < model.sort_by('created_on').first().created_on){
+					model.to_cells(model.initial_limit).each(function(cell){ cell.inject(fm.cells.first(),'before') })
+					injected = true
+				}
+			})
+		}
+		
+		if (!injected) this.element.adopt( model.to_cells(model.initial_limit))
 	}
 })
 
