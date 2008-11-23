@@ -118,7 +118,7 @@ h1 {
 .text {
   line-height    : 1.3em;
   letter-spacing : 0.3px;
-  background-color : #F5F5F5;
+  background-color : #F0F0F0;
 }
   .text.single-wide {
     font-size        : 15px;
@@ -175,6 +175,9 @@ h1 {
   }
 
 
+.lastfm-song {
+  cursor:default;
+}
 .lastfm-song .artist {
   font-size:20px !important;
   display:block !important;

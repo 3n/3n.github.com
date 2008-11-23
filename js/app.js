@@ -130,13 +130,14 @@ var Flickr = new Class({
 	Extends: Model,
 	
 	site_name  : "flickr",
-	nombre     : "SEEING",
+	nombre     : "SEEING", 
 	json_url   : "http://api.flickr.com/services/feeds/photos_public.gne",
 	web_source : "http://www.flickr.com/photos/" + current_user('flickr'),
 	json_opts  : { globalFunction : 'jsonFlickrFeed',
 								 data: { id     : _3n.flickr_id,
 												 lang   : "en-us",
 									       format : 'json' } },
+ 	initial_limit : 15,									
 	
 	initialize: function(){
 		if (this.json_opts.data.id === '') this.json_url = null
@@ -176,6 +177,7 @@ var Twitter = new Class({
 	json_url   : "http://search.twitter.com/search.json",
 	web_source : "http://www.twitter.com/" + current_user('twitter'),
 	json_opts  : { data: { q : "from:" + current_user('twitter') } },
+ 	initial_limit : 20,	
   
   initialize: function(){
 		return this.parent()
@@ -217,6 +219,7 @@ var LastFM = new Class({
 													api_key : 'b25b959554ed76058ac220b7b2e0a026',
 													limit   : 100,
 													outtype : 'js' } },
+ 	initial_limit : 10,													
 													
   initialize: function(){
 		return this.parent()
@@ -275,6 +278,7 @@ var Delicious = new Class({
 	
 	site_name  : "delicious",
 	jsonp_opts : {data: { count: 20 }},
+	initial_limit : 5,														
   
   initialize: function(tag){
 		this.tag = tag
@@ -314,6 +318,27 @@ var Delicious = new Class({
 			}) 
 		}
 	}	
+})
+
+var Grid = new Class({
+	initialize: function(elem, buckets){
+		this.element = $(elem)
+		this.buckets = buckets
+	},
+	
+	to_html: function(){
+		this.buckets.each(function(b,i){
+			b.each(function(m){
+				m.bucket = i
+				m.addEvent('dataReady', this.handle_model.bind(this))
+				 .get_data()
+			}, this)
+		}, this)
+	},
+	
+	handle_model: function(model){
+		this.element.adopt( model.to_cells(model.initial_limit))
+	}
 })
 
 function current_user(site){
@@ -376,19 +401,15 @@ window.addEvent('domready', function(){
   document.body.set('html', '<div id="wrapper"><h1 id="title">3N</h1><div id="main"></div></div>')	
 
 	if (navigator.userAgent.match('iPhone')) document.body.addClass('iphone');
-
-	[ [Flickr,15], [Twitter,20], [LastFM,10]].each(function(Bone){
-		new Bone[0]()
-			.addEvent('dataReady', function(f){ $('main').adopt( f.to_cells(Bone[1])) })
-			.get_data()
-	});	
 	
 	_3n.delicious_tags = params()['delicious_tags'] || 'humor-awesome'
-	_3n.delicious_tags.split('-').each(function(tag){
-		new Delicious(tag)
-			.addEvent('dataReady', function(f){ $('main').adopt( f.to_cells(5)) })
-			.get_data()
-	})
+	
+	new Grid('main', [
+		[ new Flickr, 
+		  new Twitter, 
+		  new LastFM ],
+		_3n.delicious_tags.split('-').map(function(tag){ return new Delicious(tag) })
+	]).to_html()
 	
 	if ( Browser.Engine.webkit ) they_spinnin()
   if ( !document.location.href.match(/~ian/) ) goog()
