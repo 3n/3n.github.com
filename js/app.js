@@ -110,8 +110,13 @@ var Model = new Class({
 		).request()
 	},
 	
-	to_cells: function(){		
-		return [this.title_elem].combine(this.db.map(function(row){ return this._to_cell.apply(row).to_html() }.bind(this)))
+	to_cells: function(limit){	
+		var limit = limit || 100	
+		return [this.title_elem].combine(this.db.map(function(row){ 
+			var cell = this._to_cell.apply(row)
+			cell.element.hasClass('double-wide') ? limit -= 2 : --limit
+			if (limit > 0) return cell.to_html()
+		}.bind(this)).flatten())
 	},
 	
 	current_user: function(){
@@ -237,8 +242,9 @@ var LastFM = new Class({
 		})
 	},
 	
-	to_cells: function(){		
+	to_cells: function(limit){		
 		var tmp = []
+		var limit = limit || limit
 		
 		for (var i=0; i < this.db.length; i++){
 			if (i > 0 && this.db[i-1].artist === this.db[i].artist ){
@@ -253,7 +259,11 @@ var LastFM = new Class({
 			}
 		}
 		
-		return [this.title_elem].combine(tmp.map(function(t){ return t.to_html() }))
+		// return [this.title_elem].combine(tmp.map(function(t){ return t.to_html() })).first(limit||100)
+		return [this.title_elem].combine(tmp.map(function(cell){ 
+			cell.element.hasClass('double-wide') ? limit -= 2 : --limit
+			if (limit > 0) return cell.to_html()
+		}.bind(this)).flatten())
 	}
 
 })
@@ -367,14 +377,14 @@ window.addEvent('domready', function(){
 
 	[Flickr, Twitter, LastFM].each(function(Bone){
 		new Bone()
-			.addEvent('dataReady', function(f){ $('main').adopt( f.to_cells()) })
+			.addEvent('dataReady', function(f){ $('main').adopt( f.to_cells(10)) })
 			.get_data()
 	});	
 	
 	_3n.delicious_tags = params()['delicious_tags'] || 'humor-awesome'
 	_3n.delicious_tags.split('-').each(function(tag){
 		new Delicious(tag)
-			.addEvent('dataReady', function(f){ $('main').adopt( f.to_cells()) })
+			.addEvent('dataReady', function(f){ $('main').adopt( f.to_cells(5)) })
 			.get_data()
 	})
 	
