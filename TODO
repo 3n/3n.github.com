@@ -14,15 +14,13 @@ on iphone maybe only showing new ones
 
 bff proxy for each cell
 
-add 'refresh' to each block and whole page
+refresh countdown on hover of each grid_title
 
 add top gradient 
 
 Showing only grid cells a few with UI for adding more
 
 last_fm track links should have some hover effect. same with all the other links. 
-
-cache sort_by method
 
 
 

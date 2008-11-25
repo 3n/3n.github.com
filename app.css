@@ -44,7 +44,7 @@ a {
   color           : #8F9EA8;
 }
   a:hover {
-    color: #658DA8;
+    color: #658DA8;    
   }
 
 
@@ -133,7 +133,10 @@ h1 {
     width            : 280px;
   }
   .text a {
-    letter-spacing : -0.5px;
+/*    letter-spacing : -0.5px;*/
+  }
+  .text a:hover {
+    background-color:#e5e5e5;
   }
 
 .tweet.inverted, .tweet.first {

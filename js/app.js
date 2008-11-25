@@ -241,7 +241,7 @@ var LastFM = new Class({
 				track       : json_item.name,
 				track_url   : json_item.url,
 				artist      : json_item.artist.name,
-				html        : "<span class='artist'>" + json_item.artist.name + "</span> <a class='track' href='" + json_item.url + "'>" + json_item.name + "</span>",
+				html        : "<span class='artist'>" + json_item.artist.name + "</span> <a class='track' href='" + json_item.url + "'>" + json_item.name + "</a>",
 				created_on  : Date.parse(json_item.date.text).decrement('hour',8)
 			}
 	  })
@@ -264,7 +264,7 @@ var LastFM = new Class({
 		for (var i=0; i < this.db.length; i++){
 			if (i > 0 && this.db[i-1].artist === this.db[i].artist ){
 				if (prev_cell) {
-					prev_cell.html += "<span class='track'>, " + this.db[i].track + "</span>"
+					prev_cell.html += "<a class='track' href='" + this.db[i].url + "'>, " + this.db[i].track + "</a>"
 					prev_cell.options.main_class = 'double-wide'
 					prev_cell.update_element()
 				}
