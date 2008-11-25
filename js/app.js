@@ -387,6 +387,11 @@ var FixedNav = new Class({
 		
 		this.set_styles()
 		this.pairs.each(this.add_pair.bind(this))
+		
+		this.element.addEvent('click', function(e){
+			e.stopPropagation()
+			this.bff.scroll_to(1/10)
+		}.bind(this))
 	}, 
 	
 	set_styles: function(){
@@ -401,7 +406,8 @@ var FixedNav = new Class({
 		var nav_elem = pair[0]
 		var bff_elem = pair[1]
 		
-		nav_elem.addEvent('click', function(){
+		nav_elem.addEvent('click', function(e){
+			e.stopPropagation()
 			bff_elem.scroll_to(40)
 		})
 	}
