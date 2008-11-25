@@ -95,12 +95,6 @@ var Model = new Class({
 	initialize: function(){
 		this.db = []
 		
-		// todo this shouldn't be in here
-		this.title_elem = new Element('div', {
-			'class' : 'cell single-wide grid-title ' + this.site_name, 
-			'html'  : this.nombre
-		}).act_like_link(this.web_source)
-		
 		return this
 	},
 	
@@ -211,9 +205,6 @@ var Twitter = new Class({
 		return this.db
 	},					
 	
-	// to_cells: function(){
-	// 	return this.parent().reverse()
-	// },
 	_to_cell: function(){
 		return new Cell(this.html, { 
 			'main_class'	 : (this.title.length > 90) ? 'double-wide' : 'single-wide',
@@ -363,6 +354,10 @@ var Grid = new Class({
 		var injected = false
 
 		model.nav = model.nav || new Element('li', {html:model.nombre, 'class':model.site_name})
+		model.title_elem = model.title_elem || new Element('div', {
+			'class' : 'cell single-wide grid-title ' + model.site_name, 
+			'html'  : model.nombre
+		}).act_like_link(model.web_source)
 
 		if (finished_models.length > 0){
 			finished_models.each(function(fm){
