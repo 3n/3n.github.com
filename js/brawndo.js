@@ -18,7 +18,7 @@ Inspiration:
 
 var MooTools = {
 	'version': '1.2.1',
-	'build': 'af51a878d292eb43575c4a9eba438dd3774a76fa'
+	'build': 'bf4082e4d4a7d8eeb23a036344e7288d93132ba4'
 };
 
 var Native = function(options){
@@ -4111,6 +4111,22 @@ Number.implement({
 });
 
 /*
+Script: Function.BrawndoExtras.js
+	Extends the Function class (using .implement) with various methods.
+*/
+
+Function.implement({
+	cache: function(){
+		this.brawndo_cache = {}
+		return function(){
+			var key = $A(arguments).join('+')
+			this.brawndo_cache[key] = this.brawndo_cache[key] || this.apply(this, arguments)
+			return this.brawndo_cache[key]
+		}.bind(this)
+	}
+})
+
+/*
 Script: Element.BrawndoExtras.js
 	Extends the Element class (using .implement) with various methods.
 */
@@ -4143,6 +4159,7 @@ Element.implement({
 	act_like_link: function(alt_href){
 		var href = alt_href || this.get('href')
 		this.addEvent('click', function(e){
+			if (!e.event.target) return
 			if (e.event.target.get('tag') == 'a') return 
 			e.stop()
 			if (e.meta)
@@ -4333,6 +4350,11 @@ Array.implement({
 	cycle: function(index){
 		return this[index % this.length]
 	},
+	inject: function(fun){
+		var memo = null
+		this.each(function(x){ memo = fun(x,memo) })
+		return memo
+	},
 	randomize: function() {
 	  var i = this.length;
     if ( i == 0 ) return false;
@@ -4447,9 +4469,10 @@ CSSTransitions.Tween = new Class({
 	options : {
 		duration					: 500,
 		transition				: 'linear',
-		initial_delay 		: 1,
+		initial_delay 		: 0,
 		is_transform      : false,
-		clear_style_after : false
+		clear_style_after : false,
+		fast							: false
 	},
 	
 	initialize: function(element, options){
@@ -4469,26 +4492,29 @@ CSSTransitions.Tween = new Class({
 			to = from;
 			if (!this.options.is_transform) from = this.element.getStyle(this.options.property);
 		}
-		if (to == 0)   to = 0.0001
-		if (from == 0) from = 0.0001
 		
 		return {from: from, to: to};
 	},
 	
 	start: function(from, to){
-		this.fireEvent('onStart')
-		this.prepared = this.prepare(from, to)
-		this.transition_string = (this.options.is_transform ? '-webkit-transform' : this.options.property) + ' ' + (this.options.duration/1000) + 's ' + this.options.transition
-		
-		if ($defined(from) && !this.options.is_transform) this.element.setStyle(this.options.property, this.prepared.from)
+		this.prepared = this.prepare(from, to)	
 
-		this.element.setStyle.delay(this.options.initial_delay, this.element, ['-webkit-transition', this.transition_string])
+		if (!this.options.fast){
+			this.fireEvent('onStart')														
+			if ($defined(from) && !this.options.is_transform) this.element.setStyle(this.options.property, this.prepared.from)
+			this.transition_string = (this.options.is_transform ? '-webkit-transform' : this.options.property) 
+																+ ' ' 
+																+ (this.options.duration === 0 ? '' : this.options.duration/1000 + 's ' ) 															
+																+ this.options.transition			
+			this.element.setStyle.delay(this.options.initial_delay, this.element, ['-webkit-transition', this.transition_string])
+		}
+
 		if (this.options.is_transform)
 			this.element.setStyle.delay(this.options.initial_delay, this.element, ['-webkit-transform', this.options.property + '(' + this.prepared.to + ')'])
 		else
 			this.element.setStyle.delay(this.options.initial_delay, this.element, [this.options.property, this.prepared.to])
 		
-		this.done.delay(this.options.duration + this.options.initial_delay, this)
+		if (!this.options.fast) this.done.delay(this.options.duration + this.options.initial_delay, this)
 		
 		return this
 	}, 
@@ -4514,13 +4540,29 @@ Element.implement({
 	
 	rotate: function(degs, opts){
 		if (!$chk(degs)) var degs = 360
-		if (degs==0) degs = 0.0001
+		var opts = opts || {}
 
-		new CSSTransitions.Tween(this, $merge({
+		var cache_key = 'rotate' + opts.duration + opts.transition + 'cache'
+		this[cache_key] = this[cache_key] || new CSSTransitions.Tween(this, $merge({
 			property     : 'rotate',
 			is_transform : true,
 			duration     : 1000
-		}, opts || {})).start(degs + 'deg')		
+		}, opts))
+		
+		this[cache_key].start(degs + 'deg')
+	},
+	
+	translate: function(axis, val, opts){
+		var opts = opts || {}		
+		var cache_key = 'translate' + axis + opts.duration + opts.transition + 'cache'
+		
+		this[cache_key] = this[cache_key] || new CSSTransitions.Tween(this, $merge({
+			property     : 'translate' + axis,
+			is_transform : true,
+			duration     : 1000
+		}, opts))
+		
+		this[cache_key].start(val + 'px')
 	},
 	
 	get_transform_int: function(){
