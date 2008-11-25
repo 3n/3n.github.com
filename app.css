@@ -111,11 +111,19 @@ h1 {
   width            : 120px !important;
   letter-spacing   : -1.5px;
 }
+.show-all { display : none; }
+.grid-title:hover .show-all { display:block; }
 
 .flickr    { background-color: #ED3B8B; }
 .twitter   { background-color: #3CBBC7; }  
 .delicious { background-color: #2F6DBA; }  
-.lastfm    { background-color: #ED3B3B; }  
+.lastfm    { background-color: #ED3B3B; } 
+  
+  .flickr    .show-all { color: #FF66AB; }
+  .twitter   .show-all { color: #5CDAE6; }  
+  .delicious .show-all { color: #5C9AE6; }  
+  .lastfm    .show-all { color: #FF6666; }
+ 
 
 #grid-nav {
   padding-top : 20px;
