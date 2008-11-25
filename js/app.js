@@ -350,6 +350,7 @@ var Grid = new Class({
 	},
 	
 	handle_model: function(model){	
+		if (model.db.length === 0) return
 		var finished_models = this.buckets.flatten().filter(function(m){ return m.cells })
 		var injected = false
 
@@ -407,7 +408,7 @@ var FixedNav = new Class({
 })
 
 function current_user(site){
-	return _3n.global_user || _3n[site + '_user']
+	return _3n[site + '_user'] || _3n.global_user
 }
 
 function get_user_names(){
