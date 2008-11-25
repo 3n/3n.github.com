@@ -361,13 +361,15 @@ var Grid = new Class({
 	handle_model: function(model){	
 		var finished_models = this.buckets.flatten().filter(function(m){ return m.cells })
 		var injected = false
-		
+
+		model.nav = model.nav || new Element('li', {html:model.nombre, 'class':model.site_name})
+
 		if (finished_models.length > 0){
 			finished_models.each(function(fm){
 				if (model.bucket < fm.bucket || (fm.sort_by('created_on').first().created_on < model.sort_by('created_on').first().created_on && fm.bucket >= model.bucket)){
 					if (!model.cells){						
-						model.to_cells(model.initial_limit).reverse().each(function(cell){ cell.inject(this.element,'top') }, this)
-						this.nav.add_pair( [new Element('li', {html:model.nombre, 'class':model.site_name}).inject(this.nav.element, 'top'), model.title_elem] )
+						model.to_cells(model.initial_limit).each(function(cell){ cell.inject(fm.title_elem,'before') }, this)
+						this.nav.add_pair( [model.nav.inject(fm.nav, 'before'), model.title_elem] )
 					}						
 					injected = true
 				}
@@ -376,7 +378,7 @@ var Grid = new Class({
 		
 		if (!injected) {
 			this.element.adopt( model.to_cells(model.initial_limit))
-			this.nav.add_pair( [new Element('li', {html:model.nombre, 'class':model.site_name}).inject(this.nav.element, 'bottom'), model.title_elem] )
+			this.nav.add_pair( [model.nav.inject(this.nav.element, 'bottom'), model.title_elem] )
 		}
 	}
 })
