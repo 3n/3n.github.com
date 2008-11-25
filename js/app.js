@@ -112,6 +112,9 @@ var Model = new Class({
 	},
 	
 	sort_by: function(field){
+		return this._sort_by.cache(this)(field)
+	},
+	_sort_by: function(field){
 		return this.db.sort(function(a,b){
 			a[field] - b[field]
 		})
@@ -346,17 +349,19 @@ var Grid = new Class({
 		}, this)
 	},
 	
-	handle_model: function(model){		
+	handle_model: function(model){	
 		var finished_models = this.buckets.flatten().filter(function(m){ return m.cells })
 		var injected = false
 		
-		if (finished_models.length > 0){			
+		if (finished_models.length > 0){
 			finished_models.each(function(fm){
 				if (model.bucket < fm.bucket || (fm.sort_by('created_on').first().created_on < model.sort_by('created_on').first().created_on && fm.bucket >= model.bucket)){
-					if (!model.cells) model.to_cells(model.initial_limit).each(function(cell){ cell.inject(fm.cells.first(),'before') })
+					if (!model.cells) 
+						model.to_cells(model.initial_limit).reverse().each(function(cell){ cell.inject(this.element,'top') }, this)
+						
 					injected = true
 				}
-			})
+			}, this)
 		}
 		
 		if (!injected) this.element.adopt( model.to_cells(model.initial_limit))
@@ -428,8 +433,8 @@ window.addEvent('domready', function(){
 	
 	new Grid('main', [
 		[ new Flickr, 
-		  new Twitter, 
-		  new LastFM ],
+		  new Twitter ],
+		[ new LastFM  ],
 		_3n.delicious_tags.split('-').map(function(tag){ return new Delicious(tag) })
 	]).to_html()
 	

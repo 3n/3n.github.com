@@ -18,7 +18,7 @@ Inspiration:
 
 var MooTools = {
 	'version': '1.2.1',
-	'build': 'bf4082e4d4a7d8eeb23a036344e7288d93132ba4'
+	'build': '3a3a060aa500f4eacd6dc1b80db6921d6c2db1d3'
 };
 
 var Native = function(options){
@@ -4116,11 +4116,11 @@ Script: Function.BrawndoExtras.js
 */
 
 Function.implement({
-	cache: function(){
+	cache: function(binding){
 		this.brawndo_cache = {}
 		return function(){
 			var key = $A(arguments).join('+')
-			this.brawndo_cache[key] = this.brawndo_cache[key] || this.apply(this, arguments)
+			this.brawndo_cache[key] = this.brawndo_cache[key] || this.apply((binding || this), arguments)
 			return this.brawndo_cache[key]
 		}.bind(this)
 	}
