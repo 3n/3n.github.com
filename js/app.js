@@ -118,7 +118,7 @@ var Model = new Class({
 	to_cells: function(limit){
 		var limit = limit || 100
 		this.cells = [this.title_elem].combine(this.db.map(function(row){ 
-			if (limit > 0) {
+			if (limit > 1) {
 				var cell = this._to_cell.apply(row)
 				cell.element.hasClass('double-wide') ? limit -= 2 : --limit
 				return cell.to_html()

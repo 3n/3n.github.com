@@ -112,11 +112,11 @@ h1 {
   letter-spacing   : -1.5px;
 }
 
-.flickr    { background-color: #ED4792; }
+.flickr    { background-color: #ED3B8B; }
 .twitter   { background-color: #3CBBC7; }  
-.delicious { background-color: #3872BA; }  
-.lastfm    { background-color: #ED4747; }  
-  
+.delicious { background-color: #2F6DBA; }  
+.lastfm    { background-color: #ED3B3B; }  
+
 #grid-nav {
   padding-top : 20px;
   opacity     : 0.2;
@@ -214,6 +214,9 @@ h1 {
 }
 .lastfm-song.double-wide .track {
   font-size:12px;
+}
+.lastfm-song.double-wide .artist {
+  margin-top:3px;
 }
 .lastfm-song.double-wide {
   line-height:0.7em;
