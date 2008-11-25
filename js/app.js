@@ -95,6 +95,7 @@ var Model = new Class({
 	initialize: function(){
 		this.db = []
 		
+		// todo this shouldn't be in here
 		this.title_elem = new Element('div', {
 			'class' : 'cell single-wide grid-title ' + this.site_name, 
 			'html'  : this.nombre
@@ -120,13 +121,16 @@ var Model = new Class({
 		})
 	},
 	
-	to_cells: function(limit){	
-		var limit = limit || 100	
+	to_cells: function(limit){
+		var limit = limit || 100
 		this.cells = [this.title_elem].combine(this.db.map(function(row){ 
-			var cell = this._to_cell.apply(row)
-			cell.element.hasClass('double-wide') ? limit -= 2 : --limit
-			if (limit > 0) return cell.to_html()
-		}.bind(this)).flatten())
+			if (limit > 0) {
+				var cell = this._to_cell.apply(row)
+				cell.element.hasClass('double-wide') ? limit -= 2 : --limit
+				return cell.to_html()
+			}
+		}.bind(this))).flatten()
+		
 		return this.cells
 		// return [this.title_elem].combine(this.db.map(function(row){ return this._to_cell.apply(row).to_html() }.bind(this))).first(limit||100)
 	},
@@ -207,6 +211,9 @@ var Twitter = new Class({
 		return this.db
 	},					
 	
+	// to_cells: function(){
+	// 	return this.parent().reverse()
+	// },
 	_to_cell: function(){
 		return new Cell(this.html, { 
 			'main_class'	 : (this.title.length > 90) ? 'double-wide' : 'single-wide',
@@ -324,7 +331,6 @@ var Delicious = new Class({
 		} else {
 		 	return new Cell(this.html, {
 				'main_class'	 : (this.text.length > 90) ? 'double-wide' : 'single-wide',
-				'custom_class' : 'delicious',
 				'created_on'	 : this.created_on,
 				'source'			 : this.href
 			}) 
@@ -337,6 +343,9 @@ var Grid = new Class({
 	initialize: function(elem, buckets){
 		this.element = $(elem)
 		this.buckets = buckets
+		
+		
+		this.nav = new FixedNav(new Element('ul', {'id':'grid-nav'}).inject(this.element, 'before'), this.element)
 	},
 	
 	to_html: function(){
@@ -356,15 +365,47 @@ var Grid = new Class({
 		if (finished_models.length > 0){
 			finished_models.each(function(fm){
 				if (model.bucket < fm.bucket || (fm.sort_by('created_on').first().created_on < model.sort_by('created_on').first().created_on && fm.bucket >= model.bucket)){
-					if (!model.cells) 
+					if (!model.cells){						
 						model.to_cells(model.initial_limit).reverse().each(function(cell){ cell.inject(this.element,'top') }, this)
-						
+						this.nav.add_pair( [new Element('li', {html:model.nombre, 'class':model.site_name}).inject(this.nav.element, 'top'), model.title_elem] )
+					}						
 					injected = true
 				}
 			}, this)
 		}
 		
-		if (!injected) this.element.adopt( model.to_cells(model.initial_limit))
+		if (!injected) {
+			this.element.adopt( model.to_cells(model.initial_limit))
+			this.nav.add_pair( [new Element('li', {html:model.nombre, 'class':model.site_name}).inject(this.nav.element, 'bottom'), model.title_elem] )
+		}
+	}
+})
+
+var FixedNav = new Class({
+	initialize: function(elem, bff, pairs){
+		this.element = elem
+		this.bff     = bff
+		this.pairs   = pairs || []
+		
+		this.set_styles()
+		this.pairs.each(this.add_pair.bind(this))
+	}, 
+	
+	set_styles: function(){
+		this.element.setStyles({
+			'position' : 'fixed',
+			'top'      : this.bff.getTop(),
+			'left'     : this.bff.getLeft() + this.bff.getWidth()
+		})
+	},
+	
+	add_pair: function(pair){
+		var nav_elem = pair[0]
+		var bff_elem = pair[1]
+		
+		nav_elem.addEvent('click', function(){
+			bff_elem.scroll_to(40)
+		})
 	}
 })
 

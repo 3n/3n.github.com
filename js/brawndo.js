@@ -4127,6 +4127,162 @@ Function.implement({
 })
 
 /*
+Script: Fx.Scroll.js
+	Effect to smoothly scroll any element, including the window.
+
+License:
+	MIT-style license.
+*/
+
+Fx.Scroll = new Class({
+
+	Extends: Fx,
+
+	options: {
+		offset: {'x': 0, 'y': 0},
+		wheelStops: true
+	},
+
+	initialize: function(element, options){
+		this.element = this.subject = $(element);
+		this.parent(options);
+		var cancel = this.cancel.bind(this, false);
+
+		if ($type(this.element) != 'element') this.element = $(this.element.getDocument().body);
+
+		var stopper = this.element;
+
+		if (this.options.wheelStops){
+			this.addEvent('start', function(){
+				stopper.addEvent('mousewheel', cancel);
+			}, true);
+			this.addEvent('complete', function(){
+				stopper.removeEvent('mousewheel', cancel);
+			}, true);
+		}
+	},
+
+	set: function(){
+		var now = Array.flatten(arguments);
+		this.element.scrollTo(now[0], now[1]);
+	},
+
+	compute: function(from, to, delta){
+		var now = [];
+		var x = 2;
+		x.times(function(i){
+			now.push(Fx.compute(from[i], to[i], delta));
+		});
+		return now;
+	},
+
+	start: function(x, y){
+		if (!this.check(arguments.callee, x, y)) return this;
+		var offsetSize = this.element.getSize(), scrollSize = this.element.getScrollSize();
+		var scroll = this.element.getScroll(), values = {x: x, y: y};
+		for (var z in values){
+			var max = scrollSize[z] - offsetSize[z];
+			if ($chk(values[z])) values[z] = ($type(values[z]) == 'number') ? values[z].limit(0, max) : max;
+			else values[z] = scroll[z];
+			values[z] += this.options.offset[z];
+		}
+		return this.parent([scroll.x, scroll.y], [values.x, values.y]);
+	},
+
+	toTop: function(){
+		return this.start(false, 0);
+	},
+
+	toLeft: function(){
+		return this.start(0, false);
+	},
+
+	toRight: function(){
+		return this.start('right', false);
+	},
+
+	toBottom: function(){
+		return this.start(false, 'bottom');
+	},
+
+	toElement: function(el){
+		var position = $(el).getPosition(this.element);
+		return this.start(position.x, position.y);
+	}
+
+});
+
+/*
+Script: Element.BrawndoScrolling.js
+	Extends the Element class (using .implement) with convenience methods to move/scroll-to the element.
+*/
+
+Element.implement({
+/*Arguments: 
+		divisor: 		(Number) leave (window height)/divisor buffer above element
+		hightlight: (bool) flash yellow after scroll animation is done
+		fireback: 	(function) callback after effect is done */
+  scroll_to: function(divisor, highlight, fireback){		
+		var offset = -window.getHeight()/(divisor||5)
+		
+		// if the element is too far down for the offset to make sense
+		if ( (window.getHeight() - -1*offset)-(window.getScrollSize().y - this.getTop()) > 0 )
+			offset = 0
+		
+		if(this && (window.getScrollTop() != Math.round(this.getTop() + offset))){
+			new Fx.Scroll(window, {
+				offset: {x:0,y:offset}, 
+				onComplete: function(){
+					if ($chk(highlight)) new Fx.Tween(this, {
+																'property':'background-color', 
+																'duration':'2000', 
+																'transition':'quart:in:out' ,  
+																onComplete: function(){
+																	this.element.setStyle('background-color','')}
+																}).start('#EFDB4A','#ffffff');
+					if ($defined(fireback)) fireback()
+				}.bind(this)
+			}).toElement_safe(this);
+		}
+		return this
+	},
+	// scrolls the window to show the element
+	scroll_to_fit: function(offset){
+		var offset_ammount = (this.getCoordinates().top + this.getHeight() + (offset||0)) - (window.getScrollTop() + window.getHeight())
+
+		if (offset_ammount > 0){
+			if (this.getHeight() > window.getHeight()){
+				new Fx.Scroll(window).toElement_safe(this)
+			}else{
+				new Fx.Scroll(window).start(0,offset_ammount+window.getScrollTop())
+			}
+		}
+	},
+	// tweens the element's top value to match the top value of passed-in element
+	match_top: function(elem, smooth, offset){
+		var tmp = elem.getPosition(this.getParent()).y
+		if (!$chk(offset)) var offset = 0
+		
+		if ($chk(smooth))
+			new Fx.Tween(this, {'property':'top'}).start(tmp+offset)
+		else
+			this.setStyle('top', tmp+offset)
+			
+		return this
+	}
+})
+
+// Just wraps toElement with a check for Opera, which then uses .set instead
+Fx.Scroll.implement({
+	toElement_safe: function(elem){
+		if (Browser.Engine.presto)
+			this.set(0, elem.getPosition().y - 30)
+		else
+			this.toElement(elem)
+	}
+})
+
+/*
 Script: Element.BrawndoExtras.js
 	Extends the Element class (using .implement) with various methods.
 */

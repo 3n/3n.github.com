@@ -72,6 +72,7 @@ h1 {
   background-color   : white;
   -webkit-box-shadow : 0 0 8px rgba(0, 0, 0, 0.1);	
   -moz-box-shadow    : 0 0 8px rgba(0, 0, 0, 0.1);
+  z-index            : 100;
 }
   body.iphone #main {
     width:480px !important;
@@ -110,10 +111,28 @@ h1 {
   width            : 120px !important;
   letter-spacing   : -1.5px;
 }
-  .grid-title.flickr    { background-color: #ED217C; }
-  .grid-title.twitter   { background-color: #38BBC7; }  
-  .grid-title.delicious { background-color: #0053B9; }  
-  .grid-title.lastfm    { background-color: #ED2121; }  
+
+.flickr    { background-color: #ED217C; }
+.twitter   { background-color: #38BBC7; }  
+.delicious { background-color: #0053B9; }  
+.lastfm    { background-color: #ED2121; }  
+  
+#grid-nav {
+  padding-top : 20px;
+  opacity     : 0.2;
+  margin-left : -7px;
+  z-index     : 1;
+}
+  #grid-nav:hover{
+    opacity:1;
+  }
+  #grid-nav li {
+    padding : 10px;
+    color   : white;
+    float   : left;
+    clear   : left;
+    cursor  : pointer;
+  }
 
 .text {
   line-height    : 1.3em;
