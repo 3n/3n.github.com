@@ -400,6 +400,9 @@ var FixedNav = new Class({
 			e.stopPropagation()
 			this.bff.scroll_to(1/10)
 		}.bind(this))
+	
+		window.addEvent('resize', this.set_styles.bind(this))
+		this.set_styles.delay(1000, this)
 	}, 
 	
 	set_styles: function(){
