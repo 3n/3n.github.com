@@ -93,8 +93,7 @@ var ImageCell = new Class({
 var Model = new Class({
 	Implements: Events,
 	initialize: function(){
-		this.db = []
-		
+		this.db = []		
 		return this
 	},
 	
@@ -104,6 +103,11 @@ var Model = new Class({
 			$merge(	{abortAfter : 2000, onComplete : this.process_data.bind(this) }, this.json_opts) 
 		).request()
 		return this
+	},
+	
+	process_data: function(){
+		this.fireEvent('dataReady', this)
+		_3n.grid_latest.set( this.site_name, this.db[0].created_on.toString())
 	},
 	
 	sort_by: function(field){
@@ -160,11 +164,12 @@ var Flickr = new Class({
 				img_url     : json_item.media.m,
 				source      : json_item.link,
 				description : json_item.description,
-				tags        : json_item.tags
+				tags        : json_item.tags,
+				is_new      : Date.parse(json_item.date_taken) > Date.parse(_3n.grid_latest.get(this.site_name))
 			}
-	  })
-	
-		this.fireEvent('dataReady', this)		
+	  }.bind(this))
+
+		this.parent()
 		return this.db
 	},
 	
@@ -197,11 +202,12 @@ var Twitter = new Class({
 				title       : json_item.text,
 				created_on  : Date.parse(json_item.created_at),
 				source      : "http://www.twitter.com/" + json_item.from_user + "/status/" + json_item.id,
-				html        : json_item.text.make_urls_links().link_replies().link_hashcodes()
+				html        : json_item.text.make_urls_links().link_replies().link_hashcodes(),
+				is_new      : Date.parse(json_item.created_at) > Date.parse(_3n.grid_latest.get(this.site_name))
 			}
-	  })
+	  }.bind(this))
 	
-		this.fireEvent('dataReady', this)		
+		this.parent()
 		return this.db
 	},					
 	
@@ -240,11 +246,12 @@ var LastFM = new Class({
 				track_url   : json_item.url,
 				artist      : json_item.artist.name,
 				html        : "<span class='artist'>" + json_item.artist.name + "</span> <a class='track' href='" + json_item.url + "'>" + json_item.name + "</a>",
-				created_on  : Date.parse(json_item.date.text).decrement('hour',8)
+				created_on  : Date.parse(json_item.date.text).decrement('hour',8),
+				is_new      : Date.parse(json_item.date.text).decrement('hour',8) > Date.parse(_3n.grid_latest.get(this.site_name))
 			}
-	  })
+	  }.bind(this))
 
-		this.fireEvent('dataReady', this)		
+		this.parent()
 		return this.db
 	},					
 
@@ -304,11 +311,14 @@ var Delicious = new Class({
 				href        : json_item.u,
 				created_on  : Date.parse(json_item.dt),
 				text        : json_item.d,
-				html        : new Element('a', {html:json_item.d, href:json_item.u})
+				html        : new Element('a', {html:json_item.d, href:json_item.u}),
+				is_new      : Date.parse(json_item.dt) > Date.parse(_3n.grid_latest.get(this.site_name + '-' + this.tag))
 			}
-	  })
+	  }.bind(this))
 	
-		this.fireEvent('dataReady', this)		
+		this.fireEvent('dataReady', this)
+		_3n.grid_latest.set( this.site_name + '-' + this.tag, this.db[0].created_on.toString())
+		
 		return this.db
 	},					
 	
@@ -474,7 +484,7 @@ function they_spinnin(){
 				duration   : 2000, 
 				onComplete : $$('body').rotate.bind($$('body'), [0.01,{duration:0.01}]),
 				transition : 'cubic-bezier(0.3,0.1,0,1)'
-			}) 
+			})
 		}
 	})
 }
@@ -486,6 +496,8 @@ window.addEvent('domready', function(){
 	if (navigator.userAgent.match('iPhone')) document.body.addClass('iphone');
 	
 	_3n.delicious_tags = params()['delicious_tags'] || 'humor-awesome'
+	
+	_3n.grid_latest = new Hash.Cookie('grid_latest', {duration:100, path: '/'})
 	
 	new Grid('main', [
 		[ new Flickr, 
