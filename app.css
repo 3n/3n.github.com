@@ -162,10 +162,10 @@ h1 {
     width            : 280px;
   }
   .text a {
-/*    letter-spacing : -0.5px;*/
+    padding : 2px 2px 0 0;
   }
   .text a:hover {
-    background-color:#e5e5e5;
+    background-color:white;
   }
 
 .tweet.inverted, .tweet.first {
