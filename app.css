@@ -100,6 +100,10 @@ h1 {
   body.iphone .cell.full-width {
     width : 460px;
   }
+  .cell.new {
+    border-top : 2px solid #aaa;
+    height     : 138px;
+  }
 
 .grid-title {
   clear            : both;
@@ -161,16 +165,15 @@ h1 {
     padding          : 10px;
     width            : 280px;
   }
+  .text.new { 
+    height : 118px;
+  }
   .text a {
     padding : 2px 2px 0 0;
   }
   .text a:hover {
     background-color:white;
   }
-
-.tweet.inverted, .tweet.first {
-/*    background-color : #eaeaea !important;*/
-}
 
 .tip {
   width            : 140px;

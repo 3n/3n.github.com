@@ -100,7 +100,7 @@ var Model = new Class({
 	get_data: function(){
 		new JsonP(
 			this.json_url, 
-			$merge(	{abortAfter : 2000, onComplete : this.process_data.bind(this) }, this.json_opts) 
+			$merge(	{abortAfter : 3000, onComplete : this.process_data.bind(this) }, this.json_opts) 
 		).request()
 		return this
 	},
@@ -116,6 +116,11 @@ var Model = new Class({
 	_sort_by: function(field){
 		return this.db.sort(function(a,b){
 			a[field] - b[field]
+		})
+	},
+	new_items: function(){
+		return this.db.filter(function(x){
+			return x.is_new
 		})
 	},
 	
@@ -175,9 +180,10 @@ var Flickr = new Class({
 	
 	_to_cell: function(){
 		return new ImageCell(this.img_url, { 
-			'title' 		: this.title, 
-			'created_on': this.created_on,
-			'source' 		: this.source
+			'title' 		   : this.title, 
+			'created_on'   : this.created_on,
+			'source' 		   : this.source,
+			'custom_class' : (this.is_new ? 'new' : '')
 		})
 	}
 })
@@ -214,7 +220,7 @@ var Twitter = new Class({
 	_to_cell: function(){
 		return new Cell(this.html, { 
 			'main_class'	 : (this.title.length > 90) ? 'double-wide' : 'single-wide',
-			'custom_class' : 'text tweet ',
+			'custom_class' : 'text tweet ' + (this.is_new ? 'new' : ''),
 			'created_on'	 : this.created_on,
 			'source'			 : this.source
 		})
@@ -257,7 +263,7 @@ var LastFM = new Class({
 
 	_to_cell: function(){
 		return new Cell(this.html, { 
-			'custom_class' : 'text lastfm-song',
+			'custom_class' : 'text lastfm-song ' + (this.is_new ? 'new' : ''),
 			'created_on'	 : this.created_on
 		})
 	},
@@ -327,13 +333,15 @@ var Delicious = new Class({
 		  return new ImageCell(this.href, {
 		    'title'        : this.text,
 				'created_on'	 : this.created_on,
-				'source'			 : this.href
+				'source'			 : this.href,
+				'custom_class' : (this.is_new ? 'new' : '')
 			})
 		} else {
 		 	return new Cell(this.html, {
 				'main_class'	 : (this.text.length > 90) ? 'double-wide' : 'single-wide',
 				'created_on'	 : this.created_on,
-				'source'			 : this.href
+				'source'			 : this.href,
+				'custom_class' : (this.is_new ? 'new' : '')				
 			}) 
 		}
 	}	
@@ -364,7 +372,10 @@ var Grid = new Class({
 		var finished_models = this.buckets.flatten().filter(function(m){ return m.cells })
 		var injected = false
 
-		model.nav = model.nav || new Element('li', {html:model.nombre, 'class':model.site_name})
+		model.nav = model.nav || new Element('li', {
+			html:model.nombre + ' ' + (model.new_items().length || ''), 
+			'class':model.site_name
+		})
 		model.title_elem = model.title_elem || new Element('div', {
 			'class' : 'cell single-wide grid-title ' + model.site_name, 
 			'html'  : model.nombre
