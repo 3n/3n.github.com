@@ -101,9 +101,13 @@ h1 {
   body.iphone .cell.full-width {
     width : 460px;
   }
-  .cell.new {
-/*    border-top : 2px solid #e1e1e1;
-    height     : 138px;*/
+  .cell.new .new-icon {
+    background-color : #e5e5e5;
+    height           : 10px;
+    position         : absolute;
+    top              : 0;
+    right            : 0;
+    width            : 10px;
   }
 
 .grid-title {

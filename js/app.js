@@ -31,6 +31,12 @@ var Cell = new Class({
 		
 		if 			($type(this.html) === 'element') this.element.adopt(this.html)
 		else if ($type(this.html) === 'string')  this.element.set('html', this.html)
+		
+		if (!this.element.getElement('.new-icon'))
+			this.element.adopt(new Element('div', {
+				'class':'new-icon', 
+				'title':"I'm new."
+			}))
 
 		this.element.store('source',  this.options.source)
 		this.element.store('title',   this.options.title)
