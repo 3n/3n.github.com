@@ -380,7 +380,7 @@ var Grid = new Class({
 			'class' : 'cell single-wide grid-title ' + model.site_name, 
 			'html'  : model.nombre
 		}).act_like_link(model.web_source)
-			.adopt( new Element('span', {'class':'show-all','html':'show all'}).addEvent('click', this.model_toggle_all.bind(model)) )
+			.adopt( new Element('span', {'class':'show-all','html':'SHOW ALL'}).addEvent('click', this.model_toggle_all.bind(model)) )
 
 		if (finished_models.length > 0){
 			finished_models.each(function(fm){
@@ -403,7 +403,7 @@ var Grid = new Class({
 	model_toggle_all: function(e){
 		e.stop()
 		this.cells.filter(function(c){ return !c.hasClass('grid-title') }.bind(this)).each(function(cell){ cell.destroy() })
-		this.title_elem.getFirst('span').set('html', this.cells.length > this.initial_limit ? 'show all' : 'show some')
+		this.title_elem.getFirst('span').set('html', this.cells.length > this.initial_limit ? 'SHOW ALL' : 'SHOW SOME')
 		this.to_cells(this.cells.length > this.initial_limit ? this.initial_limit : null).reverse().each(function(cell){ cell.inject(this.title_elem,'after') }, this)
 	}
 })

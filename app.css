@@ -117,7 +117,10 @@ h1 {
 }
 .grid-title:hover .show-all { display:block; }
 
-.show-all { display : none; }
+.show-all { 
+  display   : none; 
+  font-size : 0.8em;
+}
   .show-all:hover { color : white !important; }
 
 .flickr    { background-color: #ED3B8B; }
