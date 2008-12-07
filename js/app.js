@@ -515,6 +515,7 @@ window.addEvent('domready', function(){
 	
 	_3n.delicious_tags = params()['delicious_tags'] || 'humor-awesome'
 	
+	if (!$defined(Cookie.read('grid_latest'))) $(document.body).addClass('all-new')
 	_3n.grid_latest = new Hash.Cookie('grid_latest', {duration:100, path: '/'})
 	
 	new Grid('main', [
