@@ -35,7 +35,7 @@ pre,code,kbd,samp,tt {font-family:monospace;*font-size:108%;line-height:99%;}
 
 body {
   font-family      : Helvetica,Arial,Geneva,sans-serif;
-  background-color : #efefef;
+  background-color : #eaeaea;
   color            : #999;
 }
 
@@ -62,13 +62,14 @@ h1 {
   text-indent       : -10000px;
   height            : 80px;
   width             : 150px;
+  z-index           : 1;
 }
 
 #main {
   overflow           : auto;
   margin             : 20px 0;
   padding            : 20px 0 20px 20px;
-  width              : 800px;  
+  width              : 760px;  
   background-color   : white;
   -webkit-box-shadow : 0 0 8px rgba(0, 0, 0, 0.1);	
   -moz-box-shadow    : 0 0 8px rgba(0, 0, 0, 0.1);
@@ -81,7 +82,7 @@ h1 {
 
 .cell {
   float    : left;
-  margin   : 0 20px 20px 0;  
+  margin   : 0 10px 10px 0;  
   overflow : hidden;
   position : relative;
   cursor   : pointer;
@@ -91,7 +92,7 @@ h1 {
     height : 140px;  
   }
   .cell.double-wide {
-    width  : 300px;
+    width  : 280px;
     height : 140px;  
   }
   .cell.full-width {
@@ -101,8 +102,8 @@ h1 {
     width : 460px;
   }
   .cell.new {
-    border-top : 2px solid #e1e1e1;
-    height     : 138px;
+/*    border-top : 2px solid #e1e1e1;
+    height     : 138px;*/
   }
 
 .grid-title {
@@ -169,7 +170,7 @@ h1 {
     font-size        : 19px;    
     height           : 120px;
     padding          : 10px;
-    width            : 280px;
+    width            : 270px;
   }
   .text.new { 
     height : 118px;

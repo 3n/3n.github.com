@@ -441,7 +441,7 @@ var FixedNav = new Class({
 		
 		nav_elem.addEvent('click', function(e){
 			e.stopPropagation()
-			bff_elem.scroll_to(40)
+			bff_elem.scroll_to(80)
 		})
 	}
 })
