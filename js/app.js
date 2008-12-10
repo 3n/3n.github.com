@@ -340,7 +340,7 @@ var Delicious = new Class({
 				href        : json_item.u,
 				created_on  : Date.parse(json_item.dt),
 				text        : json_item.d,
-				html        : new Element('a', {html:json_item.d, href:json_item.u}),
+				html        : "<a href='" + json_item.u + "'>" + json_item.d + "</a>",
 				is_new      : Date.parse(json_item.dt) > Date.parse(_3n.grid_latest.get(this.site_name + '-' + this.tag))
 			}
 	  }.bind(this))
