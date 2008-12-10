@@ -372,10 +372,10 @@ var Delicious = new Class({
 
 // both methods in here should be renamed to represent their sort order
 var Grid = new Class({
+	Implements : Events,
 	initialize: function(elem, buckets){
 		this.element = $(elem)
 		this.buckets = buckets
-		
 		
 		this.nav = new FixedNav(new Element('ul', {'id':'grid-nav'}).inject(this.element, 'before'), this.element)
 	},
@@ -422,6 +422,11 @@ var Grid = new Class({
 			this.element.adopt( model.to_cells(model.initial_limit))
 			this.nav.add_pair( [model.nav.inject(this.nav.element, 'bottom'), model.title_elem] )
 		}
+		
+		if (finished_models.length == this.buckets.flatten().length - 1){
+			this.fireEvent('shitsDoneScro')
+			this.nav.handle_hash_scroll()
+		}			
 	},
 	
 	model_toggle_all: function(e){
@@ -443,7 +448,7 @@ var FixedNav = new Class({
 		
 		this.element.addEvent('click', function(e){
 			e.stopPropagation()
-			this.bff.scroll_to(1/10)
+			document.location.hash = '#'
 		}.bind(this))
 	
 		window.addEvent('resize', this.set_styles.bind(this))
@@ -462,9 +467,19 @@ var FixedNav = new Class({
 		var nav_elem = pair[0]
 		var bff_elem = pair[1]
 		
+		this.pairs.include(pair)
+		
 		nav_elem.addEvent('click', function(e){
 			e.stopPropagation()
 			bff_elem.scroll_to(80)
+			document.location.hash = nav_elem.get('html').clean().toLowerCase()
+		})
+	},
+	
+	handle_hash_scroll: function(){
+		this.pairs.each(function(pair){
+			if (pair[0].get('html').clean().toLowerCase() === document.location.hash.slice(1))
+				pair[1].scroll_to(80)
 		})
 	}
 })
