@@ -298,7 +298,7 @@ var LastFM = new Class({
 		for (var i=0; i < this.db.length; i++){
 			if (i > 0 && this.db[i-1].artist === this.db[i].artist ){
 				if (prev_cell) {
-					prev_cell.html += ", <a class='track' href='" + this.db[i].url + "'>" + this.db[i].track + "</a>"
+					prev_cell.html += ", <a class='track' href='" + this.db[i].track_url + "'>" + this.db[i].track + "</a>"
 					prev_cell.options.main_class = 'double-wide'
 					prev_cell.update_element()
 				}
