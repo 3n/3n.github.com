@@ -541,7 +541,9 @@ function they_spinnin(){
 
 window.addEvent('domready', function(){
 
-  $(document.body).set('html', '<div id="wrapper"><h1 id="title">3N</h1><div id="main"></div></div>')	
+  $(document.body)
+		.set('html', '<div id="wrapper"><h1 id="title">3N</h1><div id="main"></div></div>')
+		.addClass('loading')
 
 	if (navigator.userAgent.match('iPhone')) document.body.addClass('iphone');
 	
@@ -555,7 +557,8 @@ window.addEvent('domready', function(){
 		  new Twitter ],
 		[ new LastFM  ],
 		_3n.delicious_tags.split('-').map(function(tag){ return new Delicious(tag) })
-	]).to_html()
+	]).addEvent('shitsDoneScro', function(){ $(document.body).removeClass('loading') })
+		.to_html()
 	
 	if ( Browser.Engine.webkit ) they_spinnin()
   if ( !document.location.href.match(/~ian/) ) goog()
