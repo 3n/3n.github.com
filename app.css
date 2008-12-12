@@ -86,14 +86,14 @@ h1 {
     padding : 2px 4px 0;
   }
   #fun-zone span.title { 
-    background-color : #e0e0e0;
+    background-color : #D8D8D8;
     color            : #f5f5f5;
     font-size        : 34px;
     line-height      : 0.9em;
     padding-top      : 5px;
   }
   #fun-zone span.word { 
-    background-color : #dadada;
+    background-color : #E0E0E0;
     color            : #f5f5f5;
     cursor           : pointer;
   }
