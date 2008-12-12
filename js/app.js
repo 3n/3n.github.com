@@ -34,8 +34,9 @@ var Cell = new Class({
 		
 		if (!this.element.getElement('.new-icon'))
 			this.element.adopt(new Element('div', {
-				'class':'new-icon', 
-				'title':"I'm new."
+				'class' : 'new-icon', 
+				'title' : "I'm new, to you.",
+				'html'  : "new"
 			}))
 
 		this.element.store('source',  this.options.source)
@@ -406,10 +407,14 @@ var Grid = new Class({
 		}).act_like_link(model.web_source)
 			.adopt( new Element('span', {'class':'show-all','html':'SHOW ' + model.db.length}).addEvent('click', this.model_toggle_all.bind(model)) )
 			
-		model.db.first(10).each(function(row){
+		model.db.first(10).each(function(row,i){
 			var text = $pick(row.title, row.text, row.html, '')
 			var the_match = text.match(/\b([A-Z]\w+)(\s[A-Z]\w+){0,5}/)
-			if (the_match && !['the'].contains(the_match[0].toLowerCase())) $('fun-zone').adopt( new Element('span', {'class':'word','html':the_match[0]}))
+			if (the_match && !['the'].contains(the_match[0].toLowerCase())) 
+				$('fun-zone').adopt( 
+					new Element('span', {'class':'word','html':the_match[0]})
+						.addEvent('click', function(){ model.cells[i+1].scroll_to(10,true) })
+				)
 		})
 
 		if (finished_models.length > 0){
@@ -551,7 +556,7 @@ window.addEvent('domready', function(){
 		.set('html', '<div id="wrapper"><h1 id="title">3N</h1><div id="fun-zone"></div><div id="main"></div></div>')
 		.addClass('loading')
 		
-	$('fun-zone').set('html', '<span class="title">what</span><span class="title">i\'m</span><span class="title">doing</span>')
+	$('fun-zone').set('html', '<span class="title">ian</span><span class="title">in</span><span class="title">summary</span>')
 
 	if (navigator.userAgent.match('iPhone')) document.body.addClass('iphone');
 	

@@ -76,22 +76,23 @@ h1 {
   height    : 77px;
   left      : 170px;
   position  : absolute;
-  top       : 0;
+  top       : 1px;
   width     : 610px;
 }
   #fun-zone span {
-    border:1px solid #EAEAEA;
-    float:left;
-    margin:0;
-    padding:3px 4px 0;
+    border  : 1px solid #EAEAEA;
+    float   : left;
+    margin  : 0;
+    padding : 3px 4px 0;
   }
   #fun-zone span.title { 
-    background-color:#B0B0B0;
-    color:#EEEEEE;
+    background-color : #B0B0B0;
+    color            : #EEEEEE;
   }
   #fun-zone span.word { 
-    background-color:#CCCCCC;
-    color:#EEEEEE;
+    background-color : #CCCCCC;
+    color            : #EEEEEE;
+    cursor           : pointer;
   }
 
 #main {
@@ -130,13 +131,18 @@ h1 {
   body.iphone .cell.full-width {
     width : 460px;
   }
+  .cell .new-icon { display : none;}
   .cell.new .new-icon {
-    background-color : #e5e5e5;
-    height           : 10px;
+    background-color : white;
+    bottom           : -4px;
+    color            : #BBBBBB;
+    font-size        : 10px;
+    left             : 0;
+    padding-right    : 3px;
     position         : absolute;
-    top              : 0;
-    right            : 0;
-    width            : 10px;
+    width            : 21px;
+    line-height      : 1.5em;
+    display          : block;
   }
   body.all-new .new-icon { display:none !important;}
 
