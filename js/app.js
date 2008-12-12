@@ -394,7 +394,7 @@ var Grid = new Class({
 		if (model.db.length === 0) return
 		var finished_models = this.buckets.flatten().filter(function(m){ return m.cells })
 		var injected = false
-
+						
 		model.nav = model.nav || new Element('li', {
 			'class' : model.site_name + (model.new_items().length > 0 ? ' opaque' : ''),
 			'html'  : model.nombre + ' ' + (model.new_items().length || '')
@@ -405,6 +405,12 @@ var Grid = new Class({
 			'html'  : model.nombre
 		}).act_like_link(model.web_source)
 			.adopt( new Element('span', {'class':'show-all','html':'SHOW ' + model.db.length}).addEvent('click', this.model_toggle_all.bind(model)) )
+			
+		model.db.first(10).each(function(row){
+			var text = $pick(row.title, row.text, row.html, '')
+			var the_match = text.match(/\b([A-Z]\w+)(\s[A-Z]\w+){0,5}/)
+			if (the_match && !['the'].contains(the_match[0].toLowerCase())) $('fun-zone').adopt( new Element('span', {'class':'word','html':the_match[0]}))
+		})
 
 		if (finished_models.length > 0){
 			finished_models.each(function(fm){

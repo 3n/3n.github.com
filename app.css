@@ -69,28 +69,29 @@ h1 {
 }
 
 #fun-zone {
-  font-size : 18px;
+  font-size : 13px;
   overflow  : hidden;
   color     : #ccc;    
   text-transform : uppercase;
-  height    : 78px;
+  height    : 77px;
   left      : 170px;
   position  : absolute;
   top       : 0;
   width     : 610px;
 }
   #fun-zone span {
-    margin:1px;
-    padding:3px 4px 0;
+    border:1px solid #EAEAEA;
     float:left;
+    margin:0;
+    padding:3px 4px 0;
   }
   #fun-zone span.title { 
-    background-color:#bbb;
-    color:#eee;
+    background-color:#B0B0B0;
+    color:#EEEEEE;
   }
   #fun-zone span.word { 
-    background-color:#dfdfdf;
-    color:#bbb;
+    background-color:#CCCCCC;
+    color:#EEEEEE;
   }
 
 #main {
