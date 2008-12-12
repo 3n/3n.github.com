@@ -515,6 +515,12 @@ function goog(){
   } catch(err) {}    
 }
 
+function browser_bullshit(){
+	if (Browser.Engine.webkit){
+		$('fun-zone').add_to_style('height', 4).add_to_style('top', -1)
+	}
+}
+
 function they_spinnin(){
 	$('main').addEvent('click', function(e){ 
 		if (e.target.id !== 'main') return;
@@ -556,7 +562,7 @@ window.addEvent('domready', function(){
 		.set('html', '<div id="wrapper"><h1 id="title">3N</h1><div id="fun-zone"></div><div id="main"></div></div>')
 		.addClass('loading')
 		
-	$('fun-zone').set('html', '<span class="title">ian</span><span class="title">in</span><span class="title">summary</span>')
+	$('fun-zone').set('html', '<span class="title">ian</span><span class="title">in</span><span class="title">summary</span>')	
 
 	if (navigator.userAgent.match('iPhone')) document.body.addClass('iphone');
 	
@@ -575,6 +581,8 @@ window.addEvent('domready', function(){
 	
 	if ( Browser.Engine.webkit ) they_spinnin()
   if ( !document.location.href.match(/~ian/) ) goog()
+
+	browser_bullshit()
 	
 }) 
 
