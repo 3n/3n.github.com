@@ -240,18 +240,18 @@ var LastFM = new Class({
 	site_name  : "lastfm",
 	nombre     : "HEARING",
 	web_source : "http://www.last.fm/user/" + current_user('lastfm'),
-	// json_url   : "http://lastfm-api-ext.appspot.com/2.0/",
-	// json_opts  : { data : { method  : 'user.getRecentTracks',
-	//  												user    : current_user('lastfm'),
-	// 												api_key : 'b25b959554ed76058ac220b7b2e0a026',
-	// 												limit   : 100,
-	// 												outtype : 'js' } },
-	json_url   : "http://www.dapper.net/transform.php",
-	json_opts  : { data : { dappName    : '3NsRecentlyPlayedTracks',
-	 												transformer : 'JSON',
-													applyToUrl  : 'http://ws.audioscrobbler.com/2.0/user/3n/recenttracks.rss?limit=100',
-													extraArg_callbackFunctionWrapper : 'shitPoop' },
-								 globalFunction : 'shitPoop' },
+	json_url   : "http://lastfm-api-ext.appspot.com/2.0/",
+	json_opts  : { data : { method  : 'user.getRecentTracks',
+	 												user    : current_user('lastfm'),
+													api_key : 'b25b959554ed76058ac220b7b2e0a026',
+													limit   : 100,
+													outtype : 'js' } },
+	// json_url   : "http://www.dapper.net/transform.php",
+	// json_opts  : { data : { dappName    : '3NsRecentlyPlayedTracks',
+	//  												transformer : 'JSON',
+	// 												applyToUrl  : 'http://ws.audioscrobbler.com/2.0/user/3n/recenttracks.rss?limit=100',
+	// 												extraArg_callbackFunctionWrapper : 'shitPoop' },
+	// 							 globalFunction : 'shitPoop' },
 	
  	initial_limit : 10,													
 													
@@ -260,26 +260,26 @@ var LastFM = new Class({
   },
 
 	process_data: function(json){
-		this.db = json.groups.RSS_Item.map(function(json_item){
-			return {
-				track       : json_item.Title[0].value.match(/\– (.+)/)[1],
-				track_url   : json_item.Title[0].href,
-				artist      : json_item.Title[0].value.match(/(.+)\s–/)[1],
-				html        : "<span class='artist'>" + json_item.Title[0].value.match(/(.+)\s–/)[1] + "</span> <a class='track' href='" + json_item.Title[0].href + "'>" + json_item.Title[0].value.match(/\– (.+)/)[1] + "</a>",
-				created_on  : Date.parse(json_item.Publication_Date[0].value).decrement('hour',8),
-				is_new      : Date.parse(json_item.Publication_Date[0].value).decrement('hour',8) > Date.parse(_3n.grid_latest.get(this.site_name))
-			}
-	  }.bind(this))
-		// this.db = json.recenttracks.map(function(json_item){
+		// this.db = json.groups.RSS_Item.map(function(json_item){
 		// 	return {
-		// 		track       : json_item.name,
-		// 		track_url   : json_item.url,
-		// 		artist      : json_item.artist.name,
-		// 		html        : "<span class='artist'>" + json_item.artist.name + "</span> <a class='track' href='" + json_item.url + "'>" + json_item.name + "</a>",
-		// 		created_on  : Date.parse(json_item.date.text).decrement('hour',8),
-		// 		is_new      : Date.parse(json_item.date.text).decrement('hour',8) > Date.parse(_3n.grid_latest.get(this.site_name))
+		// 		track       : json_item.Title[0].value.match(/\– (.+)/)[1],
+		// 		track_url   : json_item.Title[0].href,
+		// 		artist      : json_item.Title[0].value.match(/(.+)\s–/)[1],
+		// 		html        : "<span class='artist'>" + json_item.Title[0].value.match(/(.+)\s–/)[1] + "</span> <a class='track' href='" + json_item.Title[0].href + "'>" + json_item.Title[0].value.match(/\– (.+)/)[1] + "</a>",
+		// 		created_on  : Date.parse(json_item.Publication_Date[0].value).decrement('hour',8),
+		// 		is_new      : Date.parse(json_item.Publication_Date[0].value).decrement('hour',8) > Date.parse(_3n.grid_latest.get(this.site_name))
 		// 	}
 		// 	  }.bind(this))
+		this.db = json.recenttracks.map(function(json_item){
+			return {
+				track       : json_item.name,
+				track_url   : json_item.url,
+				artist      : json_item.artist.name,
+				html        : "<span class='artist'>" + json_item.artist.name + "</span> <a class='track' href='" + json_item.url + "'>" + json_item.name + "</a>",
+				created_on  : Date.parse(json_item.date.text).decrement('hour',8),
+				is_new      : Date.parse(json_item.date.text).decrement('hour',8) > Date.parse(_3n.grid_latest.get(this.site_name))
+			}
+			  }.bind(this))
 
 		this.parent()
 		return this.db
