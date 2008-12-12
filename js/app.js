@@ -177,7 +177,7 @@ var Flickr = new Class({
 				source      : json_item.link,
 				description : json_item.description,
 				tags        : json_item.tags,
-				is_new      : Date.parse(json_item.date_taken) > Date.parse(_3n.grid_latest.get(this.site_name))
+				is_new      : true//Date.parse(json_item.date_taken) > Date.parse(_3n.grid_latest.get(this.site_name))
 			}
 	  }.bind(this))
 
@@ -483,13 +483,13 @@ var FixedNav = new Class({
 		nav_elem.addEvent('click', function(e){
 			e.stopPropagation()
 			bff_elem.scroll_to(80)
-			document.location.hash = nav_elem.get('html').clean().toLowerCase()
+			document.location.hash = nav_elem.get('html').match(/^(\w)+/)[0].clean().toLowerCase()
 		})
 	},
 	
 	handle_hash_scroll: function(){
 		this.pairs.each(function(pair){
-			if (pair[0].get('html').clean().toLowerCase() === document.location.hash.slice(1))
+			if (pair[0].get('html').match(/^(\w)+/)[0].clean().toLowerCase() === document.location.hash.slice(1))
 				pair[1].scroll_to(80)
 		})
 	}
