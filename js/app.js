@@ -517,7 +517,8 @@ function goog(){
 
 function browser_bullshit(){
 	if (Browser.Engine.webkit){
-		$('fun-zone').add_to_style('height', 4).add_to_style('top', -1)
+		$('fun-zone').add_to_style('height', 5).add_to_style('top', -1)
+		$('fun-zone').getElements('span.title').add_to_style('padding-bottom',3)
 	}
 }
 
@@ -562,7 +563,7 @@ window.addEvent('domready', function(){
 		.set('html', '<div id="wrapper"><h1 id="title">3N</h1><div id="fun-zone"></div><div id="main"></div></div>')
 		.addClass('loading')
 		
-	$('fun-zone').set('html', '<span class="title">ian</span><span class="title">in</span><span class="title">summary</span>')	
+	$('fun-zone').set('html', '<span class="title">in</span><span class="title">summary</span>')	
 
 	if (navigator.userAgent.match('iPhone')) document.body.addClass('iphone');
 	

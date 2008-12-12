@@ -69,11 +69,11 @@ h1 {
 }
 
 #fun-zone {
-  font-size : 13px;
+  font-size : 14px;
   overflow  : hidden;
   color     : #ccc;    
   text-transform : uppercase;
-  height    : 77px;
+  height    : 75px;
   left      : 170px;
   position  : absolute;
   top       : 1px;
@@ -86,8 +86,11 @@ h1 {
     padding : 2px 4px 0;
   }
   #fun-zone span.title { 
-    background-color : #B0B0B0;
+    background-color : #b9b9b9;
     color            : #EEEEEE;
+    font-size        : 34px;
+    line-height      : 0.9em;
+    padding-top      : 5px;
   }
   #fun-zone span.word { 
     background-color : #CCCCCC;
