@@ -177,7 +177,7 @@ var Flickr = new Class({
 				source      : json_item.link,
 				description : json_item.description,
 				tags        : json_item.tags,
-				is_new      : true//Date.parse(json_item.date_taken) > Date.parse(_3n.grid_latest.get(this.site_name))
+				is_new      : Date.parse(json_item.date_taken) > Date.parse(_3n.grid_latest.get(this.site_name))
 			}
 	  }.bind(this))
 
