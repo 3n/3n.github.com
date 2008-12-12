@@ -38,7 +38,7 @@ body {
   background-color : #eaeaea;
   color            : #888;
 }
-body.loading { cursor : wait; }
+/*body.loading { cursor : wait; }*/
 
 a {
   text-decoration : none;

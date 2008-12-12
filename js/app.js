@@ -107,7 +107,7 @@ var Model = new Class({
 	get_data: function(){
 		new JsonP(
 			this.json_url, 
-			$merge(	{abortAfter : 3000, onComplete : this.process_data.bind(this) }, this.json_opts) 
+			$merge(	{abortAfter : 1000, retries : 1, onComplete : this.process_data.bind(this) }, this.json_opts) 
 		).request()
 		return this
 	},
