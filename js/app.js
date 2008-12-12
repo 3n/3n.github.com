@@ -542,8 +542,10 @@ function they_spinnin(){
 window.addEvent('domready', function(){
 
   $(document.body)
-		.set('html', '<div id="wrapper"><h1 id="title">3N</h1><div id="main"></div></div>')
+		.set('html', '<div id="wrapper"><h1 id="title">3N</h1><div id="fun-zone"></div><div id="main"></div></div>')
 		.addClass('loading')
+		
+	$('fun-zone').set('html', '<span class="title">what</span><span class="title">i\'m</span><span class="title">doing</span>')
 
 	if (navigator.userAgent.match('iPhone')) document.body.addClass('iphone');
 	

@@ -50,8 +50,9 @@ a {
 
 
 #wrapper {
-  width   : 780px;
-  margin  : 20px auto;  
+  width    : 780px;
+  margin   : 20px auto;  
+  position : relative;
 }
   body.iphone #wrapper {
     width: 540px !important;
@@ -64,7 +65,33 @@ h1 {
   height            : 80px;
   width             : 150px;
   z-index           : 1;
+  margin-left       : 8px;
 }
+
+#fun-zone {
+  font-size : 18px;
+  overflow  : hidden;
+  color     : #ccc;    
+  text-transform : uppercase;
+  height    : 78px;
+  left      : 170px;
+  position  : absolute;
+  top       : 0;
+  width     : 610px;
+}
+  #fun-zone span {
+    margin:1px;
+    padding:3px 4px 0;
+    float:left;
+  }
+  #fun-zone span.title { 
+    background-color:#bbb;
+    color:#eee;
+  }
+  #fun-zone span.word { 
+    background-color:#dfdfdf;
+    color:#bbb;
+  }
 
 #main {
   overflow           : auto;
