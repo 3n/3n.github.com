@@ -482,7 +482,8 @@ var FixedNav = new Class({
 		
 		nav_elem.addEvent('click', function(e){
 			e.stopPropagation()
-			bff_elem.scroll_to(80)
+			hash_clear_off()
+			bff_elem.scroll_to(79, null, hash_clear_on.create({delay:10}))
 			document.location.hash = nav_elem.get('html').match(/^(\w)+/)[0].clean().toLowerCase()
 		})
 	},
@@ -490,7 +491,7 @@ var FixedNav = new Class({
 	handle_hash_scroll: function(){
 		this.pairs.each(function(pair){
 			if (pair[0].get('html').match(/^(\w)+/)[0].clean().toLowerCase() === document.location.hash.slice(1))
-				pair[1].scroll_to(80)
+				pair[1].scroll_to(79)
 		})
 	}
 })
@@ -513,6 +514,15 @@ function goog(){
     var pageTracker = _gat._getTracker("UA-6319958-1");
     pageTracker._trackPageview();
   } catch(err) {}    
+}
+
+function hash_clear_on(){
+	_3n.hash_clear = _3n.hash_clear || function(){ document.location.hash = "/" }
+	window.addEvent('scroll', _3n.hash_clear)
+}
+function hash_clear_off(){
+	_3n.hash_clear = _3n.hash_clear || function(){ document.location.hash = "/" }
+	window.removeEvent('scroll', _3n.hash_clear)
 }
 
 function they_spinnin(){
