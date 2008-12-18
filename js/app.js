@@ -336,6 +336,7 @@ var Delicious = new Class({
   },
 
 	process_data: function(json){
+		if (json.length == 0) return
 		this.db = json.map(function(json_item){
 			return {
 				href        : json_item.u,
