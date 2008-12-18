@@ -491,7 +491,7 @@ var FixedNav = new Class({
 	handle_hash_scroll: function(){
 		this.pairs.each(function(pair){
 			if (pair[0].get('html').match(/^(\w)+/)[0].clean().toLowerCase() === document.location.hash.slice(1))
-				pair[1].scroll_to(79)
+				pair[1].scroll_to(79, null, hash_clear_on.create({delay:10}))
 		})
 	}
 })
@@ -517,11 +517,11 @@ function goog(){
 }
 
 function hash_clear_on(){
-	_3n.hash_clear = _3n.hash_clear || function(){ document.location.hash = "/" }
+	_3n.hash_clear = _3n.hash_clear || function(){ if (document.location.hash !== "#/") document.location.hash = "/" }
 	window.addEvent('scroll', _3n.hash_clear)
 }
 function hash_clear_off(){
-	_3n.hash_clear = _3n.hash_clear || function(){ document.location.hash = "/" }
+	_3n.hash_clear = _3n.hash_clear || function(){ if (document.location.hash !== "#/") document.location.hash = "/" }
 	window.removeEvent('scroll', _3n.hash_clear)
 }
 
