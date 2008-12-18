@@ -20,6 +20,7 @@ blue and a large yellow thing comes up in front of them.
 
 bottom bar of logos: made using <mootools logo> on a <apple logo>. also butterfly achewood vimeo flickr delicious
 
+holding SHIFT makes the animations slower.
 
 ARCHITECTURE
 
@@ -56,29 +57,4 @@ model.first(10).get('created_on')
 
 
 
-
-
-
-
-	// var DeliciousCell = new Class({
-	// 	initialize: function(data){		
-	// 		this.element = this.generate_element(data)
-	// 		return this
-	// 	},
-	// 	
-	// 	generate_element: function(data){
-	// 		var tmp = new Element('div', {'id':'delicious-block', 'class':'cell full-width'}).adopt([
-	// 			data.map(function(bookmark,i){
-	// 				return new Element('a', {
-	// 					'html':bookmark.d,
-	// 					'class':'delicious-bookmark ' + (i.is_even() ? 'even' : 'odd')
-	// 				}).set('href', bookmark.u)
-	// 			})
-	// 		])		
-	// 		return tmp
-	// 	},
-	// 	
-	// 	to_html: function(){
-	// 		return this.element
-	// 	}
-	// })
+http://www.iancollins.me/?global_user=takeo&flickr_id=93851177@N00&delicious_user=tobys&lastfm_user=tobysterrett

@@ -566,6 +566,11 @@ window.addEvent('domready', function(){
 		.set('html', '<div id="wrapper"><h1 id="title">3N</h1><div id="fun-zone"></div><div id="main"></div><p id="footer">This is the personal site of <span class="highlighted">Ian Collins</span> a.k.a. <span class="highlighted">3n</span>. What you see above is a summary of my online acivity and roughly, my life. Upon your first visit this site will remember what you have seen and on subsequent visits, it will mark anything that is new for you. This site is made exclusively with Javscript through the wonders of JSONP. I made this using <a href="http://www.mootools.net">Mootools</a> on an <a href="http://www.apple.com">Apple</a>. Special thanks to: <a href="http://www.flickr.com">Flickr</a>, <a href="http://www.delicious.com">del.icio.us</a>, <a href="http://www.twitter.com">Twitter</a> and <a href="http://www.last.fm">LastFM</a>. <br/>Oh I also like <a href="http://www.achewood.com">Achewood</a> and <a href="http://www.butterflyonline.com/">Butterfly</a>.</p></div>')
 		.addClass('loading')
 		
+	if (_3n.global_user) {
+		new Element('p', {html: "This site has been customized for " + _3n.global_user + "."}).inject($('footer'),'before')
+		$('footer').addClass('custom')
+	} 
+		
 	$('fun-zone').set('html', '<span class="title">in</span><span class="title">summary</span>')	
 
 	if (navigator.userAgent.match('iPhone')) document.body.addClass('iphone');

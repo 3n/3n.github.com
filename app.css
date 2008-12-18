@@ -70,6 +70,10 @@ a {
   line-height : 1.4em;
 }
   #footer .highlighted { background-color: white; }
+  #footer.custom { 
+    text-decoration:line-through; 
+    color:#bbb;
+  }
 
 h1 {
   background        : url(images/3n.png);
