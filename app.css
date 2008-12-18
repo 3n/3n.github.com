@@ -49,6 +49,12 @@ a {
     color: #658DA8;    
   }
 
+.lighter { color:#aaa; }
+.highlighted { 
+  background-color      : #FFFBDA;
+  padding               : 0 4px;
+  -webkit-border-radius : 5px;
+}
 
 #wrapper {
   width    : 780px;
@@ -58,6 +64,12 @@ a {
   body.iphone #wrapper {
     width: 540px !important;
   }
+
+#footer { 
+  text-align  : justify; 
+  line-height : 1.4em;
+}
+  #footer .highlighted { background-color: white; }
 
 h1 {
   background        : url(images/3n.png);
