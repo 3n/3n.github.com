@@ -56,6 +56,12 @@ a {
   padding               : 0 4px;
   -webkit-border-radius : 5px;
 }
+.code {
+  font-family:courier;
+  letter-spacing:0.05em;
+  background-color:#ddd;
+  padding:0 4px;
+}
 
 #wrapper {
   width    : 780px;
@@ -75,6 +81,10 @@ a {
     text-decoration:line-through; 
     color:#bbb;
   }
+  
+#footer p {
+  margin-bottom : 0.8em;
+}
 
 h1 {
   background        : url(images/3n.png);
