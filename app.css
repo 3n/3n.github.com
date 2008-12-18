@@ -46,7 +46,8 @@ a {
   color           : #8F9EA8;
 }
   a:hover {
-    color: #658DA8;    
+    color            : #658DA8;   
+    background-color : white; 
   }
 
 .lighter { color:#aaa; }
