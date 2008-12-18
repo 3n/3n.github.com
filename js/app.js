@@ -568,7 +568,7 @@ window.addEvent('domready', function(){
 		.addClass('loading')
 		
 	if (_3n.global_user) {
-		new Element('p', {html: "This site has been customized for " + _3n.global_user + "."}).inject($('footer'),'before')
+		new Element('p', {'class':'shits_custom', html:"This site has been customized for " + _3n.global_user + "."}).inject($('footer'),'before')
 		$('footer').addClass('custom')
 	} 
 		
