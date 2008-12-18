@@ -79,7 +79,7 @@ h1 {
   position  : absolute;
   top       : 0;
   width     : 610px;
-}
+}  
   #fun-zone span {
     float   : left;
     margin-bottom:2px;
@@ -102,6 +102,14 @@ h1 {
     #fun-zone span.word:hover { 
       background-color : #ccc; 
     }
+    
+  body.iphone #fun-zone { width:330px; }
+  body.iphone #fun-zone span.title {
+    font-size   : 14px;
+    font-weight : bold;
+    line-height : 18px;
+    color       : white;
+  }
 
 #main {
   overflow           : auto;
