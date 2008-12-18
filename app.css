@@ -141,14 +141,15 @@ h1 {
   .cell.new .new-icon {
     background-color : white;
     bottom           : -4px;
-    color            : #BBBBBB;
+    color            : #666;
     font-size        : 10px;
     left             : 0;
-    padding-right    : 3px;
+    padding-right    : 1px;
     position         : absolute;
     width            : 21px;
     line-height      : 1.5em;
     display          : block;
+    letter-spacing   : 0.05em;
   }
   body.all-new .new-icon { display:none !important;}
 
