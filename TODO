@@ -22,6 +22,12 @@ bottom bar of logos: made using <mootools logo> on a <apple logo>. also butterfl
 
 holding SHIFT makes the animations slower.
 
+make the 3N logo darker. 
+
+
+
+
+
 ARCHITECTURE
 
 rename 'data' as it is now to 'json' 
