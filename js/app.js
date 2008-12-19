@@ -372,6 +372,24 @@ var Delicious = new Class({
 	}	
 })
 
+var GitHub = new Class({
+	Extends: Model,
+	
+	site_name  : "github",
+	nombre     : "CODING",
+	web_source : "http://www.github.com/" + current_user('github'),
+	json_url   : "http://github.com/" + current_user('github') + ".json",
+	initial_limit : 10,
+
+	initialize: function(){
+		return this.parent()
+	},
+	
+	process_data: function(json){
+		console.log(json)
+	}
+})
+
 // both methods in here should be renamed to represent their sort order
 var Grid = new Class({
 	Implements : Events,
@@ -502,7 +520,8 @@ function current_user(site){
 }
 
 function get_user_names(){
-	[['global_user',null],['twitter_user','3n'],['flickr_id','52179512@N00'],['flickr_user','3n'],['delicious_user','3n'],['lastfm_user','3n']].each(function(u){
+	// todo add constants to top
+	[['global_user',null],['twitter_user','3n'],['flickr_id','52179512@N00'],['flickr_user','3n'],['delicious_user','3n'],['lastfm_user','3n'],['github_user','3n']].each(function(u){
 		var passed_in = params()[u[0]]
 		_3n[u[0]] = ((_3n.global_user && !passed_in) || passed_in === '') ? '' : (passed_in || u[1])
 	})
@@ -580,6 +599,8 @@ window.addEvent('domready', function(){
 	
 	if (!$defined(Cookie.read('grid_latest_'+_3n.global_user))) $(document.body).addClass('all-new')
 	_3n.grid_latest = new Hash.Cookie('grid_latest_'+_3n.global_user, {duration:100, path: '/'})
+	
+	new GitHub().get_data()
 	
 	new Grid('main', [
 		[ new Flickr, 
