@@ -386,7 +386,44 @@ var GitHub = new Class({
 	},
 	
 	process_data: function(json){
-		console.log(json)
+		this.db = json.map(function(json_item){
+			return {
+				html        : this._gen_html(json_item),
+				source      : this._gen_source(json_item),
+				created_on  : Date.parse(json_item.created_at),
+				is_new      : Date.parse(json_item.created_at) > Date.parse(_3n.grid_latest.get(this.site_name))
+			}
+		}.bind(this))
+		
+		this.db = this.db.filter(function(x){ return x.html })
+
+		this.parent()
+		return this.db
+	},
+	
+	_gen_html: function(json_item){
+		switch(json_item.type) {
+			case 'CommitEvent' :
+				return json_item.actor + " commited to " + "<a href='" + json_item.repository.url + "'>" + json_item.repository.name + "</a>"; break;
+			default : return; break;			
+		}
+	},
+	
+	_gen_source: function(json_item){
+		switch(json_item.type) {
+			case 'CommitEvent' :
+				return "http://github.com/3n/" + json_item.repository.name + "/commit/" + json_item.payload.commit; break;
+			default : return; break;			
+		}
+	},
+	
+	_to_cell: function(){
+		return new Cell(this.html, { 
+			'main_class'	 : 'single-wide',
+			'custom_class' : 'text ' + (this.is_new ? 'new' : ''),
+			'created_on'	 : this.created_on,
+			'source'			 : this.source
+		})
 	}
 })
 
@@ -533,7 +570,7 @@ function goog(){
   try {
     var pageTracker = _gat._getTracker("UA-6319958-1");
     pageTracker._trackPageview();
-  } catch(err) {}    
+  } catch(err) {}
 }
 
 function hash_clear_on(){
@@ -600,13 +637,12 @@ window.addEvent('domready', function(){
 	if (!$defined(Cookie.read('grid_latest_'+_3n.global_user))) $(document.body).addClass('all-new')
 	_3n.grid_latest = new Hash.Cookie('grid_latest_'+_3n.global_user, {duration:100, path: '/'})
 	
-	new GitHub().get_data()
-	
 	new Grid('main', [
 		[ new Flickr, 
 		  new Twitter ],
 		[ new LastFM  ],
-		_3n.delicious_tags.split('-').map(function(tag){ return new Delicious(tag) })
+		_3n.delicious_tags.split('-').map(function(tag){ return new Delicious(tag) }),
+		[ new GitHub ]
 	]).addEvent('shitsDoneScro', function(){ $(document.body).removeClass('loading') })
 		.to_html()
 	
