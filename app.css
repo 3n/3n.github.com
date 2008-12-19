@@ -44,6 +44,7 @@ body {
 a {
   text-decoration : none;
   color           : #8F9EA8;
+  cursor          : pointer;
 }
   a:hover {
     color            : #658DA8;   
@@ -332,4 +333,14 @@ h1 {
 .shits_custom {
   font-size:1.5em;
   margin-bottom:0.6em;
+}
+
+#sort-group {
+  color:#CCCCCC;
+  font-size:13px;
+  left:790px;
+  padding:0 3px;
+  position:absolute;
+  top:100px;
+  z-index:100;
 }

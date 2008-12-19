@@ -18,7 +18,7 @@ Inspiration:
 
 var MooTools = {
 	'version': '1.2.1',
-	'build': '028e6fb28454d41a4d835ee988ef51655dc389e9'
+	'build': 'c2bec2cf95fba351162d572661b6250bc92cfb06'
 };
 
 var Native = function(options){
@@ -4902,4 +4902,59 @@ Hash.Cookie.implement((function(){
 	return methods;
 
 })());
+
+/*
+Script: BrawndoButton.js
+	Class for handling class/text toggling of a button. Can be used to make a toggle button
+	that has two non-toggling elements and a toggling element. 
+*/
+
+var BrawndoButton = new Class({
+	
+	Implements: [Options, Events],
+	
+	options: {
+		class_name  : "active",
+		non_toggles : [],
+		event_type  : 'click',
+		text_states : [], 
+		hide_after  : false,
+		num_states  : 2
+	},
+	
+	initialize: function(element, options){		
+		if (!element) return null;
+		this.setOptions(options);
+		
+		this.element    = $(element);
+		this.count      = 0;
+
+		this.element.addEvent(this.options.event_type, function(){ this.set(null, true) }.bind(this));		
+		this.options.non_toggles.each(function(nt,i){
+			nt.addEvent('click', this.set.bind(this, [i, true]));
+		},this);
+		
+		return this;
+	},
+	set: function(i, fire_events){
+		if ($chk(i)) this.count = i;
+		else 				 this.count = (this.count+1) % this.options.num_states;
+
+		if (fire_events) this.fireEvent('onStart', this.count);
+		
+		if ((this.count%2) === 0)
+			this.element.removeClass(this.options.class_name); 
+		else
+			this.element.addClass(this.options.class_name);		
+			
+		if (fire_events) this.fireEvent('onState' + this.count);			
+		
+		if (this.options.hide_after) 
+			this.element.simple_hide();
+		if (this.options.text_states.length > 0) 
+			this.element.set('text', this.options.text_states[this.count]);
+			
+		if (fire_events) this.fireEvent('onComplete', this.count);
+	}
+});
 
