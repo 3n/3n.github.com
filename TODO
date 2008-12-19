@@ -2,18 +2,14 @@ Sweetass clock whose hand(s) are the string of the time
 
 click and drag on logo to start spinning (like bottle) or clic and pull, then let go to spin. 
 
-add last.fm artist photos
-
 store everything in the model dbs in a browser sqlite if possible - make for better long-term
 visualizations
 
 keyword search for all entries
 
-bff proxy for each cell
-
 refresh countdown on hover of each grid_title
 
-add top gradient
+add top gradient?
 
 do something like http://www.youworkforthem.com/product.php?sku=P1139 where all the cells get tinted
 blue and a large yellow thing comes up in front of them. 
