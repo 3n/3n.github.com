@@ -412,7 +412,7 @@ var GitHub = new Class({
 	_gen_source: function(json_item){
 		switch(json_item.type) {
 			case 'CommitEvent' :
-				return "http://github.com/3n/" + json_item.repository.name + "/commit/" + json_item.payload.commit; break;
+				return "http://github.com/" + this.current_user() + "/" + json_item.repository.name + "/commit/" + json_item.payload.commit; break;
 			default : return; break;			
 		}
 	},
