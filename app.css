@@ -73,8 +73,7 @@ a {
     width: 540px !important;
   }
 
-#footer { 
-  text-align  : justify; 
+#footer {
   line-height : 1.4em;
 }
   #footer .highlighted { background-color: white; }
