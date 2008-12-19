@@ -492,7 +492,7 @@ var Grid = new Class({
 		if (finished_models.length > 0){
 			finished_models.each(function(fm){
 				if (model.bucket < fm.bucket || (fm.sort_by('created_on').first().created_on < model.sort_by('created_on').first().created_on && fm.bucket >= model.bucket)){
-					if (!model.injected){	
+					if (!model.injected){
 						model.to_cells(model.initial_limit).each(function(cell){ cell.inject(fm.title_elem,'before') }, this)
 						this.nav.add_pair( [model.nav.inject(fm.nav, 'before'), model.title_elem] )
 					}						
@@ -504,6 +504,7 @@ var Grid = new Class({
 		if (!model.injected) {
 			this.element.adopt( model.to_cells(model.initial_limit) )
 			this.nav.add_pair( [model.nav.inject(this.nav.element, 'bottom'), model.title_elem] )
+			model.injected = true
 		}
 		
 		if (finished_models.length == this.buckets.flatten().length - 1){
