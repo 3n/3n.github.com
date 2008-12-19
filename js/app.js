@@ -100,21 +100,32 @@ var ImageCell = new Class({
 var Model = new Class({
 	Implements: Events,
 	initialize: function(){
-		this.db = []		
+		this.db = []
+		this.data_ready = false
 		return this
 	},
 	
 	get_data: function(){
-		new JsonP(
-			this.json_url, 
-			$merge(	{abortAfter : 1000, retries : 1, onComplete : this.process_data.bind(this) }, this.json_opts) 
-		).request()
+		if (this.data_ready)
+			this.fireEvent('dataReady', this)
+		else
+			new JsonP(
+				this.json_url, 
+				$merge(	{abortAfter : 1000, retries : 1, onComplete : this.process_data.bind(this) }, this.json_opts) 
+			).request()
+			
 		return this
 	},
 	
-	process_data: function(){
+	process_data: function(custom_name){
+		this.db = this.db.map(function(row){
+			row.model = this
+			return row
+		}, this)
+		
+		this.data_ready = true
 		this.fireEvent('dataReady', this)
-		_3n.grid_latest.set( this.site_name, this.db[0].created_on.toString())
+		_3n.grid_latest.set( custom_name || this.site_name, this.db[0].created_on.toString())
 	},
 	
 	sort_by: function(field){
@@ -347,8 +358,7 @@ var Delicious = new Class({
 			}
 	  }.bind(this))
 	
-		this.fireEvent('dataReady', this)
-		_3n.grid_latest.set( this.site_name + '-' + this.tag, this.db[0].created_on.toString())
+		this.parent(this.site_name + '-' + this.tag)
 		
 		return this.db
 	},					
@@ -435,22 +445,34 @@ var Grid = new Class({
 		this.buckets = buckets
 		
 		this.nav = new FixedNav(new Element('ul', {'id':'grid-nav'}).inject(this.element, 'before'), this.element)
+		return this
 	},
 	
-	to_html: function(){
+	to_html: function(format){
+		format = format || 'grouped'
+		this.element.set('html','')
+
 		this.buckets.each(function(b,i){
 			b.each(function(m){
 				m.bucket = i
-				m.addEvent('dataReady', this.handle_model.bind(this))
-				 .get_data()
+				m.removeEvents('dataReady').addEvent('dataReady', this["_"+format].bind(this))
+				m.get_data()
 			}, this)
 		}, this)
 	},
 	
-	handle_model: function(model){	
+	fade: function(){
+		this.element.f4de('out', 500, this.element.set.bind(this.element, ['html','']))
+		return this
+	},
+	
+	_grouped: function(model){	
 		if (model.db.length === 0) return
-		var finished_models = this.buckets.flatten().filter(function(m){ return m.cells })
-		var injected = false
+		var finished_models = this.buckets.flatten().filter(function(m){ return m.injected })
+		model.injected = false
+		
+		this.element.setStyles({'visibility':'visible', 'opacity':1})
+		this.nav.element.simple_show()
 						
 		model.nav = model.nav || new Element('li', {
 			'class' : model.site_name + (model.new_items().length > 0 ? ' opaque' : ''),
@@ -476,17 +498,17 @@ var Grid = new Class({
 		if (finished_models.length > 0){
 			finished_models.each(function(fm){
 				if (model.bucket < fm.bucket || (fm.sort_by('created_on').first().created_on < model.sort_by('created_on').first().created_on && fm.bucket >= model.bucket)){
-					if (!model.cells){						
+					if (!model.injected){	
 						model.to_cells(model.initial_limit).each(function(cell){ cell.inject(fm.title_elem,'before') }, this)
 						this.nav.add_pair( [model.nav.inject(fm.nav, 'before'), model.title_elem] )
 					}						
-					injected = true
+					model.injected = true
 				}
 			}, this)
 		}
 		
-		if (!injected) {
-			this.element.adopt( model.to_cells(model.initial_limit))
+		if (!model.injected) {
+			this.element.adopt( model.to_cells(model.initial_limit) )
 			this.nav.add_pair( [model.nav.inject(this.nav.element, 'bottom'), model.title_elem] )
 		}
 		
@@ -494,6 +516,23 @@ var Grid = new Class({
 			this.fireEvent('shitsDoneScro')
 			this.nav.handle_hash_scroll()
 		}			
+	},
+	_sorted: function(model){
+		if (model.db.length === 0) return
+		var finished_models = this.buckets.flatten().filter(function(m){ return m.data_ready })		
+		this.sorted_cells = this.sorted_cells || []
+	
+		this.element.setStyles({'visibility':'visible', 'opacity':1})
+		this.nav.element.simple_hide()
+	
+		this.sorted_cells = this.sorted_cells.include(model.db.first(20).map(function(x){ return x.model._to_cell.apply(x) })).flatten().sort(function(a,b){
+			if      (a.options.created_on >  b.options.created_on) return 1
+			else if (a.options.created_on <= b.options.created_on) return -1
+			else return 0
+		})
+		
+		if (finished_models.length === this.buckets.flatten().length)
+			this.element.adopt(this.sorted_cells.reverse().map(function(x){ return x.to_html() }))
 	},
 	
 	model_toggle_all: function(e){
@@ -637,14 +676,15 @@ window.addEvent('domready', function(){
 	if (!$defined(Cookie.read('grid_latest_'+_3n.global_user))) $(document.body).addClass('all-new')
 	_3n.grid_latest = new Hash.Cookie('grid_latest_'+_3n.global_user, {duration:100, path: '/'})
 	
-	new Grid('main', [
+	_3n.the_grid = new Grid('main', [
 		[ new Flickr, 
 		  new Twitter ],
 		[ new LastFM  ],
 		_3n.delicious_tags.split('-').map(function(tag){ return new Delicious(tag) }),
 		[ new GitHub ]
 	]).addEvent('shitsDoneScro', function(){ $(document.body).removeClass('loading') })
-		.to_html()
+		
+	_3n.the_grid.to_html()
 	
 	if ( Browser.Engine.webkit ) they_spinnin()
   if ( !document.location.href.match(/~ian/) ) goog()
