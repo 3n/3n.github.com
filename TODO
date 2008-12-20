@@ -20,6 +20,8 @@ holding SHIFT makes the animations slower.
 
 make the 3N logo darker. 
 
+double wide for long links
+
 
 
 
@@ -60,3 +62,6 @@ model.first(10).get('created_on')
 
 toby
 http://www.iancollins.me/?global_user=takeo&flickr_id=93851177@N00&delicious_user=tobys&lastfm_user=tobysterrett
+
+abhay
+http://www.iancollins.me/?flickr_id=61791246@N00&global_user=abhaykumar&lastfm_user=c0de#/
