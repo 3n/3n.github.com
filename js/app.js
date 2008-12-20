@@ -687,5 +687,4 @@ window.addEvent('domready', function(){
 	if ( Browser.Engine.webkit ) they_spinnin()
   if ( !document.location.href.match(/~ian/) ) goog()
 	
-}) 
-
+})

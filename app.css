@@ -45,6 +45,7 @@ a {
   text-decoration : none;
   color           : #8F9EA8;
   cursor          : pointer;
+  word-wrap       : break-word;
 }
   a:hover {
     color            : #658DA8;   
