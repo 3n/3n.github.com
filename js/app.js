@@ -500,9 +500,10 @@ var Grid = new Class({
 	to_html: function(format){
 		format = format || 'grouped'
 		this.element.set('html','')
-
+		
 		this.buckets.each(function(b,i){
 			b.each(function(m){
+				m.injected = false
 				m.bucket = i
 				m.removeEvents('dataReady').addEvent('dataReady', this["_"+format].bind(this))
 				m.get_data()
@@ -513,7 +514,7 @@ var Grid = new Class({
 	_grouped: function(model){	
 		if (model.db.length === 0) return
 		var finished_models = this.buckets.flatten().filter(function(m){ return m.injected })
-		model.injected = false
+		// model.injected = false
 		
 		this.nav.element.simple_show()
 						
@@ -563,7 +564,7 @@ var Grid = new Class({
 	},
 	_sorted: function(model){
 		if (model.db.length === 0) return
-		var finished_models = this.buckets.flatten().filter(function(m){ return m.data_ready })		
+		var finished_models = this.buckets.flatten().filter(function(m){ return m.data_ready })
 		this.sorted_cells = this.sorted_cells || []
 	
 		this.nav.element.simple_hide()
