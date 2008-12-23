@@ -437,6 +437,55 @@ var GitHub = new Class({
 	}
 })
 
+var YouTube = new Class({
+  Extends: Model,
+  
+  site_name  : "youtube",
+  nombre     : "WATCHING",
+  json_url   : "http://gdata.youtube.com/feeds/api/users/" + current_user('youtube') + "/favorites",
+  web_source : "http://www.youtube.com/user/" + current_user('youtube'),
+  json_opts  : { data : { 'v'           : 2,
+                          'alt'         : 'json-in-script',
+                          'max-results' : 15 } },
+  initial_limit : 10,
+  
+  initialize: function(){
+    return this.parent()
+  },
+  
+  process_data: function(json){
+    this.db = json.feed.entry.map(function(json_item){
+      return {
+        href        : this._gen_href(json_item),
+        created_on  : Date.parse(json_item.published.$t),
+        text        : json_item.title.$t,
+        html        : "<a href='" + this._gen_href(json_item) + "'>" + json_item.title.$t + "</a>",
+        is_new      : Date.parse(json_item.published.$t) > Date.parse(_3n.grid_latest.get(this.site_name))
+      }
+    }.bind(this))
+    
+    this.db = this.db.filter(function(x){ return x.html })
+ 
+    this.parent()
+    return this.db
+  },
+  
+  _gen_href: function(json_item){
+    return json_item.link.filter(function(link){
+      return link.rel == 'alternate'
+    }).first().href;
+  },
+  
+  _to_cell: function(){
+    return new Cell(this.html, {
+      'main_class'   : (this.text.length > 90) ? 'double-wide' : 'single-wide',
+      'created_on'   : this.created_on,
+      'source'       : this.href,
+      'custom_class' : 'text ' + (this.is_new ? 'new' : '')
+    })
+  }
+})
+
 // both methods in here should be renamed to represent their sort order
 var Grid = new Class({
 	Implements : Events,

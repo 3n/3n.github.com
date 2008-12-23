@@ -216,12 +216,14 @@ h1 {
 .delicious { background-color: #2F6DBA; }  
 .lastfm    { background-color: #ED3B3B; } 
 .github    { background-color: #FFB22E; } 
+.youtube   { background-color: #622FBA; }
   
   .flickr    .show-all { color: #FF66AB; }
   .twitter   .show-all { color: #6CD0D9; }  
   .delicious .show-all { color: #5C9AE6; }  
   .lastfm    .show-all { color: #FF6666; }
   .github    .show-all { color: #FFE0AA; }
+  .youtube   .show-all { color: #8840FF; }
  
 
 #grid-nav {
