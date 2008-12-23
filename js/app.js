@@ -531,7 +531,7 @@ var Grid = new Class({
 		model.db.first(10).each(function(row,i){
 			var text = $pick(row.title, row.text, row.html, '')
 			var the_match = text.match(/\b([A-Z]\w+)(\s[A-Z]\w+){0,5}/)
-			if (the_match && !['the'].contains(the_match[0].toLowerCase())) 
+			if (the_match && !['the','youtube'].contains(the_match[0].toLowerCase())) 
 				$('fun-zone').adopt( 
 					new Element('span', {'class':'word','html':the_match[0]})
 						.addEvent('click', function(){ model.cells[i+1].scroll_to(10,true) })
