@@ -240,13 +240,13 @@ h1 {
     float   : left;
     clear   : left;
     cursor  : pointer;
-    opacity : 0.2;
+    opacity : 0.3;
   }
   #grid-nav li.opaque {
     opacity : 1;
   }
   body.all-new #grid-nav li {
-    opacity : 0.2;
+    opacity : 0.3;
   }
 
 .text {
