@@ -114,14 +114,14 @@ h1 {
     margin-right:2px;
   }
   #fun-zone span.title { 
-    background-color : #D8D8D8;
+    background-color : #c6c6c6;
     color            : #f5f5f5;
     font-size        : 34px;
     line-height      : 38px;
     padding          : 0 6px;
   }
   #fun-zone span.word { 
-    background-color : #E0E0E0;
+    background-color : #d5d5d5;
     color            : white;
     cursor           : pointer;
     line-height      : 18px;
