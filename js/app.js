@@ -514,7 +514,6 @@ var Grid = new Class({
 	_grouped: function(model){	
 		if (model.db.length === 0) return
 		var finished_models = this.buckets.flatten().filter(function(m){ return m.injected })
-		// model.injected = false
 		
 		this.nav.element.simple_show()
 						
