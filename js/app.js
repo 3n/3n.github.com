@@ -1,4 +1,7 @@
-var $3n = {}
+var $3n = {
+	delicious_tags : params()['delicious_tags'] || 'humor-awesome'
+}
+
 get_user_names()
 
 var Cell = new Class({
@@ -712,8 +715,6 @@ window.addEvent('domready', function(){
 	$('fun-zone').set('html', '<span class="title">in</span><span class="title">summary</span>')	
 
 	if (navigator.userAgent.match('iPhone')) document.body.addClass('iphone');
-	
-	$3n.delicious_tags = params()['delicious_tags'] || 'humor-awesome'
 	
 	if (!$defined(Cookie.read('grid_latest_'+$3n.global_user))) $(document.body).addClass('all-new')
 	$3n.grid_latest = new Hash.Cookie('grid_latest_'+$3n.global_user, {duration:100, path: '/'})
