@@ -1,4 +1,4 @@
-var _3n = {}
+var $3n = {}
 get_user_names()
 
 var Cell = new Class({
@@ -125,7 +125,7 @@ var Model = new Class({
 		
 		this.data_ready = true
 		this.fireEvent('dataReady', this)
-		_3n.grid_latest.set( custom_name || this.site_name, this.db[0].created_on.toString())
+		$3n.grid_latest.set( custom_name || this.site_name, this.db[0].created_on.toString())
 	},
 	
 	sort_by: function(field){
@@ -169,7 +169,7 @@ var Flickr = new Class({
 	json_url   : "http://api.flickr.com/services/feeds/photos_public.gne",
 	web_source : "http://www.flickr.com/photos/" + current_user('flickr'),
 	json_opts  : { globalFunction : 'jsonFlickrFeed',
-								 data: { id     : _3n.flickr_id,
+								 data: { id     : $3n.flickr_id,
 												 lang   : "en-us",
 									       format : 'json' } },
  	initial_limit : 15,									
@@ -188,7 +188,7 @@ var Flickr = new Class({
 				source      : json_item.link,
 				description : json_item.description,
 				tags        : json_item.tags,
-				is_new      : Date.parse(json_item.date_taken) > Date.parse(_3n.grid_latest.get(this.site_name))
+				is_new      : Date.parse(json_item.date_taken) > Date.parse($3n.grid_latest.get(this.site_name))
 			}
 	  }.bind(this))
 
@@ -227,7 +227,7 @@ var Twitter = new Class({
 				created_on  : Date.parse(json_item.created_at),
 				source      : "http://www.twitter.com/" + json_item.from_user + "/status/" + json_item.id,
 				html        : json_item.text.make_urls_links().link_replies().link_hashcodes(),
-				is_new      : Date.parse(json_item.created_at) > Date.parse(_3n.grid_latest.get(this.site_name))
+				is_new      : Date.parse(json_item.created_at) > Date.parse($3n.grid_latest.get(this.site_name))
 			}
 	  }.bind(this))
 	
@@ -278,7 +278,7 @@ var LastFM = new Class({
 		// 		artist      : json_item.Title[0].value.match(/(.+)\s–/)[1],
 		// 		html        : "<span class='artist'>" + json_item.Title[0].value.match(/(.+)\s–/)[1] + "</span> <a class='track' href='" + json_item.Title[0].href + "'>" + json_item.Title[0].value.match(/\– (.+)/)[1] + "</a>",
 		// 		created_on  : Date.parse(json_item.Publication_Date[0].value).decrement('hour',8),
-		// 		is_new      : Date.parse(json_item.Publication_Date[0].value).decrement('hour',8) > Date.parse(_3n.grid_latest.get(this.site_name))
+		// 		is_new      : Date.parse(json_item.Publication_Date[0].value).decrement('hour',8) > Date.parse($3n.grid_latest.get(this.site_name))
 		// 	}
 		// 	  }.bind(this))
 		this.db = json.recenttracks.map(function(json_item){
@@ -288,7 +288,7 @@ var LastFM = new Class({
 				artist      : json_item.artist.name,
 				html        : "<span class='artist'>" + json_item.artist.name + "</span> <a class='track' href='" + json_item.url + "'>" + json_item.name + "</a>",
 				created_on  : Date.parse(json_item.date.text).decrement('hour',8),
-				is_new      : Date.parse(json_item.date.text).decrement('hour',8) > Date.parse(_3n.grid_latest.get(this.site_name))
+				is_new      : Date.parse(json_item.date.text).decrement('hour',8) > Date.parse($3n.grid_latest.get(this.site_name))
 			}
 			  }.bind(this))
 
@@ -354,7 +354,7 @@ var Delicious = new Class({
 				created_on  : Date.parse(json_item.dt),
 				text        : json_item.d,
 				html        : "<a href='" + json_item.u + "'>" + json_item.d + "</a>",
-				is_new      : Date.parse(json_item.dt) > Date.parse(_3n.grid_latest.get(this.site_name + '-' + this.tag))
+				is_new      : Date.parse(json_item.dt) > Date.parse($3n.grid_latest.get(this.site_name + '-' + this.tag))
 			}
 	  }.bind(this))
 	
@@ -401,7 +401,7 @@ var GitHub = new Class({
 				html        : this._gen_html(json_item),
 				source      : this._gen_source(json_item),
 				created_on  : Date.parse(json_item.created_at),
-				is_new      : Date.parse(json_item.created_at) > Date.parse(_3n.grid_latest.get(this.site_name))
+				is_new      : Date.parse(json_item.created_at) > Date.parse($3n.grid_latest.get(this.site_name))
 			}
 		}.bind(this))
 		
@@ -460,7 +460,7 @@ var YouTube = new Class({
         created_on  : Date.parse(json_item.published.$t),
         text        : json_item.title.$t,
         html        : "<a href='" + this._gen_href(json_item) + "'>" + json_item.title.$t + "</a>",
-        is_new      : Date.parse(json_item.published.$t) > Date.parse(_3n.grid_latest.get(this.site_name))
+        is_new      : Date.parse(json_item.published.$t) > Date.parse($3n.grid_latest.get(this.site_name))
       }
     }.bind(this))
     
@@ -635,14 +635,13 @@ var FixedNav = new Class({
 })
 
 function current_user(site){
-	return _3n[site + '_user'] || _3n.global_user
+	return $3n[site + '_user'] || $3n.global_user
 }
 
 function get_user_names(){
-	// todo add constants to top
 	[['global_user',null],['twitter_user','3n'],['flickr_id','52179512@N00'],['flickr_user','3n'],['delicious_user','3n'],['lastfm_user','3n'],['github_user','3n']].each(function(u){
 		var passed_in = params()[u[0]]
-		_3n[u[0]] = ((_3n.global_user && !passed_in) || passed_in === '') ? '' : (passed_in || u[1])
+		$3n[u[0]] = (($3n.global_user && !passed_in) || passed_in === '') ? '' : (passed_in || u[1])
 	})
 }
 
@@ -656,12 +655,12 @@ function goog(){
 }
 
 function hash_clear_on(){
-	_3n.hash_clear = _3n.hash_clear || function(){ if (document.location.hash !== "#/") document.location.hash = "/" }
-	window.addEvent('scroll', _3n.hash_clear)
+	$3n.hash_clear = $3n.hash_clear || function(){ if (document.location.hash !== "#/") document.location.hash = "/" }
+	window.addEvent('scroll', $3n.hash_clear)
 }
 function hash_clear_off(){
-	_3n.hash_clear = _3n.hash_clear || function(){ if (document.location.hash !== "#/") document.location.hash = "/" }
-	window.removeEvent('scroll', _3n.hash_clear)
+	$3n.hash_clear = $3n.hash_clear || function(){ if (document.location.hash !== "#/") document.location.hash = "/" }
+	window.removeEvent('scroll', $3n.hash_clear)
 }
 
 function they_spinnin(){
@@ -705,8 +704,8 @@ window.addEvent('domready', function(){
 		.set('html', '<div id="wrapper"><h1 id="title">3N</h1><div id="fun-zone"></div><a id="sort-group">SORT</a><div id="main"></div><div id="footer"><p>This is the personal site of <span class="highlighted">Ian Collins</span> a.k.a. <span class="highlighted">3n</span>. What you see above is a summary of my online acivity and roughly, my life. Upon your first visit this site will remember what you have seen and on subsequent visits, it will mark anything that is new for you. </p><p>You can create your own version of this site by adding query params to the url like <span class="code">lastfm_user=username</span> or <span class="code">delicious_tags=tag1-tag2</span>, for example: <a href="http://www.iancollins.me/?global_user=takeo&flickr_id=93851177@N00&delicious_user=tobys&lastfm_user=tobysterrett">takeo</a>. Make sure to start with <span class="code">global_user=username</span>, and add the specific ones if necessary.</p><p>This site is made exclusively with Javscript through the wonders of JSONP. I made this using <a href="http://www.mootools.net">Mootools</a> & <a href="http://www.clientcide.com">Clientcide</a> on an <a href="http://www.apple.com">Apple</a>. Special thanks to: <a href="http://www.github.com">GitHub</a>, <a href="http://www.flickr.com">Flickr</a>, <a href="http://www.delicious.com">del.icio.us</a>, <a href="http://www.twitter.com">Twitter</a> and <a href="http://www.last.fm">LastFM</a>. </p><p>Oh I also like <a href="http://www.achewood.com">Achewood</a> and <a href="http://www.butterflyonline.com/">Butterfly</a>.</p></div></div>')
 		.addClass('loading')
 		
-	if (_3n.global_user) {
-		new Element('p', {'class':'shits_custom', html:"This site has been customized for " + _3n.global_user + "."}).inject($('footer'),'before')
+	if ($3n.global_user) {
+		new Element('p', {'class':'shits_custom', html:"This site has been customized for " + $3n.global_user + "."}).inject($('footer'),'before')
 		$('footer').addClass('custom')
 	} 
 		
@@ -714,24 +713,24 @@ window.addEvent('domready', function(){
 
 	if (navigator.userAgent.match('iPhone')) document.body.addClass('iphone');
 	
-	_3n.delicious_tags = params()['delicious_tags'] || 'humor-awesome'
+	$3n.delicious_tags = params()['delicious_tags'] || 'humor-awesome'
 	
-	if (!$defined(Cookie.read('grid_latest_'+_3n.global_user))) $(document.body).addClass('all-new')
-	_3n.grid_latest = new Hash.Cookie('grid_latest_'+_3n.global_user, {duration:100, path: '/'})
+	if (!$defined(Cookie.read('grid_latest_'+$3n.global_user))) $(document.body).addClass('all-new')
+	$3n.grid_latest = new Hash.Cookie('grid_latest_'+$3n.global_user, {duration:100, path: '/'})
 	
-	_3n.the_grid = new Grid('main', [
+	$3n.the_grid = new Grid('main', [
 		[ new Flickr, 
 		  new Twitter ],
 		[ new LastFM  ],
-		_3n.delicious_tags.split('-').map(function(tag){ return new Delicious(tag) }),
+		$3n.delicious_tags.split('-').map(function(tag){ return new Delicious(tag) }),
 		[ new GitHub ]
 	]).addEvent('shitsDoneScro', function(){ $(document.body).removeClass('loading') })
 		
-	_3n.the_grid.to_html()
+	$3n.the_grid.to_html()
 	
 	new BrawndoButton($("sort-group"), {text_states:['SORT','GROUP']})
-		.addEvent('onState0', _3n.the_grid.to_html.bind(_3n.the_grid))
-		.addEvent('onState1', _3n.the_grid.to_html.bind(_3n.the_grid, 'sorted'))
+		.addEvent('onState0', $3n.the_grid.to_html.bind($3n.the_grid))
+		.addEvent('onState1', $3n.the_grid.to_html.bind($3n.the_grid, 'sorted'))
 	
 	if ( Browser.Engine.webkit ) they_spinnin()
   if ( !document.location.href.match(/~ian/) ) goog()
