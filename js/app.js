@@ -1,5 +1,6 @@
 var $3n = {
-	delicious_tags : params()['delicious_tags'] || 'humor-awesome'
+	delicious_tags : params()['delicious_tags'] || 'humor-awesome',
+	user_names     : {} // todo
 }
 
 get_user_names()
@@ -172,7 +173,7 @@ var Flickr = new Class({
 	json_url   : "http://api.flickr.com/services/feeds/photos_public.gne",
 	web_source : "http://www.flickr.com/photos/" + current_user('flickr'),
 	json_opts  : { globalFunction : 'jsonFlickrFeed',
-								 data: { id     : $3n.flickr_id,
+								 data: { id     : $3n.user_names.flickr_id,
 												 lang   : "en-us",
 									       format : 'json' } },
  	initial_limit : 15,									
@@ -415,6 +416,7 @@ var GitHub = new Class({
 	},
 	
 	_gen_html: function(json_item){
+		if (!json_item.repository) return
 		switch(json_item.type) {
 			case 'CommitEvent' :
 				return json_item.actor + " commited to " + "<a href='" + json_item.repository.url + "'>" + json_item.repository.name + "</a>"; break;
@@ -423,6 +425,7 @@ var GitHub = new Class({
 	},
 	
 	_gen_source: function(json_item){
+		if (!json_item.repository) return
 		switch(json_item.type) {
 			case 'CommitEvent' :
 				return "http://github.com/" + this.current_user() + "/" + json_item.repository.name + "/commit/" + json_item.payload.commit; break;
@@ -638,13 +641,13 @@ var FixedNav = new Class({
 })
 
 function current_user(site){
-	return $3n[site + '_user'] || $3n.global_user
+	return $3n.user_names[site + '_user'] || $3n.user_names.global_user
 }
 
 function get_user_names(){
 	[['global_user',null],['twitter_user','3n'],['flickr_id','52179512@N00'],['flickr_user','3n'],['delicious_user','3n'],['lastfm_user','3n'],['github_user','3n']].each(function(u){
 		var passed_in = params()[u[0]]
-		$3n[u[0]] = (($3n.global_user && !passed_in) || passed_in === '') ? '' : (passed_in || u[1])
+		$3n.user_names[u[0]] = (($3n.user_names.global_user && !passed_in) || passed_in === '') ? '' : (passed_in || u[1])
 	})
 }
 
@@ -707,8 +710,8 @@ window.addEvent('domready', function(){
 		.set('html', '<div id="wrapper"><h1 id="title">3N</h1><div id="fun-zone"></div><a id="sort-group">SORT</a><div id="main"></div><div id="footer"><p>This is the personal site of <span class="highlighted">Ian Collins</span> a.k.a. <span class="highlighted">3n</span>. What you see above is a summary of my online acivity and roughly, my life. Upon your first visit this site will remember what you have seen and on subsequent visits, it will mark anything that is new for you. </p><p>You can create your own version of this site by adding query params to the url like <span class="code">lastfm_user=username</span> or <span class="code">delicious_tags=tag1-tag2</span>, for example: <a href="http://www.iancollins.me/?global_user=takeo&flickr_id=93851177@N00&delicious_user=tobys&lastfm_user=tobysterrett">takeo</a>. Make sure to start with <span class="code">global_user=username</span>, and add the specific ones if necessary.</p><p>This site is made exclusively with Javscript through the wonders of JSONP. I made this using <a href="http://www.mootools.net">Mootools</a> & <a href="http://www.clientcide.com">Clientcide</a> on an <a href="http://www.apple.com">Apple</a>. Special thanks to: <a href="http://www.github.com">GitHub</a>, <a href="http://www.flickr.com">Flickr</a>, <a href="http://www.delicious.com">del.icio.us</a>, <a href="http://www.twitter.com">Twitter</a> and <a href="http://www.last.fm">LastFM</a>. </p><p>Oh I also like <a href="http://www.achewood.com">Achewood</a> and <a href="http://www.butterflyonline.com/">Butterfly</a>.</p></div></div>')
 		.addClass('loading')
 		
-	if ($3n.global_user) {
-		new Element('p', {'class':'shits_custom', html:"This site has been customized for " + $3n.global_user + "."}).inject($('footer'),'before')
+	if ($3n.user_names.global_user) {
+		new Element('p', {'class':'shits_custom', html:"This site has been customized for " + $3n.user_names.global_user + "."}).inject($('footer'),'before')
 		$('footer').addClass('custom')
 	} 
 		
@@ -716,8 +719,8 @@ window.addEvent('domready', function(){
 
 	if (navigator.userAgent.match('iPhone')) document.body.addClass('iphone');
 	
-	if (!$defined(Cookie.read('grid_latest_'+$3n.global_user))) $(document.body).addClass('all-new')
-	$3n.grid_latest = new Hash.Cookie('grid_latest_'+$3n.global_user, {duration:100, path: '/'})
+	if (!$defined(Cookie.read('grid_latest_'+$3n.user_names.global_user))) $(document.body).addClass('all-new')
+	$3n.grid_latest = new Hash.Cookie('grid_latest_'+$3n.user_names.global_user, {duration:100, path: '/'})
 	
 	$3n.the_grid = new Grid('main', [
 		[ new Flickr, 
