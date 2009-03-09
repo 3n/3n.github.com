@@ -1,3 +1,4 @@
+
 /*
 Script: Core.js
 	MooTools - My Object Oriented JavaScript Tools.
@@ -18,7 +19,7 @@ Inspiration:
 
 var MooTools = {
 	'version': '1.2.1',
-	'build': 'c2bec2cf95fba351162d572661b6250bc92cfb06'
+	'build': '5f1b7fef3522d79fb9844859a8e0af2d6b8206b4'
 };
 
 var Native = function(options){
@@ -279,6 +280,163 @@ function $unlink(object){
 	}
 	return unlinked;
 };
+
+/*
+Script: Browser.js
+	The Browser Core. Contains Browser initialization, Window and Document, and the Browser Hash.
+
+License:
+	MIT-style license.
+*/
+
+var Browser = $merge({
+
+	Engine: {name: 'unknown', version: 0},
+
+	Platform: {name: (window.orientation != undefined) ? 'ipod' : (navigator.platform.match(/mac|win|linux/i) || ['other'])[0].toLowerCase()},
+
+	Features: {xpath: !!(document.evaluate), air: !!(window.runtime), query: !!(document.querySelector)},
+
+	Plugins: {},
+
+	Engines: {
+
+		presto: function(){
+			return (!window.opera) ? false : ((arguments.callee.caller) ? 960 : ((document.getElementsByClassName) ? 950 : 925));
+		},
+
+		trident: function(){
+			return (!window.ActiveXObject) ? false : ((window.XMLHttpRequest) ? 5 : 4);
+		},
+
+		webkit: function(){
+			return (navigator.taintEnabled) ? false : ((Browser.Features.xpath) ? ((Browser.Features.query) ? 525 : 420) : 419);
+		},
+
+		gecko: function(){
+			return (document.getBoxObjectFor == undefined) ? false : ((document.getElementsByClassName) ? 19 : 18);
+		}
+
+	}
+
+}, Browser || {});
+
+Browser.Platform[Browser.Platform.name] = true;
+
+Browser.detect = function(){
+
+	for (var engine in this.Engines){
+		var version = this.Engines[engine]();
+		if (version){
+			this.Engine = {name: engine, version: version};
+			this.Engine[engine] = this.Engine[engine + version] = true;
+			break;
+		}
+	}
+
+	return {name: engine, version: version};
+
+};
+
+Browser.detect();
+
+Browser.Request = function(){
+	return $try(function(){
+		return new XMLHttpRequest();
+	}, function(){
+		return new ActiveXObject('MSXML2.XMLHTTP');
+	});
+};
+
+Browser.Features.xhr = !!(Browser.Request());
+
+Browser.Plugins.Flash = (function(){
+	var version = ($try(function(){
+		return navigator.plugins['Shockwave Flash'].description;
+	}, function(){
+		return new ActiveXObject('ShockwaveFlash.ShockwaveFlash').GetVariable('$version');
+	}) || '0 r0').match(/\d+/g);
+	return {version: parseInt(version[0] || 0 + '.' + version[1], 10) || 0, build: parseInt(version[2], 10) || 0};
+})();
+
+function $exec(text){
+	if (!text) return text;
+	if (window.execScript){
+		window.execScript(text);
+	} else {
+		var script = document.createElement('script');
+		script.setAttribute('type', 'text/javascript');
+		script[(Browser.Engine.webkit && Browser.Engine.version < 420) ? 'innerText' : 'text'] = text;
+		document.head.appendChild(script);
+		document.head.removeChild(script);
+	}
+	return text;
+};
+
+Native.UID = 1;
+
+var $uid = (Browser.Engine.trident) ? function(item){
+	return (item.uid || (item.uid = [Native.UID++]))[0];
+} : function(item){
+	return item.uid || (item.uid = Native.UID++);
+};
+
+var Window = new Native({
+
+	name: 'Window',
+
+	legacy: (Browser.Engine.trident) ? null: window.Window,
+
+	initialize: function(win){
+		$uid(win);
+		if (!win.Element){
+			win.Element = $empty;
+			if (Browser.Engine.webkit) win.document.createElement("iframe"); //fixes safari 2
+			win.Element.prototype = (Browser.Engine.webkit) ? window["[[DOMElement.prototype]]"] : {};
+		}
+		win.document.window = win;
+		return $extend(win, Window.Prototype);
+	},
+
+	afterImplement: function(property, value){
+		window[property] = Window.Prototype[property] = value;
+	}
+
+});
+
+Window.Prototype = {$family: {name: 'window'}};
+
+new Window(window);
+
+var Document = new Native({
+
+	name: 'Document',
+
+	legacy: (Browser.Engine.trident) ? null: window.Document,
+
+	initialize: function(doc){
+		$uid(doc);
+		doc.head = doc.getElementsByTagName('head')[0];
+		doc.html = doc.getElementsByTagName('html')[0];
+		if (Browser.Engine.trident && Browser.Engine.version <= 4) $try(function(){
+			doc.execCommand("BackgroundImageCache", false, true);
+		});
+		if (Browser.Engine.trident) doc.window.attachEvent('onunload', function() {
+			doc.window.detachEvent('onunload', arguments.callee);
+			doc.head = doc.html = doc.window = null;
+		});
+		return $extend(doc, Document.Prototype);
+	},
+
+	afterImplement: function(property, value){
+		document[property] = Document.Prototype[property] = value;
+	}
+
+});
+
+Document.Prototype = {$family: {name: 'document'}};
+
+new Document(document);
 
 /*
 Script: Array.js
@@ -748,382 +906,6 @@ Hash.implement({
 });
 
 Hash.alias({keyOf: 'indexOf', hasValue: 'contains'});
-
-/*
-Script: Class.js
-	Contains the Class Function for easily creating, extending, and implementing reusable Classes.
-
-License:
-	MIT-style license.
-*/
-
-var Class = new Native({
-
-	name: 'Class',
-
-	initialize: function(properties){
-		properties = properties || {};
-		var klass = function(){
-			for (var key in this){
-				if ($type(this[key]) != 'function') this[key] = $unlink(this[key]);
-			}
-			this.constructor = klass;
-			if (Class.prototyping) return this;
-			var instance = (this.initialize) ? this.initialize.apply(this, arguments) : this;
-			if (this.options && this.options.initialize) this.options.initialize.call(this);
-			return instance;
-		};
-
-		for (var mutator in Class.Mutators){
-			if (!properties[mutator]) continue;
-			properties = Class.Mutators[mutator](properties, properties[mutator]);
-			delete properties[mutator];
-		}
-
-		$extend(klass, this);
-		klass.constructor = Class;
-		klass.prototype = properties;
-		return klass;
-	}
-
-});
-
-Class.Mutators = {
-
-	Extends: function(self, klass){
-		Class.prototyping = klass.prototype;
-		var subclass = new klass;
-		delete subclass.parent;
-		subclass = Class.inherit(subclass, self);
-		delete Class.prototyping;
-		return subclass;
-	},
-
-	Implements: function(self, klasses){
-		$splat(klasses).each(function(klass){
-			Class.prototying = klass;
-			$extend(self, ($type(klass) == 'class') ? new klass : klass);
-			delete Class.prototyping;
-		});
-		return self;
-	}
-
-};
-
-Class.extend({
-
-	inherit: function(object, properties){
-		var caller = arguments.callee.caller;
-		for (var key in properties){
-			var override = properties[key];
-			var previous = object[key];
-			var type = $type(override);
-			if (previous && type == 'function'){
-				if (override != previous){
-					if (caller){
-						override.__parent = previous;
-						object[key] = override;
-					} else {
-						Class.override(object, key, override);
-					}
-				}
-			} else if(type == 'object'){
-				object[key] = $merge(previous, override);
-			} else {
-				object[key] = override;
-			}
-		}
-
-		if (caller) object.parent = function(){
-			return arguments.callee.caller.__parent.apply(this, arguments);
-		};
-
-		return object;
-	},
-
-	override: function(object, name, method){
-		var parent = Class.prototyping;
-		if (parent && object[name] != parent[name]) parent = null;
-		var override = function(){
-			var previous = this.parent;
-			this.parent = parent ? parent[name] : object[name];
-			var value = method.apply(this, arguments);
-			this.parent = previous;
-			return value;
-		};
-		object[name] = override;
-	}
-
-});
-
-Class.implement({
-
-	implement: function(){
-		var proto = this.prototype;
-		$each(arguments, function(properties){
-			Class.inherit(proto, properties);
-		});
-		return this;
-	}
-
-});
-
-/*
-Script: Class.Extras.js
-	Contains Utility Classes that can be implemented into your own Classes to ease the execution of many common tasks.
-
-License:
-	MIT-style license.
-*/
-
-var Chain = new Class({
-
-	$chain: [],
-
-	chain: function(){
-		this.$chain.extend(Array.flatten(arguments));
-		return this;
-	},
-
-	callChain: function(){
-		return (this.$chain.length) ? this.$chain.shift().apply(this, arguments) : false;
-	},
-
-	clearChain: function(){
-		this.$chain.empty();
-		return this;
-	}
-
-});
-
-var Events = new Class({
-
-	$events: {},
-
-	addEvent: function(type, fn, internal){
-		type = Events.removeOn(type);
-		if (fn != $empty){
-			this.$events[type] = this.$events[type] || [];
-			this.$events[type].include(fn);
-			if (internal) fn.internal = true;
-		}
-		return this;
-	},
-
-	addEvents: function(events){
-		for (var type in events) this.addEvent(type, events[type]);
-		return this;
-	},
-
-	fireEvent: function(type, args, delay){
-		type = Events.removeOn(type);
-		if (!this.$events || !this.$events[type]) return this;
-		this.$events[type].each(function(fn){
-			fn.create({'bind': this, 'delay': delay, 'arguments': args})();
-		}, this);
-		return this;
-	},
-
-	removeEvent: function(type, fn){
-		type = Events.removeOn(type);
-		if (!this.$events[type]) return this;
-		if (!fn.internal) this.$events[type].erase(fn);
-		return this;
-	},
-
-	removeEvents: function(events){
-		if ($type(events) == 'object'){
-			for (var type in events) this.removeEvent(type, events[type]);
-			return this;
-		}
-		if (events) events = Events.removeOn(events);
-		for (var type in this.$events){
-			if (events && events != type) continue;
-			var fns = this.$events[type];
-			for (var i = fns.length; i--; i) this.removeEvent(type, fns[i]);
-		}
-		return this;
-	}
-
-});
-
-Events.removeOn = function(string){
-	return string.replace(/^on([A-Z])/, function(full, first) {
-		return first.toLowerCase();
-	});
-};
-
-var Options = new Class({
-
-	setOptions: function(){
-		this.options = $merge.run([this.options].extend(arguments));
-		if (!this.addEvent) return this;
-		for (var option in this.options){
-			if ($type(this.options[option]) != 'function' || !(/^on[A-Z]/).test(option)) continue;
-			this.addEvent(option, this.options[option]);
-			delete this.options[option];
-		}
-		return this;
-	}
-
-});
-
-/*
-Script: Browser.js
-	The Browser Core. Contains Browser initialization, Window and Document, and the Browser Hash.
-
-License:
-	MIT-style license.
-*/
-
-var Browser = $merge({
-
-	Engine: {name: 'unknown', version: 0},
-
-	Platform: {name: (window.orientation != undefined) ? 'ipod' : (navigator.platform.match(/mac|win|linux/i) || ['other'])[0].toLowerCase()},
-
-	Features: {xpath: !!(document.evaluate), air: !!(window.runtime), query: !!(document.querySelector)},
-
-	Plugins: {},
-
-	Engines: {
-
-		presto: function(){
-			return (!window.opera) ? false : ((arguments.callee.caller) ? 960 : ((document.getElementsByClassName) ? 950 : 925));
-		},
-
-		trident: function(){
-			return (!window.ActiveXObject) ? false : ((window.XMLHttpRequest) ? 5 : 4);
-		},
-
-		webkit: function(){
-			return (navigator.taintEnabled) ? false : ((Browser.Features.xpath) ? ((Browser.Features.query) ? 525 : 420) : 419);
-		},
-
-		gecko: function(){
-			return (document.getBoxObjectFor == undefined) ? false : ((document.getElementsByClassName) ? 19 : 18);
-		}
-
-	}
-
-}, Browser || {});
-
-Browser.Platform[Browser.Platform.name] = true;
-
-Browser.detect = function(){
-
-	for (var engine in this.Engines){
-		var version = this.Engines[engine]();
-		if (version){
-			this.Engine = {name: engine, version: version};
-			this.Engine[engine] = this.Engine[engine + version] = true;
-			break;
-		}
-	}
-
-	return {name: engine, version: version};
-
-};
-
-Browser.detect();
-
-Browser.Request = function(){
-	return $try(function(){
-		return new XMLHttpRequest();
-	}, function(){
-		return new ActiveXObject('MSXML2.XMLHTTP');
-	});
-};
-
-Browser.Features.xhr = !!(Browser.Request());
-
-Browser.Plugins.Flash = (function(){
-	var version = ($try(function(){
-		return navigator.plugins['Shockwave Flash'].description;
-	}, function(){
-		return new ActiveXObject('ShockwaveFlash.ShockwaveFlash').GetVariable('$version');
-	}) || '0 r0').match(/\d+/g);
-	return {version: parseInt(version[0] || 0 + '.' + version[1], 10) || 0, build: parseInt(version[2], 10) || 0};
-})();
-
-function $exec(text){
-	if (!text) return text;
-	if (window.execScript){
-		window.execScript(text);
-	} else {
-		var script = document.createElement('script');
-		script.setAttribute('type', 'text/javascript');
-		script[(Browser.Engine.webkit && Browser.Engine.version < 420) ? 'innerText' : 'text'] = text;
-		document.head.appendChild(script);
-		document.head.removeChild(script);
-	}
-	return text;
-};
-
-Native.UID = 1;
-
-var $uid = (Browser.Engine.trident) ? function(item){
-	return (item.uid || (item.uid = [Native.UID++]))[0];
-} : function(item){
-	return item.uid || (item.uid = Native.UID++);
-};
-
-var Window = new Native({
-
-	name: 'Window',
-
-	legacy: (Browser.Engine.trident) ? null: window.Window,
-
-	initialize: function(win){
-		$uid(win);
-		if (!win.Element){
-			win.Element = $empty;
-			if (Browser.Engine.webkit) win.document.createElement("iframe"); //fixes safari 2
-			win.Element.prototype = (Browser.Engine.webkit) ? window["[[DOMElement.prototype]]"] : {};
-		}
-		win.document.window = win;
-		return $extend(win, Window.Prototype);
-	},
-
-	afterImplement: function(property, value){
-		window[property] = Window.Prototype[property] = value;
-	}
-
-});
-
-Window.Prototype = {$family: {name: 'window'}};
-
-new Window(window);
-
-var Document = new Native({
-
-	name: 'Document',
-
-	legacy: (Browser.Engine.trident) ? null: window.Document,
-
-	initialize: function(doc){
-		$uid(doc);
-		doc.head = doc.getElementsByTagName('head')[0];
-		doc.html = doc.getElementsByTagName('html')[0];
-		if (Browser.Engine.trident && Browser.Engine.version <= 4) $try(function(){
-			doc.execCommand("BackgroundImageCache", false, true);
-		});
-		if (Browser.Engine.trident) doc.window.attachEvent('onunload', function() {
-			doc.window.detachEvent('onunload', arguments.callee);
-			doc.head = doc.html = doc.window = null;
-		});
-		return $extend(doc, Document.Prototype);
-	},
-
-	afterImplement: function(property, value){
-		document[property] = Document.Prototype[property] = value;
-	}
-
-});
-
-Document.Prototype = {$family: {name: 'document'}};
-
-new Document(document);
 
 /*
 Script: Element.js
@@ -1798,11 +1580,102 @@ if (Browser.Engine.webkit && Browser.Engine.version < 420) Element.Properties.te
 };
 
 /*
+Script: Clientcide.js
+	The Clientcide namespace.
+
+License:
+	http://www.clientcide.com/wiki/cnet-libraries#license
+*/
+var Clientcide = {
+	version: '%build%',
+	setAssetLocation: function(baseHref) {
+		if (window.StickyWin && StickyWin.ui) {
+			StickyWin.UI.refactor({
+				options: {
+					baseHref: baseHref + '/stickyWinHTML/'
+				}
+			});
+			if (StickyWin.alert) {
+				var CGFsimpleErrorPopup = StickyWin.alert.bind(window);
+				StickyWin.alert = function(msghdr, msg, base) {
+				    return CGFsimpleErrorPopup(msghdr, msg, base||baseHref + "/simple.error.popup");
+				};
+			}
+		}
+		if (window.TagMaker) {
+			TagMaker = TagMaker.refactor({
+			    options: {
+			        baseHref: baseHref + '/tips/'
+			    }
+			});
+		}
+		if (window.ProductPicker) {
+			ProductPicker.refactor({
+			    options:{
+			        baseHref: baseHref + '/Picker'
+			    }
+			});
+		}
+
+		if (window.Autocompleter) {
+			var AcClientcide = {
+					options: {
+						baseHref: baseHref + '/autocompleter/'
+					}
+			};
+			Autocompleter.Base.refactor(AcClientcide);
+			if (Autocompleter.Ajax) {
+				["Base", "Xhtml", "Json"].each(function(c){
+					if(Autocompleter.Ajax[c]) Autocompleter.Ajax[c].refactor(AcClientcide);
+				});
+			}
+			if (Autocompleter.Local) Autocompleter.Local.refactor(AcClientcide);
+			if (Autocompleter.JsonP) Autocompleter.JsonP.refactor(AcClientcide);
+		}
+
+		if (window.Lightbox) {
+			Lightbox.refactor({
+			    options: {
+			        assetBaseUrl: baseHref + '/slimbox/'
+			    }
+			});
+		}
+
+		if (window.Waiter) {
+			Waiter.refactor({
+				options: {
+					baseHref: baseHref + '/waiter/'
+				}
+			});
+		}
+	},
+	preLoadCss: function(){
+		if (window.DatePicker) new DatePicker();
+		if (window.ProductPicker) new ProductPicker();
+		if (window.TagMaker) new TagMaker();
+		if (window.StickyWin && StickyWin.ui) StickyWin.ui();
+		if (window.StickyWin && StickyWin.pointy) StickyWin.pointy();
+		Clientcide.preloaded = true;
+		return true;
+	},
+	preloaded: false
+};
+(function(){
+	if (!window.addEvent) return;
+	var preload = function(){
+		if (window.dbug) dbug.log('preloading clientcide css');
+		if (!Clientcide.preloaded) Clientcide.preLoadCss();
+	};
+	window.addEvent('domready', preload);
+	window.addEvent('load', preload);
+})();
+setCNETAssetBaseHref = Clientcide.setAssetLocation;
+/*
 Script: dbug.js
 	A wrapper for Firebug console.* statements.
 
 License:
-	http://clientside.cnet.com/wiki/cnet-libraries#license
+	http://www.clientcide.com/wiki/cnet-libraries#license
 */
 var dbug = {
 	logged: [],	
@@ -1895,11 +1768,230 @@ if (typeof console != "undefined" && console.warn){
 }
 
 /*
+Script: Class.js
+	Contains the Class Function for easily creating, extending, and implementing reusable Classes.
+
+License:
+	MIT-style license.
+*/
+
+var Class = new Native({
+
+	name: 'Class',
+
+	initialize: function(properties){
+		properties = properties || {};
+		var klass = function(){
+			for (var key in this){
+				if ($type(this[key]) != 'function') this[key] = $unlink(this[key]);
+			}
+			this.constructor = klass;
+			if (Class.prototyping) return this;
+			var instance = (this.initialize) ? this.initialize.apply(this, arguments) : this;
+			if (this.options && this.options.initialize) this.options.initialize.call(this);
+			return instance;
+		};
+
+		for (var mutator in Class.Mutators){
+			if (!properties[mutator]) continue;
+			properties = Class.Mutators[mutator](properties, properties[mutator]);
+			delete properties[mutator];
+		}
+
+		$extend(klass, this);
+		klass.constructor = Class;
+		klass.prototype = properties;
+		return klass;
+	}
+
+});
+
+Class.Mutators = {
+
+	Extends: function(self, klass){
+		Class.prototyping = klass.prototype;
+		var subclass = new klass;
+		delete subclass.parent;
+		subclass = Class.inherit(subclass, self);
+		delete Class.prototyping;
+		return subclass;
+	},
+
+	Implements: function(self, klasses){
+		$splat(klasses).each(function(klass){
+			Class.prototying = klass;
+			$extend(self, ($type(klass) == 'class') ? new klass : klass);
+			delete Class.prototyping;
+		});
+		return self;
+	}
+
+};
+
+Class.extend({
+
+	inherit: function(object, properties){
+		var caller = arguments.callee.caller;
+		for (var key in properties){
+			var override = properties[key];
+			var previous = object[key];
+			var type = $type(override);
+			if (previous && type == 'function'){
+				if (override != previous){
+					if (caller){
+						override.__parent = previous;
+						object[key] = override;
+					} else {
+						Class.override(object, key, override);
+					}
+				}
+			} else if(type == 'object'){
+				object[key] = $merge(previous, override);
+			} else {
+				object[key] = override;
+			}
+		}
+
+		if (caller) object.parent = function(){
+			return arguments.callee.caller.__parent.apply(this, arguments);
+		};
+
+		return object;
+	},
+
+	override: function(object, name, method){
+		var parent = Class.prototyping;
+		if (parent && object[name] != parent[name]) parent = null;
+		var override = function(){
+			var previous = this.parent;
+			this.parent = parent ? parent[name] : object[name];
+			var value = method.apply(this, arguments);
+			this.parent = previous;
+			return value;
+		};
+		object[name] = override;
+	}
+
+});
+
+Class.implement({
+
+	implement: function(){
+		var proto = this.prototype;
+		$each(arguments, function(properties){
+			Class.inherit(proto, properties);
+		});
+		return this;
+	}
+
+});
+
+/*
+Script: Class.Extras.js
+	Contains Utility Classes that can be implemented into your own Classes to ease the execution of many common tasks.
+
+License:
+	MIT-style license.
+*/
+
+var Chain = new Class({
+
+	$chain: [],
+
+	chain: function(){
+		this.$chain.extend(Array.flatten(arguments));
+		return this;
+	},
+
+	callChain: function(){
+		return (this.$chain.length) ? this.$chain.shift().apply(this, arguments) : false;
+	},
+
+	clearChain: function(){
+		this.$chain.empty();
+		return this;
+	}
+
+});
+
+var Events = new Class({
+
+	$events: {},
+
+	addEvent: function(type, fn, internal){
+		type = Events.removeOn(type);
+		if (fn != $empty){
+			this.$events[type] = this.$events[type] || [];
+			this.$events[type].include(fn);
+			if (internal) fn.internal = true;
+		}
+		return this;
+	},
+
+	addEvents: function(events){
+		for (var type in events) this.addEvent(type, events[type]);
+		return this;
+	},
+
+	fireEvent: function(type, args, delay){
+		type = Events.removeOn(type);
+		if (!this.$events || !this.$events[type]) return this;
+		this.$events[type].each(function(fn){
+			fn.create({'bind': this, 'delay': delay, 'arguments': args})();
+		}, this);
+		return this;
+	},
+
+	removeEvent: function(type, fn){
+		type = Events.removeOn(type);
+		if (!this.$events[type]) return this;
+		if (!fn.internal) this.$events[type].erase(fn);
+		return this;
+	},
+
+	removeEvents: function(events){
+		if ($type(events) == 'object'){
+			for (var type in events) this.removeEvent(type, events[type]);
+			return this;
+		}
+		if (events) events = Events.removeOn(events);
+		for (var type in this.$events){
+			if (events && events != type) continue;
+			var fns = this.$events[type];
+			for (var i = fns.length; i--; i) this.removeEvent(type, fns[i]);
+		}
+		return this;
+	}
+
+});
+
+Events.removeOn = function(string){
+	return string.replace(/^on([A-Z])/, function(full, first) {
+		return first.toLowerCase();
+	});
+};
+
+var Options = new Class({
+
+	setOptions: function(){
+		this.options = $merge.run([this.options].extend(arguments));
+		if (!this.addEvent) return this;
+		for (var option in this.options){
+			if ($type(this.options[option]) != 'function' || !(/^on[A-Z]/).test(option)) continue;
+			this.addEvent(option, this.options[option]);
+			delete this.options[option];
+		}
+		return this;
+	}
+
+});
+
+/*
 Script: JsonP.js
 	Defines JsonP, a class for cross domain javascript via script injection.
 
 License:
-	http://clientside.cnet.com/wiki/cnet-libraries#license
+	http://www.clientcide.com/wiki/cnet-libraries#license
 */
 var JsonP = new Class({
 	Implements: [Options, Events],
@@ -1968,7 +2060,7 @@ var JsonP = new Class({
 		}
 		if(url) {
 			var separator = (url.test('\\?'))?'&':'?';
-			var jurl = url + separator + this.options.callBackKey + "=JsonP.requestors.request_" +
+			var jurl = url + separator + this.options.callBackKey + "=window.JsonP.requestors.request_" +
 				index+".handleResults";
 			if(this.options.queryString) jurl += "&"+this.options.queryString;
 			jurl += "&"+Hash.toQueryString(this.options.data);
@@ -1994,7 +2086,7 @@ Script: Date.js
 	Extends the Date native object to include methods useful in managing dates.
 
 License:
-	http://clientside.cnet.com/wiki/cnet-libraries#license
+	http://www.clientcide.com/wiki/cnet-libraries#license
 */
 
 new Native({name: 'Date', initialize: Date, protect: true});
@@ -2339,6 +2431,21 @@ $extend(Date, {
 				d.set('ampm', bits[6]);
 				return Date.fixY2K(d);
 			}
+		},
+		{
+			//"12.31.08 11:59:59", "12-31-08 11:59:59", "12/31/08 11:59:59", "12.31.2008 11:59:59", "12-31-2008 11:59:59", "12/31/2008 11:59:59"
+			re: /^(\d{1,2})[\.\-\/](\d{1,2})[\.\-\/](\d{2,4})\s(\d{1,2}):(\d{1,2}):(\d{1,2})/,
+			handler: function(bits) {
+				var d = new Date();
+				var culture = Date.$cultures[Date.$culture];
+				d.set('year', bits[Date.$cIndex('year')]);
+				d.set('month', bits[Date.$cIndex('month')] - 1);
+				d.set('date', bits[Date.$cIndex('date')]);
+				d.set('hours', bits[4]);
+				d.set('minutes', bits[5]);
+				d.set('seconds', bits[6]);
+				return Date.fixY2K(d);
+			}
 		}
 	]
 });
@@ -2366,7 +2473,7 @@ Script: Date.Extras.js
 	Extends the Date native object to include extra methods (on top of those in Date.js).
 
 License:
-	http://clientside.cnet.com/wiki/cnet-libraries#license
+	http://www.clientcide.com/wiki/cnet-libraries#license
 */
 
 ["LastDayOfMonth", "Ordinal"].each(function(method) {
@@ -2473,6 +2580,21 @@ Date.$resources = {
 
 Date.$parsePatterns.extend([
 	{
+		//"1999-12-31 23:59:59"
+		re: /^(\d{4})[\.\-\/](\d{1,2})[\.\-\/](\d{2,4})\s(\d{1,2}):(\d{1,2}):(\d{1,2})/,
+		handler: function(bits) {			
+			var d = new Date();
+			var culture = Date.$cultures[Date.$culture];
+			d.set('year', bits[1]);
+			d.set('month', bits[2] - 1);
+			d.set('date', bits[3]);
+			d.set('hours', bits[4]);
+			d.set('minutes', bits[5]);
+			d.set('seconds', bits[6]);
+			return d;
+		}
+	},
+	{		
 		// yyyy-mm-ddTHH:MM:SS-0500 (ISO8601) i.e.2007-04-17T23:15:22Z
 		// inspired by: http://delete.me.uk/2005/03/iso8601.html
 		re: /^(\d{4})(?:-?(\d{2})(?:-?(\d{2})(?:[T ](\d{2})(?::?(\d{2})(?::?(\d{2})(?:\.(\d+))?)?)?(?:Z|(?:([-+])(\d{2})(?::?(\d{2}))?)?)?)?)?)?$/,
@@ -2489,7 +2611,7 @@ Date.$parsePatterns.extend([
 				offset = (bits[9].toInt() * 60) + bits[10].toInt();
 				offset *= ((bits[8] == '-') ? 1 : -1);
 			}
-			offset -= d.getTimezoneOffset();
+			//offset -= d.getTimezoneOffset();
 			d.setTime((d * 1) + (offset * 60 * 1000).toInt());
 			return d;
 		}
@@ -4470,8 +4592,12 @@ Element.implement({
 	},
 	// don't use this unless the IMG will have width shortly after calling this (no timeout)
 	on_has_width: function(fun){
+		var retries = (this.retrieve('on_has_width_tries') || 0) + 1		
+		if (retries > 30) return
+		
 		if (this.invisibleSize().x > 0) fun()
 		else this.on_has_width.delay(100, this, fun)
+		this.store('on_has_width_tries', retries)
 		return this
 	}
 })
@@ -4958,3 +5084,4 @@ var BrawndoButton = new Class({
 	}
 });
 
+window.JsonP = JsonP
