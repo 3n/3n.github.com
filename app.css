@@ -345,3 +345,10 @@ h1 {
   top:100px;
   z-index:100;
 }
+
+#ninjacam {
+  padding-top:15px;
+}
+#ninjacam img {
+  margin: 0 5px -8px 2px;
+}
